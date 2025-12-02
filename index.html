@@ -473,6 +473,93 @@
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 18px;
+            }
+            
+            .subtitle-question {
+                font-size: 14px;
+            }
+            
+            /* Stack builders vertically on mobile */
+            .builders-row {
+                flex-direction: column;
+            }
+            
+            .item-builder-section {
+                width: 100%;
+            }
+            
+            /* Stack visualization components vertically */
+            .viz-container {
+                flex-direction: column;
+            }
+            
+            .viz-legend {
+                flex: 0 0 auto;
+                width: 100%;
+                height: 80px;
+                margin-bottom: 10px;
+            }
+            
+            .legend-container {
+                height: 80px;
+            }
+            
+            .color-legend {
+                height: 70px;
+                flex-direction: row;
+                padding: 8px 15px;
+            }
+            
+            .legend-label {
+                flex: 1;
+                font-size: 8px;
+                line-height: 1.1;
+            }
+            
+            .viz-main {
+                flex: 0 0 auto;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .river-box {
+                height: 200px;
+            }
+            
+            .viz-sidebar {
+                flex: 0 0 auto;
+                width: 100%;
+                flex-direction: row;
+                gap: 6px;
+            }
+            
+            .sidebar-section {
+                flex: 1;
+            }
+            
+            /* Adjust zone labels for smaller viz */
+            .zone-item-label {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+            
+            .zone-percentage {
+                font-size: 12px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1186,9 +1273,12 @@
         
         // Update river visualization - PUSH FROM BOTH SIDES
         function updateRiver() {
-            const boxHeight = 285; // Updated to match river-box height
+            // Check if mobile (screen width <= 768px)
+            const isMobile = window.innerWidth <= 768;
+            const boxHeight = isMobile ? 200 : 285;
+            
             const minZoneHeight = boxHeight * 0.10;
-            const maxRiverHeight = 265; // Cap river at initial size (285 - 20px for min zones)
+            const maxRiverHeight = isMobile ? 180 : 265; // Cap river at initial size
             
             const totals = updateTotals();
             const stressorTotal = totals.stressorTotal;
