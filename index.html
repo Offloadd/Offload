@@ -20,6 +20,14 @@
         h2 { font-size: 18px; margin-bottom: 9px; color: #111827; }
         .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 12px; }
         .slider-container { background: #f9fafb; padding: 6px; border-radius: 4px; margin-bottom: 5px; position: relative; }
+        .slider-container.collapsed {
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: #e5e7eb;
+            vertical-align: top;
+        }
         .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
         .slider-label { font-weight: 600; color: #111827; font-size: 14px; flex: 1; }
         .slider-value { font-size: 18px; font-weight: bold; }
@@ -180,12 +188,17 @@
             transition: background-color 0.3s ease-out;
         }
 
-        .color-legend {
+        .color-legend-container {
             position: absolute;
             left: 10px;
             top: 10px;
-            bottom: 10px;
+            z-index: 9;
+        }
+
+        .color-legend {
+            position: relative;
             width: 25px;
+            height: 280px;
             background: linear-gradient(to bottom,
                 #ff4444 0%,
                 #ffaa44 33%,
@@ -195,29 +208,104 @@
             border: 2px solid #333;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            z-index: 9;
+        }
+
+
+        .legend-labels {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 25px;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            pointer-events: none;
+        }
+
+        .legend-label-condensed {
+            color: white;
+            font-weight: bold;
+            font-size: 9px;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+            padding: 2px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
         }
 
         .zone-labels {
             position: absolute;
             left: 45px;
-            width: 180px;
+            width: 220px;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            pointer-events: none;
+            pointer-events: auto;
             z-index: 10;
         }
 
         .zone-label {
+            position: relative;
             color: white;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             font-size: 12px;
-            padding: 4px;
-            background: rgba(0,0,0,0.3);
+            padding: 6px 8px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 4px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.2s ease;
+        }
+
+        .zone-label-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .zone-label.expanded .zone-label-title {
+            margin-bottom: 6px;
+        }
+
+        .zone-label-details {
+            display: none;
+            font-size: 11px;
+            font-weight: normal;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        .zone-label.expanded .zone-label-details {
+            display: block;
+        }
+
+        .zone-toggle-btn {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.5);
             border-radius: 3px;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-left: 6px;
+        }
+
+        .zone-toggle-btn:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .zone-toggle-btn:active {
+            background: rgba(255,255,255,0.6);
         }
 
         .visualization svg {
@@ -402,7 +490,7 @@
         .ground-label {
             position: absolute;
             bottom: 8px;
-            left: 8px;
+            right: 8px;
             background: rgba(0,0,0,0.7);
             color: white;
             padding: 4px 8px;
@@ -621,6 +709,15 @@
             lifeAreas: {},
             lifeAreasConfig: [],
             lifeAreasVisible: true,
+            tutorialVisible: true,
+            systemLoadVisible: true,
+            ambientVisible: true,
+            sliderVisible: {}, // tracks which life area sliders are visible
+            zoneLabelsExpanded: {
+                threat: false,
+                stable: false,
+                opportunity: false
+            },
             ambient: [
                 { value: 0, type: 'draining_positive', note: '' },
                 { value: 0, type: 'draining_positive', note: '' },
@@ -645,12 +742,38 @@
             // Initialize lifeAreas values
             state.lifeAreasConfig.forEach(config => {
                 state.lifeAreas[config.key] = 0;
+                state.sliderVisible[config.key] = true; // all sliders visible by default
             });
+
+            // Load slider visibility preferences
+            const savedSliderVisibility = localStorage.getItem('offload_slider_visibility');
+            if (savedSliderVisibility) {
+                const savedVisibility = JSON.parse(savedSliderVisibility);
+                Object.assign(state.sliderVisible, savedVisibility);
+            }
 
             // Load visibility preference
             const savedVisibility = localStorage.getItem('offload_life_areas_visible');
             if (savedVisibility !== null) {
                 state.lifeAreasVisible = savedVisibility === 'true';
+            }
+
+            // Load tutorial visibility preference (default true)
+            const savedTutorialVisibility = localStorage.getItem('offload_tutorial_visible');
+            if (savedTutorialVisibility !== null) {
+                state.tutorialVisible = savedTutorialVisibility === 'true';
+            }
+
+            // Load system load visibility preference (default true)
+            const savedSystemLoadVisibility = localStorage.getItem('offload_system_load_visible');
+            if (savedSystemLoadVisibility !== null) {
+                state.systemLoadVisible = savedSystemLoadVisibility === 'true';
+            }
+
+            // Load ambient visibility preference (default true)
+            const savedAmbientVisibility = localStorage.getItem('offload_ambient_visible');
+            if (savedAmbientVisibility !== null) {
+                state.ambientVisible = savedAmbientVisibility === 'true';
             }
         }
 
@@ -665,6 +788,24 @@
         function toggleLifeAreasVisibility() {
             state.lifeAreasVisible = !state.lifeAreasVisible;
             saveVisibilityPreference();
+            render();
+        }
+
+        function toggleTutorialVisibility() {
+            state.tutorialVisible = !state.tutorialVisible;
+            localStorage.setItem('offload_tutorial_visible', state.tutorialVisible);
+            render();
+        }
+
+        function toggleSystemLoadVisibility() {
+            state.systemLoadVisible = !state.systemLoadVisible;
+            localStorage.setItem('offload_system_load_visible', state.systemLoadVisible);
+            render();
+        }
+
+        function toggleAmbientVisibility() {
+            state.ambientVisible = !state.ambientVisible;
+            localStorage.setItem('offload_ambient_visible', state.ambientVisible);
             render();
         }
 
@@ -703,6 +844,35 @@
             state.editingKey = null;
         }
 
+        function toggleLegendDetails() {
+            const details = document.getElementById('legendDetails');
+            const button = document.getElementById('legendToggle');
+            
+            if (details.classList.contains('expanded')) {
+                details.classList.remove('expanded');
+                button.textContent = '+';
+            } else {
+                details.classList.add('expanded');
+                button.textContent = '-';
+            }
+        }
+
+        function toggleZoneLabel(zone) {
+            state.zoneLabelsExpanded[zone] = !state.zoneLabelsExpanded[zone];
+            render();
+        }
+
+        function toggleLifeAreaSlider(key) {
+            state.sliderVisible[key] = !state.sliderVisible[key];
+            localStorage.setItem('offload_slider_visibility', JSON.stringify(state.sliderVisible));
+            render();
+        }
+
+        function toggleSliderVisibility(key) {
+            state.sliderVisible[key] = !state.sliderVisible[key];
+            render();
+        }
+
         function saveLifeAreaEdit() {
             const name = document.getElementById('editName').value.trim();
             const positive = document.getElementById('editPositive').value.trim();
@@ -732,6 +902,7 @@
                     negativeLabel: negative
                 });
                 state.lifeAreas[newKey] = 0;
+                state.sliderVisible[newKey] = true; // new sliders visible by default
             }
 
             saveLifeAreasConfig();
@@ -1184,9 +1355,28 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             const neutralCount = getNeutralCount();
 
             const html = `
-                <div class="card header">
-                    <h1>Offload: A nervous system validation companion</h1>
-                    <div class="subtitle">(Based on the concepts of Polyvagal Theory, Shadow Work, Window of Tolerance, Inner Child Work, and RAS and default mode reprogramming)<br><em style="font-size: 11px; color: #9333ea;">Saves to Google Sheets</em></div>
+                <div class="card header" style="border-left: 4px solid #3b82f6;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${state.tutorialVisible ? '12px' : '0'};">
+                        <div>
+                            <h1 style="margin-bottom: 6px;">Offload: A nervous system validation companion</h1>
+                            <div class="subtitle">(Based on the concepts of Polyvagal Theory, Shadow Work, Window of Tolerance, Inner Child Work, and RAS and default mode reprogramming)<br><em style="font-size: 11px; color: #9333ea;">Saves to Google Sheets</em></div>
+                        </div>
+                        <button class="btn btn-toggle" onclick="toggleTutorialVisibility()" style="margin-left: 12px;">
+                            ${state.tutorialVisible ? '▲' : '▼'}
+                        </button>
+                    </div>
+                    
+                    ${state.tutorialVisible ? `
+                        <div class="how-it-works">
+                            <div class="how-item">Offload is a nervous system validation tool designed to externalize internal information. Which is basically the same as shadow work, making the invisible visible. Offload can help you see your inner experiences for what they are, information. We all have beliefs and perceptions about the world around us, ourselves, our thoughts and our feelings. This tool is designed to support and develop more helpful versions of those beliefs and perceptions. The theory is that by externalizing internal information you are putting that information somewhere safe and accessible so you can learn from it when you are more able to do so.</div>
+                            
+                            <div class="how-item">In my personal experience, offloading internal experiences helps to reduce worrying, ruminating and overthinking. It can give clarity to foggy or multilayered states, and makes space for other layers of thoughts, feelings or ideas to surface.</div>
+                            
+                            <div class="how-item">Long story short, it can help a person to see things about themselves they can't normally see and create a healthier relationship to their shadow self that might be making things more difficult than they need to be.</div>
+                            
+                            <div class="how-item"><span class="how-label">How It Works:</span> This tool works by rating different life areas and internal experiences using words, numbers, colors and structured visualizations like slide bars and a larger dynamic visualization. The main visualization shows your Window of Tolerance as a river between two gates. The top gate (red) closes with threat responses (anxiety, fear, activation). The bottom gate (green) closes with opportunity responses (excitement, enthusiasm). The blue river between shows your available capacity for processing information. More neutral areas = wider river = more flexibility and ease.</div>
+                        </div>
+                    ` : ''}
                 </div>
 
                 <div class="card section-blue">
@@ -1216,10 +1406,28 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                 <div class="divider-line divider-right"></div>
                             </div>
                         
-                        ${state.lifeAreasConfig.map(config => `
+                        ${state.lifeAreasConfig.filter(config => !state.sliderVisible[config.key]).map(config => {
+                            return `
+                            <div class="slider-container collapsed">
+                                <div class="slider-header">
+                                    <span class="slider-label">
+                                        ${config.label}
+                                        <button class="icon-btn" onclick="toggleLifeAreaSlider('${config.key}')" title="Show slider" style="margin-left: 4px;">▲</button>
+                                        : ${-state.lifeAreas[config.key] > 0 ? '+' : ''}${-state.lifeAreas[config.key]}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                        }).join('')}
+                        
+                        ${state.lifeAreasConfig.filter(config => state.sliderVisible[config.key]).map(config => {
+                            return `
                             <div class="slider-container">
                                 <div class="slider-header">
-                                    <span class="slider-label">${config.label}</span>
+                                    <span class="slider-label">
+                                        ${config.label}
+                                        <button class="icon-btn" onclick="toggleLifeAreaSlider('${config.key}')" title="Hide slider" style="margin-left: 4px;">▼</button>
+                                    </span>
                                     <div class="slider-actions">
                                         <button class="icon-btn" onclick="openEditModal('${config.key}')" title="Edit">✏️</button>
                                         <button class="icon-btn" onclick="deleteLifeArea('${config.key}')" title="Delete">🗑️</button>
@@ -1231,7 +1439,8 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                        onchange="updateSlider('life', '${config.key}', this.value)"
                                        style="background: linear-gradient(to right, #64ff64 0%, #4488ff 50%, #ffaa44 75%, #ff4444 100%);">
                             </div>
-                        `).join('')}
+                        `;
+                        }).join('')}
                         
                         </div>
                         
@@ -1252,7 +1461,14 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                 </div>
 
                 <div class="card section-purple">
-                    <h2>2. Specific Internal Experiences (Emotions, Vibes, Somatic/Bodily Activity) (0-15 each)</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${state.ambientVisible ? '12px' : '0'};">
+                        <h2 style="margin: 0;">2. Specific Internal Experiences (Emotions, Vibes, Somatic/Bodily Activity) (0-15 each)</h2>
+                        <button class="btn btn-toggle" onclick="toggleAmbientVisibility()">
+                            ${state.ambientVisible ? '▲ Collapse' : '▼ Expand'}
+                        </button>
+                    </div>
+                    
+                    ${state.ambientVisible ? `
                     <div class="subtitle"><em>Rate and describe what you're carrying internally</em></div>
                     
                     <div class="examples-box">
@@ -1290,42 +1506,50 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                             ` : ''}
                         </div>
                     `).join('')}
-                </div>
-
-                <div class="card" style="border: 2px solid #9333ea;">
-                    <h2>System Load Summary</h2>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 12px 0;">
-                        <div style="background: #fee2e2; padding: 9px; border-radius: 5px; text-align: center;">
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Threat Load</div>
-                            <div style="font-size: 28px; font-weight: bold; color: #dc2626;">${threatLoad}</div>
-                            <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Dysregulated</div>
-                        </div>
-                        <div style="background: #dbeafe; padding: 9px; border-radius: 5px; text-align: center;">
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Neutral Areas</div>
-                            <div style="font-size: 28px; font-weight: bold; color: #3b82f6;">${neutralCount}</div>
-                            <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Regulated</div>
-                        </div>
-                        <div style="background: #d1fae5; padding: 9px; border-radius: 5px; text-align: center;">
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Opportunity Load</div>
-                            <div style="font-size: 28px; font-weight: bold; color: #16a34a;">${opportunityLoad}</div>
-                            <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Enthusiasm/Fun</div>
-                        </div>
-                    </div>
-                    <div class="status-box" style="background: ${status.color}; border-color: ${status.border}; color: ${status.textColor};">
-                        <span class="status-icon">${status.icon}</span>
-                        <span style="font-weight: 600;">${status.text}</span>
-                    </div>
+                    ` : ''}
                 </div>
 
                 <div class="card">
                     <h2>Window of Tolerance Visualization</h2>
                     <div class="visualization" id="visualization">
-                        <div class="color-legend"></div>
+                        <div class="color-legend-container">
+                            <div class="color-legend">
+                                <div class="legend-labels">
+                                    <div class="legend-label-condensed">STRESS</div>
+                                    <div class="legend-label-condensed">STABLE</div>
+                                    <div class="legend-label-condensed">OPPORTUNITY</div>
+                                </div>
+                            </div>
+                        </div>
                         
                         <div class="zone-labels">
-                            <div class="zone-label">Threat Response (Dysregulated):<br>Fear, anxiety, activated feel, anger,<br>hopelessness, powerlessness,<br>and threat of pain responses</div>
-                            <div class="zone-label">Grounded, calm,<br>and approachable (Regulated)</div>
-                            <div class="zone-label">Opportunity Responses:<br>Enthusiasm, joy, sex, hunger,<br>expansiveness or freedom feelings</div>
+                            <div class="zone-label ${state.zoneLabelsExpanded.threat ? 'expanded' : ''}">
+                                <div class="zone-label-title">
+                                    <span>🔴 Threat Response</span>
+                                    <button class="zone-toggle-btn" onclick="toggleZoneLabel('threat')">${state.zoneLabelsExpanded.threat ? '-' : '?'}</button>
+                                </div>
+                                <div class="zone-label-details">
+                                    Fear, anxiety, activated feelings, anger, hopelessness, powerlessness, threat of pain responses
+                                </div>
+                            </div>
+                            <div class="zone-label ${state.zoneLabelsExpanded.stable ? 'expanded' : ''}">
+                                <div class="zone-label-title">
+                                    <span>🔵 Regulated State</span>
+                                    <button class="zone-toggle-btn" onclick="toggleZoneLabel('stable')">${state.zoneLabelsExpanded.stable ? '-' : '?'}</button>
+                                </div>
+                                <div class="zone-label-details">
+                                    Grounded, calm, approachable, present
+                                </div>
+                            </div>
+                            <div class="zone-label ${state.zoneLabelsExpanded.opportunity ? 'expanded' : ''}">
+                                <div class="zone-label-title">
+                                    <span>🟢 Opportunity Response</span>
+                                    <button class="zone-toggle-btn" onclick="toggleZoneLabel('opportunity')">${state.zoneLabelsExpanded.opportunity ? '-' : '?'}</button>
+                                </div>
+                                <div class="zone-label-details">
+                                    Enthusiasm, joy, sexual feelings, hunger, expansiveness, freedom feelings
+                                </div>
+                            </div>
                         </div>
 
                         <svg viewBox="0 0 600 300" preserveAspectRatio="none">
@@ -1365,22 +1589,37 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                     </div>
                 </div>
 
-                <div class="card">
-                    <h2>How This Works:</h2>
-                    <div class="how-it-works">
-                        <div class="how-item"><span class="how-label">Dual Gates System:</span> Top gate (red) closes down with threat load, bottom gate (green) closes up with opportunity load. Blue river flows between them showing your window of tolerance.</div>
-                        <div class="how-item"><span class="how-label">Life Areas (+5 to -5 each):</span> Negative values (dysregulated) add to threat, positive values (enthusiasm/fun) add to opportunity. Zero is regulated/calm.</div>
-                        <div class="how-item"><span class="how-label">Internal Experiences (0-15 each):</span> Rate intensity, then select type:
-                            <ul style="margin-left: 20px; margin-top: 3px;">
-                                <li><strong>Positive but Draining/Obsessive:</strong> Adds to threat (e.g., manic excitement)</li>
-                                <li><strong>Positive and Expansive/Calming:</strong> Adds to opportunity (e.g., contentment, curiosity)</li>
-                                <li><strong>Negative and Draining/Obsessive:</strong> Adds to threat (e.g., fear, rumination)</li>
-                                <li><strong>Negative with Positive Returns:</strong> Adds to opportunity (e.g., productive grief)</li>
-                            </ul>
-                        </div>
-                        <div class="how-item"><span class="how-label">Regulated State:</span> More zeros = wider blue river = more capacity available</div>
-                        <div class="how-item"><span class="how-label">Customization:</span> Click edit (✏️) to change life area labels, or delete (🗑️) to remove. Add new life areas with the "+ Add Life Area" button (max 10 total).</div>
+                <div class="card" style="border: 2px solid #9333ea;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${state.systemLoadVisible ? '12px' : '0'};">
+                        <h2 style="margin: 0;">System Load Summary</h2>
+                        <button class="btn btn-toggle" onclick="toggleSystemLoadVisibility()">
+                            ${state.systemLoadVisible ? '▲ Collapse' : '▼ Expand'}
+                        </button>
                     </div>
+                    
+                    ${state.systemLoadVisible ? `
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 12px 0;">
+                        <div style="background: #fee2e2; padding: 9px; border-radius: 5px; text-align: center;">
+                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Threat Load</div>
+                            <div style="font-size: 28px; font-weight: bold; color: #dc2626;">${threatLoad}</div>
+                            <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Dysregulated</div>
+                        </div>
+                        <div style="background: #dbeafe; padding: 9px; border-radius: 5px; text-align: center;">
+                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Neutral Areas</div>
+                            <div style="font-size: 28px; font-weight: bold; color: #3b82f6;">${neutralCount}</div>
+                            <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Regulated</div>
+                        </div>
+                        <div style="background: #d1fae5; padding: 9px; border-radius: 5px; text-align: center;">
+                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Opportunity Load</div>
+                            <div style="font-size: 28px; font-weight: bold; color: #16a34a;">${opportunityLoad}</div>
+                            <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Enthusiasm/Fun</div>
+                        </div>
+                    </div>
+                    <div class="status-box" style="background: ${status.color}; border-color: ${status.border}; color: ${status.textColor};">
+                        <span class="status-icon">${status.icon}</span>
+                        <span style="font-weight: 600;">${status.text}</span>
+                    </div>
+                    ` : ''}
                 </div>
 
                 <div class="card" style="border: 2px solid #16a34a;">
