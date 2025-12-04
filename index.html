@@ -617,7 +617,7 @@
 <body>
     <div class="container" id="app"></div>
 
-    <!-- Modal -->
+    <!-- Modal for Life Areas -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <div class="modal-header">
@@ -644,7 +644,40 @@
         </div>
     </div>
 
+    <!-- Modal for Text Editing -->
+    <div class="modal-overlay" id="textModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="textModalTitle">Edit Text</h3>
+                <button class="modal-close" onclick="closeTextModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <label class="input-label" id="textModalLabel">Text:</label>
+                <textarea id="textModalContent" style="min-height: 300px;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeTextModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveTextEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Default intro text
+        const DEFAULT_INTRO_TEXT = `<div class="how-item"><span class="how-label">Summary:</span> Offload is a tool that is a result of a long held/standing desire of wanting to be able to do something daily (if necessary) that I knew would be an effort towards improving my mental health, quality of life, and adult life navigation skills and confidence. Developmental things that got overlooked, suppressed, or ignored earlier in my life which was just how I learned to survive and make it through all those years.</div>
+                            
+<div class="how-item">Offload is based on a few concepts such as: Nervous System Regulation, Shadow Work, Inner Child Work, Polyvagal Theory, Attachment Theory, Window of Tolerance, and other relatable notions. This tool is a way to visualize how one's own thoughts, emotions and other internal experiences are affecting their own capacity to process information and make decisions. It uses concepts like flight, fight, freeze, and fawn stress responses but also includes concepts about what stability and safety look and feel like, as well as what opportunity responses look and feel like.</div>
+                            
+<div class="how-item">The Window of Tolerance concept states that how wide or narrow one's own window of tolerance is, directly affects their life experiences. So if you have internalized high stress or chronically stressed life patterns, those put pressure on and narrow your window of tolerance. The "fix" to that is to learn what calm and stability look and feel like because those are the things that help widen your window of tolerance so that you have more of a chance to experience things you need or want to experience in life.</div>
+                            
+<div class="how-item">Learning how and when to aim for and return to states of calm and stability are the foundation of creating the conditions that allow you to attract and receive more desired life experiences.</div>
+                            
+<div class="how-item"><span class="how-label">How this works:</span> Offload uses color and number scales, labels and notes to help externalize internal information which can show you how regulated or dysregulated your nervous system is and why. This is definitely NOT something to try to perfect your ratings or notes about what you are experiencing.</div>
+                            
+<div class="how-item">The main goal of rating life experiences in this tool is so that your ratings resonate with how you are thinking and/or feeling. Or another way to put it is, rate your experiences in a way that you are comfortable enough with. Good enough ratings are the goal, not perfection. Let's try to keep the shame of perfectionism to a minimum.</div>
+                            
+<div class="how-item">By doing these ratings over time, when you need to or when you want to, your shadow self patterns will start to emerge in the accumulated data. That is where things can start to get interesting and this tool can help you stop bad habits before you obey them automatically.</div>`;
+
         // Default life areas configuration
         const DEFAULT_LIFE_AREAS = [
             {
@@ -718,6 +751,14 @@
                 stable: false,
                 opportunity: false
             },
+            introText: '', // editable intro text
+            ambientDescription: 'Rate and describe what you\'re carrying internally',
+            ambientExamples: '<strong>Positive:</strong> Joy, calm, contentment, enthusiasm<br><strong>Negative/Threat responses:</strong> Fear, anger, tension, shutting down',
+            ambientTitles: [
+                'Internal Activity Intensity/Loudness 1',
+                'Internal Activity Intensity/Loudness 2',
+                'Internal Activity Intensity/Loudness 3'
+            ],
             ambient: [
                 { value: 0, type: 'draining_positive', note: '' },
                 { value: 0, type: 'draining_positive', note: '' },
@@ -775,6 +816,20 @@
             if (savedAmbientVisibility !== null) {
                 state.ambientVisible = savedAmbientVisibility === 'true';
             }
+
+            // Load intro text
+            const savedIntroText = localStorage.getItem('offload_intro_text');
+            state.introText = savedIntroText || DEFAULT_INTRO_TEXT;
+
+            // Load ambient description and examples
+            const savedAmbientDesc = localStorage.getItem('offload_ambient_description');
+            if (savedAmbientDesc) state.ambientDescription = savedAmbientDesc;
+
+            const savedAmbientExamples = localStorage.getItem('offload_ambient_examples');
+            if (savedAmbientExamples) state.ambientExamples = savedAmbientExamples;
+
+            const savedAmbientTitles = localStorage.getItem('offload_ambient_titles');
+            if (savedAmbientTitles) state.ambientTitles = JSON.parse(savedAmbientTitles);
         }
 
         function saveLifeAreasConfig() {
@@ -865,6 +920,72 @@
         function toggleLifeAreaSlider(key) {
             state.sliderVisible[key] = !state.sliderVisible[key];
             localStorage.setItem('offload_slider_visibility', JSON.stringify(state.sliderVisible));
+            render();
+        }
+
+        let currentTextEdit = null;
+
+        function openTextEditModal(type, index = null) {
+            currentTextEdit = { type, index };
+            const modal = document.getElementById('textModalOverlay');
+            const title = document.getElementById('textModalTitle');
+            const content = document.getElementById('textModalContent');
+
+            switch(type) {
+                case 'intro':
+                    title.textContent = 'Edit Introduction Text';
+                    content.value = state.introText.replace(/<div class="how-item">/g, '\n\n').replace(/<\/div>/g, '').replace(/<span class="how-label">(.*?)<\/span>/g, '$1').replace(/<br>/g, '\n').replace(/<strong>/g, '').replace(/<\/strong>/g, '');
+                    break;
+                case 'ambient_desc':
+                    title.textContent = 'Edit Section Description';
+                    content.value = state.ambientDescription;
+                    break;
+                case 'ambient_examples':
+                    title.textContent = 'Edit Examples Text';
+                    content.value = state.ambientExamples.replace(/<br>/g, '\n').replace(/<strong>/g, '').replace(/<\/strong>/g, '');
+                    break;
+                case 'ambient_title':
+                    title.textContent = `Edit Slider ${index + 1} Title`;
+                    content.value = state.ambientTitles[index];
+                    break;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeTextModal() {
+            document.getElementById('textModalOverlay').classList.remove('active');
+            currentTextEdit = null;
+        }
+
+        function saveTextEdit() {
+            if (!currentTextEdit) return;
+
+            const content = document.getElementById('textModalContent').value;
+            const { type, index } = currentTextEdit;
+
+            switch(type) {
+                case 'intro':
+                    // Convert plain text back to HTML structure
+                    const paragraphs = content.split('\n\n').filter(p => p.trim());
+                    state.introText = paragraphs.map(p => `<div class="how-item">${p.trim()}</div>`).join('\n                            \n');
+                    localStorage.setItem('offload_intro_text', state.introText);
+                    break;
+                case 'ambient_desc':
+                    state.ambientDescription = content;
+                    localStorage.setItem('offload_ambient_description', content);
+                    break;
+                case 'ambient_examples':
+                    state.ambientExamples = content.replace(/\n/g, '<br>');
+                    localStorage.setItem('offload_ambient_examples', state.ambientExamples);
+                    break;
+                case 'ambient_title':
+                    state.ambientTitles[index] = content;
+                    localStorage.setItem('offload_ambient_titles', JSON.stringify(state.ambientTitles));
+                    break;
+            }
+
+            closeTextModal();
             render();
         }
 
@@ -1359,22 +1480,23 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${state.tutorialVisible ? '12px' : '0'};">
                         <div>
                             <h1 style="margin-bottom: 6px;">Offload: A nervous system validation companion</h1>
-                            <div class="subtitle">(Based on the concepts of Polyvagal Theory, Shadow Work, Window of Tolerance, Inner Child Work, and RAS and default mode reprogramming)<br><em style="font-size: 11px; color: #9333ea;">Saves to Google Sheets</em></div>
                         </div>
-                        <button class="btn btn-toggle" onclick="toggleTutorialVisibility()" style="margin-left: 12px;">
-                            ${state.tutorialVisible ? '▲' : '▼'}
-                        </button>
+                        <div style="display: flex; gap: 8px;">
+                            ${state.tutorialVisible ? `<button class="icon-btn" onclick="openTextEditModal('intro')" title="Edit intro text">✏️</button>` : ''}
+                            <button class="btn btn-toggle" onclick="toggleTutorialVisibility()" style="margin-left: 0;">
+                                ${state.tutorialVisible ? '▲' : '▼'}
+                            </button>
+                        </div>
                     </div>
                     
                     ${state.tutorialVisible ? `
                         <div class="how-it-works">
-                            <div class="how-item">Offload is a nervous system validation tool designed to externalize internal information. Which is basically the same as shadow work, making the invisible visible. Offload can help you see your inner experiences for what they are, information. We all have beliefs and perceptions about the world around us, ourselves, our thoughts and our feelings. This tool is designed to support and develop more helpful versions of those beliefs and perceptions. The theory is that by externalizing internal information you are putting that information somewhere safe and accessible so you can learn from it when you are more able to do so.</div>
-                            
-                            <div class="how-item">In my personal experience, offloading internal experiences helps to reduce worrying, ruminating and overthinking. It can give clarity to foggy or multilayered states, and makes space for other layers of thoughts, feelings or ideas to surface.</div>
-                            
-                            <div class="how-item">Long story short, it can help a person to see things about themselves they can't normally see and create a healthier relationship to their shadow self that might be making things more difficult than they need to be.</div>
-                            
-                            <div class="how-item"><span class="how-label">How It Works:</span> This tool works by rating different life areas and internal experiences using words, numbers, colors and structured visualizations like slide bars and a larger dynamic visualization. The main visualization shows your Window of Tolerance as a river between two gates. The top gate (red) closes with threat responses (anxiety, fear, activation). The bottom gate (green) closes with opportunity responses (excitement, enthusiasm). The blue river between shows your available capacity for processing information. More neutral areas = wider river = more flexibility and ease.</div>
+                            ${state.introText}
+                        </div>
+                        <div style="text-align: center; margin-top: 12px;">
+                            <button class="btn btn-toggle" onclick="toggleTutorialVisibility()">
+                                ▲ Collapse
+                            </button>
                         </div>
                     ` : ''}
                 </div>
@@ -1407,11 +1529,12 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                             </div>
                         
                         ${state.lifeAreasConfig.filter(config => !state.sliderVisible[config.key]).map(config => {
+                            const firstName = config.label.split(' ')[0];
                             return `
                             <div class="slider-container collapsed">
                                 <div class="slider-header">
                                     <span class="slider-label">
-                                        ${config.label}
+                                        ${firstName}
                                         <button class="icon-btn" onclick="toggleLifeAreaSlider('${config.key}')" title="Show slider" style="margin-left: 4px;">▲</button>
                                         : ${-state.lifeAreas[config.key] > 0 ? '+' : ''}${-state.lifeAreas[config.key]}
                                     </span>
@@ -1469,20 +1592,28 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                     </div>
                     
                     ${state.ambientVisible ? `
-                    <div class="subtitle"><em>Rate and describe what you're carrying internally</em></div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+                        <div class="subtitle" style="margin: 0;"><em>${state.ambientDescription}</em></div>
+                        <button class="icon-btn" onclick="openTextEditModal('ambient_desc')" title="Edit description" style="font-size: 14px;">✏️</button>
+                    </div>
                     
                     <div class="examples-box">
-                        <div class="examples-title">Could be positive or negative internal responses:</div>
-                        <div class="examples-list">
-                            <strong>Positive:</strong> Joy, calm, contentment, enthusiasm<br>
-                            <strong>Negative/Threat responses:</strong> Fear, anger, tension, shutting down
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div class="examples-title">Could be positive or negative internal responses:</div>
+                                <div class="examples-list">${state.ambientExamples}</div>
+                            </div>
+                            <button class="icon-btn" onclick="openTextEditModal('ambient_examples')" title="Edit examples" style="font-size: 14px; flex-shrink: 0;">✏️</button>
                         </div>
                     </div>
 
                     ${state.ambient.map((amb, i) => `
                         <div class="slider-container">
                             <div class="slider-header">
-                                <span class="slider-label">Internal Activity Intensity/Loudness ${i+1}</span>
+                                <span class="slider-label">
+                                    ${state.ambientTitles[i]}
+                                    <button class="icon-btn" onclick="openTextEditModal('ambient_title', ${i})" title="Edit title" style="font-size: 14px; margin-left: 4px;">✏️</button>
+                                </span>
                                 <span class="slider-value" style="color: #9333ea;">${amb.value}</span>
                             </div>
                             <input type="range" min="0" max="15" value="${amb.value}" 
