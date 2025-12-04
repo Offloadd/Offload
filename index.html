@@ -177,6 +177,41 @@
         
         .hidden { display: none; }
         
+        /* Type editor styles - NEW */
+        .type-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .type-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .type-item-title {
+            font-weight: 600;
+            color: #111827;
+            font-size: 14px;
+        }
+        .type-item-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .zone-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .zone-badge.threat { background: #fee2e2; color: #991b1b; }
+        .zone-badge.opportunity { background: #d1fae5; color: #065f46; }
+        .zone-badge.neutral { background: #dbeafe; color: #1e40af; }
+        
         .visualization {
             position: relative;
             width: 100%;
@@ -209,7 +244,6 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-
 
         .legend-labels {
             position: absolute;
@@ -662,6 +696,31 @@
         </div>
     </div>
 
+    <!-- Modal for Type System Editor - NEW! -->
+    <div class="modal-overlay" id="typeEditorModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Manage Internal Experience Types</h3>
+                <button class="modal-close" onclick="closeTypeEditor()">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 16px; padding: 12px; background: #f3f4f6; border-radius: 6px;">
+                    <p style="font-size: 13px; color: #374151; margin-bottom: 8px;">
+                        Each type has a <strong>dropdown label</strong> (shown in the dropdown), a <strong>short label</strong> (shown in saved entries), 
+                        and a <strong>zone assignment</strong> (determines how it affects your system load).
+                    </p>
+                </div>
+                
+                <div id="typeEditorList"></div>
+                
+                <button class="btn btn-add" onclick="addNewType()">+ Add New Type</button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-save" onclick="saveTypeEdits()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Default intro text
         const DEFAULT_INTRO_TEXT = `<div class="how-item"><span class="how-label">Summary:</span> Offload is a tool that is a result of a long held/standing desire of wanting to be able to do something daily (if necessary) that I knew would be an effort towards improving my mental health, quality of life, and adult life navigation skills and confidence. Developmental things that got overlooked, suppressed, or ignored earlier in my life which was just how I learned to survive and make it through all those years.</div>
@@ -738,20 +797,49 @@
             }
         ];
 
+        // Default ambient types configuration - NEW!
+        const DEFAULT_AMBIENT_TYPES = [
+            {
+                id: 'draining_positive',
+                dropdownLabel: 'Positive but Draining/Obsessive',
+                shortLabel: 'Positive/Draining',
+                zone: 'threat'
+            },
+            {
+                id: 'expansive_positive',
+                dropdownLabel: 'Positive and Expansive/Calming',
+                shortLabel: 'Positive/Expansive',
+                zone: 'opportunity'
+            },
+            {
+                id: 'draining_negative',
+                dropdownLabel: 'Negative and Draining/Obsessive',
+                shortLabel: 'Negative/Draining',
+                zone: 'threat'
+            },
+            {
+                id: 'productive_negative',
+                dropdownLabel: 'Negative with Positive Returns',
+                shortLabel: 'Negative/Productive',
+                zone: 'opportunity'
+            }
+        ];
+
         const state = {
             lifeAreas: {},
             lifeAreasConfig: [],
+            ambientTypes: [], // NEW!
             lifeAreasVisible: true,
             tutorialVisible: true,
             systemLoadVisible: true,
             ambientVisible: true,
-            sliderVisible: {}, // tracks which life area sliders are visible
+            sliderVisible: {},
             zoneLabelsExpanded: {
                 threat: false,
                 stable: false,
                 opportunity: false
             },
-            introText: '', // editable intro text
+            introText: '',
             ambientDescription: 'Rate and describe what you\'re carrying internally',
             ambientExamples: '<strong>Positive:</strong> Joy, calm, contentment, enthusiasm<br><strong>Negative/Threat responses:</strong> Fear, anger, tension, shutting down',
             ambientTitles: [
@@ -766,11 +854,21 @@
             ],
             entries: [],
             saveError: '',
-            editingKey: null
+            editingKey: null,
+            tempAmbientTypes: [] // NEW! For editing types in modal
         };
 
         // Initialize from localStorage or defaults
         function initializeState() {
+            // Load ambient types config - NEW!
+            const savedTypes = localStorage.getItem('offload_ambient_types');
+            if (savedTypes) {
+                state.ambientTypes = JSON.parse(savedTypes);
+            } else {
+                state.ambientTypes = [...DEFAULT_AMBIENT_TYPES];
+                saveAmbientTypes();
+            }
+
             // Load life areas config
             const savedConfig = localStorage.getItem('offload_life_areas_config');
             if (savedConfig) {
@@ -783,7 +881,7 @@
             // Initialize lifeAreas values
             state.lifeAreasConfig.forEach(config => {
                 state.lifeAreas[config.key] = 0;
-                state.sliderVisible[config.key] = true; // all sliders visible by default
+                state.sliderVisible[config.key] = true;
             });
 
             // Load slider visibility preferences
@@ -832,6 +930,11 @@
             if (savedAmbientTitles) state.ambientTitles = JSON.parse(savedAmbientTitles);
         }
 
+        // NEW! Save ambient types
+        function saveAmbientTypes() {
+            localStorage.setItem('offload_ambient_types', JSON.stringify(state.ambientTypes));
+        }
+
         function saveLifeAreasConfig() {
             localStorage.setItem('offload_life_areas_config', JSON.stringify(state.lifeAreasConfig));
         }
@@ -863,6 +966,115 @@
             localStorage.setItem('offload_ambient_visible', state.ambientVisible);
             render();
         }
+
+        // Type Editor Functions - NEW!
+        function openTypeEditor() {
+            // Copy current types to temp for editing
+            state.tempAmbientTypes = JSON.parse(JSON.stringify(state.ambientTypes));
+            renderTypeEditor();
+            document.getElementById('typeEditorModal').classList.add('active');
+        }
+
+        function closeTypeEditor() {
+            document.getElementById('typeEditorModal').classList.remove('active');
+            state.tempAmbientTypes = [];
+        }
+
+        function renderTypeEditor() {
+            const list = document.getElementById('typeEditorList');
+            
+            const html = state.tempAmbientTypes.map((type, index) => `
+                <div class="type-item">
+                    <div class="type-item-header">
+                        <span class="type-item-title">Type ${index + 1}</span>
+                        <div class="type-item-actions">
+                            ${index > 0 ? `<button class="icon-btn" onclick="moveType(${index}, -1)" title="Move up">↑</button>` : ''}
+                            ${index < state.tempAmbientTypes.length - 1 ? `<button class="icon-btn" onclick="moveType(${index}, 1)" title="Move down">↓</button>` : ''}
+                            <button class="icon-btn" onclick="deleteType(${index})" title="Delete">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <label class="input-label">Dropdown Label (shown in dropdown):</label>
+                    <input type="text" value="${type.dropdownLabel}" 
+                           onchange="updateTypeField(${index}, 'dropdownLabel', this.value)"
+                           placeholder="e.g., Positive but Draining/Obsessive">
+                    
+                    <label class="input-label">Short Label (shown in saved entries):</label>
+                    <input type="text" value="${type.shortLabel}" 
+                           onchange="updateTypeField(${index}, 'shortLabel', this.value)"
+                           placeholder="e.g., Positive/Draining">
+                    
+                    <label class="input-label">Zone Assignment:</label>
+                    <select onchange="updateTypeField(${index}, 'zone', this.value)" 
+                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                        <option value="threat" ${type.zone === 'threat' ? 'selected' : ''}>Threat (adds to system load)</option>
+                        <option value="opportunity" ${type.zone === 'opportunity' ? 'selected' : ''}>Opportunity (reduces system load)</option>
+                        <option value="neutral" ${type.zone === 'neutral' ? 'selected' : ''}>Neutral (no effect on load)</option>
+                    </select>
+                    
+                    <span class="zone-badge ${type.zone}">${type.zone.toUpperCase()}</span>
+                </div>
+            `).join('');
+            
+            list.innerHTML = html;
+        }
+
+        function updateTypeField(index, field, value) {
+            state.tempAmbientTypes[index][field] = value;
+            renderTypeEditor();
+        }
+
+        function moveType(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= state.tempAmbientTypes.length) return;
+            
+            const temp = state.tempAmbientTypes[index];
+            state.tempAmbientTypes[index] = state.tempAmbientTypes[newIndex];
+            state.tempAmbientTypes[newIndex] = temp;
+            
+            renderTypeEditor();
+        }
+
+        function deleteType(index) {
+            if (state.tempAmbientTypes.length <= 1) {
+                alert('You must have at least one type');
+                return;
+            }
+            if (!confirm('Delete this type? Any saved entries using this type will still show the old label.')) {
+                return;
+            }
+            state.tempAmbientTypes.splice(index, 1);
+            renderTypeEditor();
+        }
+
+        function addNewType() {
+            const newId = 'custom_' + Date.now();
+            state.tempAmbientTypes.push({
+                id: newId,
+                dropdownLabel: 'New Type',
+                shortLabel: 'New',
+                zone: 'neutral'
+            });
+            renderTypeEditor();
+        }
+
+        function saveTypeEdits() {
+            // Validate all types have required fields
+            for (let type of state.tempAmbientTypes) {
+                if (!type.dropdownLabel.trim() || !type.shortLabel.trim()) {
+                    alert('All types must have both dropdown and short labels');
+                    return;
+                }
+            }
+            
+            // Save to state and localStorage
+            state.ambientTypes = JSON.parse(JSON.stringify(state.tempAmbientTypes));
+            saveAmbientTypes();
+            
+            closeTypeEditor();
+            render();
+        }
+        // End Type Editor Functions
 
         function openEditModal(key) {
             state.editingKey = key;
@@ -897,19 +1109,6 @@
         function closeModal() {
             document.getElementById('modalOverlay').classList.remove('active');
             state.editingKey = null;
-        }
-
-        function toggleLegendDetails() {
-            const details = document.getElementById('legendDetails');
-            const button = document.getElementById('legendToggle');
-            
-            if (details.classList.contains('expanded')) {
-                details.classList.remove('expanded');
-                button.textContent = '+';
-            } else {
-                details.classList.add('expanded');
-                button.textContent = '-';
-            }
         }
 
         function toggleZoneLabel(zone) {
@@ -966,7 +1165,6 @@
 
             switch(type) {
                 case 'intro':
-                    // Convert plain text back to HTML structure
                     const paragraphs = content.split('\n\n').filter(p => p.trim());
                     state.introText = paragraphs.map(p => `<div class="how-item">${p.trim()}</div>`).join('\n                            \n');
                     localStorage.setItem('offload_intro_text', state.introText);
@@ -989,11 +1187,6 @@
             render();
         }
 
-        function toggleSliderVisibility(key) {
-            state.sliderVisible[key] = !state.sliderVisible[key];
-            render();
-        }
-
         function saveLifeAreaEdit() {
             const name = document.getElementById('editName').value.trim();
             const positive = document.getElementById('editPositive').value.trim();
@@ -1006,14 +1199,12 @@
             }
 
             if (state.editingKey) {
-                // Edit existing
                 const config = state.lifeAreasConfig.find(c => c.key === state.editingKey);
                 config.label = name;
                 config.positiveLabel = positive;
                 config.neutralLabel = neutral;
                 config.negativeLabel = negative;
             } else {
-                // Add new
                 const newKey = 'custom_' + Date.now();
                 state.lifeAreasConfig.push({
                     key: newKey,
@@ -1023,7 +1214,7 @@
                     negativeLabel: negative
                 });
                 state.lifeAreas[newKey] = 0;
-                state.sliderVisible[newKey] = true; // new sliders visible by default
+                state.sliderVisible[newKey] = true;
             }
 
             saveLifeAreasConfig();
@@ -1044,74 +1235,72 @@
         }
 
         function getSliderColor(value) {
-            // Value comes in negated for display
             if (value > 0) {
-                // Green gradient: lighter at +1, darker at +5 (energizing)
-                const intensity = value / 5; // 0.2 to 1.0
-                const red = Math.round(100 - (100 * intensity)); // 100 to 0
-                const green = Math.round(220 + (35 * intensity)); // 220 to 255
-                const blue = Math.round(100 - (100 * intensity)); // 100 to 0
+                const intensity = value / 5;
+                const red = Math.round(100 - (100 * intensity));
+                const green = Math.round(220 + (35 * intensity));
+                const blue = Math.round(100 - (100 * intensity));
                 return `rgb(${red}, ${green}, ${blue})`;
             } else if (value < 0) {
                 const absValue = Math.abs(value);
                 if (absValue <= 1.5) {
-                    // Transition from blue to yellow/orange (0 to -1.5)
-                    const intensity = absValue / 1.5; // 0 to 1
-                    const red = Math.round(68 + (200 * intensity)); // 68 to 268 -> capped at 255
-                    const green = Math.round(136 + (100 * intensity)); // 136 to 236
-                    const blue = Math.round(255 - (155 * intensity)); // 255 to 100
+                    const intensity = absValue / 1.5;
+                    const red = Math.round(68 + (200 * intensity));
+                    const green = Math.round(136 + (100 * intensity));
+                    const blue = Math.round(255 - (155 * intensity));
                     return `rgb(${Math.min(red, 255)}, ${Math.min(green, 255)}, ${blue})`;
                 } else {
-                    // Yellow/orange to red gradient (-1.5 to -5)
-                    const intensity = (absValue - 1.5) / 3.5; // 0 to 1
-                    const red = 255; // Stay at max red
-                    const green = Math.round(236 - (136 * intensity)); // 236 to 100
-                    const blue = Math.round(100 - (100 * intensity)); // 100 to 0
+                    const intensity = (absValue - 1.5) / 3.5;
+                    const red = 255;
+                    const green = Math.round(236 - (136 * intensity));
+                    const blue = Math.round(100 - (100 * intensity));
                     return `rgb(${red}, ${green}, ${blue})`;
                 }
             } else {
-                return 'rgb(68, 136, 255)'; // Blue for 0
+                return 'rgb(68, 136, 255)';
             }
         }
 
+        // MODIFIED: getTotal now uses zone assignments from types
         function getTotal() {
-            // Negate life areas so positive values (draining) make total more negative
             const lifeTotal = -Object.values(state.lifeAreas).reduce((sum, val) => sum + val, 0);
             
-            // Calculate ambient contribution based on type
             let ambientContribution = 0;
             state.ambient.forEach(amb => {
                 if (amb.value !== 0) {
-                    if (amb.type === 'draining_positive' || amb.type === 'draining_negative') {
-                        // Draining types add to load (make number more negative)
-                        ambientContribution -= amb.value;
-                    } else if (amb.type === 'expansive_positive') {
-                        // Expansive/calming reduces load (make number more positive)
-                        ambientContribution += amb.value;
+                    const typeConfig = state.ambientTypes.find(t => t.id === amb.type);
+                    if (typeConfig) {
+                        if (typeConfig.zone === 'threat') {
+                            ambientContribution -= amb.value; // Threat adds to load
+                        } else if (typeConfig.zone === 'opportunity') {
+                            ambientContribution += amb.value; // Opportunity reduces load
+                        }
+                        // neutral zone contributes 0
                     }
-                    // productive_negative is neutral (0) for now
                 }
             });
             
             return lifeTotal + ambientContribution;
         }
 
+        // MODIFIED: getThreatLoad now uses zone assignments
         function getThreatLoad() {
-            // Sum all negative values (threat/activation)
             let threatTotal = 0;
             let lifeAreaThreat = 0;
             let ambientThreat = 0;
             
             Object.values(state.lifeAreas).forEach(val => {
                 if (val > 0) {
-                    lifeAreaThreat += val; // Positive slider values are threat
+                    lifeAreaThreat += val;
                 }
             });
             
-            // Add draining ambient experiences
             state.ambient.forEach(amb => {
-                if (amb.value !== 0 && (amb.type === 'draining_positive' || amb.type === 'draining_negative')) {
-                    ambientThreat += amb.value;
+                if (amb.value !== 0) {
+                    const typeConfig = state.ambientTypes.find(t => t.id === amb.type);
+                    if (typeConfig && typeConfig.zone === 'threat') {
+                        ambientThreat += amb.value;
+                    }
                 }
             });
             
@@ -1119,22 +1308,24 @@
             return threatTotal;
         }
 
+        // MODIFIED: getOpportunityLoad now uses zone assignments
         function getOpportunityLoad() {
-            // Sum all positive values (opportunity/enthusiasm)
             let opportunityTotal = 0;
             let lifeAreaOpp = 0;
             let ambientOpp = 0;
             
             Object.values(state.lifeAreas).forEach(val => {
                 if (val < 0) {
-                    lifeAreaOpp += Math.abs(val); // Negative slider values are opportunity
+                    lifeAreaOpp += Math.abs(val);
                 }
             });
             
-            // Add expansive ambient experiences AND productive negative experiences
             state.ambient.forEach(amb => {
-                if (amb.value !== 0 && (amb.type === 'expansive_positive' || amb.type === 'productive_negative')) {
-                    ambientOpp += amb.value;
+                if (amb.value !== 0) {
+                    const typeConfig = state.ambientTypes.find(t => t.id === amb.type);
+                    if (typeConfig && typeConfig.zone === 'opportunity') {
+                        ambientOpp += amb.value;
+                    }
                 }
             });
             
@@ -1143,15 +1334,12 @@
         }
 
         function getNeutralCount() {
-            // Count how many life areas are at zero
             return Object.values(state.lifeAreas).filter(val => val === 0).length;
         }
 
         function getPercentage() {
             const total = getTotal();
-            // Map -30 (max load) to 100%, +10 (min load) to 0%
-            // Range is 40 total: from -30 to +10
-            const normalized = (-total + 10) / 40; // Convert to 0-1 range (flip sign so -30 maps to 1)
+            const normalized = (-total + 10) / 40;
             return Math.round(Math.max(0, Math.min(100, normalized * 100)));
         }
 
@@ -1205,7 +1393,8 @@
             const entry = {
                 timestamp: new Date().toISOString(),
                 lifeAreas: {...state.lifeAreas},
-                lifeAreasConfig: [...state.lifeAreasConfig], // Save config with entry
+                lifeAreasConfig: [...state.lifeAreasConfig],
+                ambientTypes: [...state.ambientTypes], // NEW! Save types config with entry
                 ambient: state.ambient.map(a => ({...a})),
                 lifeTotal,
                 total: getTotal(),
@@ -1217,7 +1406,6 @@
             
             state.entries.unshift(entry);
             
-            // Send to Google Sheets
             fetch('https://script.google.com/macros/s/AKfycbyre8dXSoVH3LDvBa-SsfPjX0gpKbNcjrF7p-YLQB6fhkQQNRcxmFyoqhp-Xp45VlLU0Q/exec', {
                 method: 'POST',
                 mode: 'no-cors',
@@ -1234,25 +1422,26 @@
             render();
         }
 
+        // NEW! Helper function to get type label from saved config
+        function getTypeLabel(typeId, types) {
+            const typeConfig = types.find(t => t.id === typeId);
+            return typeConfig ? typeConfig.shortLabel : typeId;
+        }
+
         function copyEntries() {
             const text = state.entries.map(e => {
                 const date = new Date(e.timestamp).toLocaleString();
                 
-                // Use the saved config from the entry
                 const config = e.lifeAreasConfig || state.lifeAreasConfig;
+                const types = e.ambientTypes || state.ambientTypes; // NEW!
+                
                 const lifeAreasText = config.map(c => {
                     const value = -(e.lifeAreas[c.key] || 0);
                     return `${c.label}: ${value}`;
                 }).join(', ');
                 
                 const ambientText = e.ambient.filter(a => a.value !== 0).map((a, i) => {
-                    const typeLabels = {
-                        'draining_positive': 'Positive/Draining',
-                        'expansive_positive': 'Positive/Expansive',
-                        'draining_negative': 'Negative/Draining',
-                        'productive_negative': 'Negative/Productive'
-                    };
-                    return `  [${a.value}/15, ${typeLabels[a.type]}]: ${a.note}`;
+                    return `  [${a.value}/15, ${getTypeLabel(a.type, types)}]: ${a.note}`; // MODIFIED!
                 }).join('\n');
                 return `=== ${date} ===
 Life Areas (Net: ${e.lifeTotal}):
@@ -1290,18 +1479,15 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             const riverText = document.getElementById('riverText');
             
             const height = 300;
-            const maxLoad = 50; // Max possible load on either end
+            const maxLoad = 50;
             
-            // Calculate raw gate heights - each can go up to 90%
             let topGateHeight = Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9);
             let bottomGateHeight = Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9);
             
-            // Ensure combined gates never exceed 90% of total height
             const combinedHeight = topGateHeight + bottomGateHeight;
             const maxCombined = height * 0.9;
             
             if (combinedHeight > maxCombined) {
-                // Scale both gates down proportionally
                 const scaleFactor = maxCombined / combinedHeight;
                 topGateHeight = topGateHeight * scaleFactor;
                 bottomGateHeight = bottomGateHeight * scaleFactor;
@@ -1316,16 +1502,13 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             gateTextBottom.style.bottom = bottomGateHeight + 'px';
             gateTextBottom.textContent = 'OPPORTUNITY\n' + opportunityLoad;
             
-            // Calculate background color based on gate positions
             const availableSpace = height - topGateHeight - bottomGateHeight;
             const topGateFactor = topGateHeight / height;
             const bottomGateFactor = bottomGateHeight / height;
             
             let r, g, b;
             
-            // Determine dominant influence
             if (topGateFactor > bottomGateFactor) {
-                // Threat is dominant
                 const threatIntensity = topGateFactor * 2.2;
                 if (threatIntensity < 0.5) {
                     const factor = threatIntensity * 2;
@@ -1339,14 +1522,12 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                     b = Math.round(100 - (100 * factor));
                 }
             } else if (bottomGateFactor > topGateFactor) {
-                // Opportunity is dominant
                 const oppIntensity = bottomGateFactor * 2.2;
                 const factor = Math.min(oppIntensity, 1);
                 r = Math.round(68 - (0 * factor));
                 g = Math.round(136 + (119 * factor));
                 b = Math.round(255 - (187 * factor));
             } else {
-                // Balanced
                 r = 68;
                 g = 136;
                 b = 255;
@@ -1354,7 +1535,6 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             
             visualization.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
             
-            // River channel
             const width = 600;
             const riverTop = topGateHeight;
             const riverBottom = height - bottomGateHeight;
@@ -1404,6 +1584,7 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             updateContributorLists();
         }
         
+        // MODIFIED: updateContributorLists now uses zone assignments
         function updateContributorLists() {
             const contributorsThreat = document.getElementById('contributorsThreat');
             const contributorsOpportunity = document.getElementById('contributorsOpportunity');
@@ -1411,18 +1592,10 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             
             if (!contributorsThreat || !contributorsOpportunity || !neutralList) return;
             
-            const typeLabels = {
-                'draining_positive': 'Positive/Draining',
-                'expansive_positive': 'Positive/Expansive',
-                'draining_negative': 'Negative/Draining',
-                'productive_negative': 'Negative/Productive'
-            };
-            
             let threatItems = [];
             let opportunityItems = [];
             let neutralItems = [];
             
-            // Collect life area contributors
             state.lifeAreasConfig.forEach(config => {
                 const value = state.lifeAreas[config.key];
                 if (value > 0) {
@@ -1434,16 +1607,18 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                 }
             });
             
-            // Collect internal experience contributors
             state.ambient.forEach((amb, i) => {
                 if (amb.value !== 0) {
-                    const typeLabel = typeLabels[amb.type] || amb.type;
+                    const typeConfig = state.ambientTypes.find(t => t.id === amb.type);
+                    const typeLabel = typeConfig ? typeConfig.shortLabel : amb.type;
                     const label = `Internal Experience ${i+1} (${typeLabel})`;
                     
-                    if (amb.type === 'draining_positive' || amb.type === 'draining_negative') {
-                        threatItems.push({ label: label, value: amb.value });
-                    } else if (amb.type === 'expansive_positive' || amb.type === 'productive_negative') {
-                        opportunityItems.push({ label: label, value: amb.value });
+                    if (typeConfig) {
+                        if (typeConfig.zone === 'threat') {
+                            threatItems.push({ label: label, value: amb.value });
+                        } else if (typeConfig.zone === 'opportunity') {
+                            opportunityItems.push({ label: label, value: amb.value });
+                        }
                     }
                 }
             });
@@ -1622,13 +1797,15 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                             <div class="slider-labels"><span>0 Not present</span><span>15 Very present</span></div>
                             
                             ${amb.value !== 0 ? `
-                                <label class="input-label">Type (required):</label>
+                                <div style="display: flex; align-items: center; gap: 4px; margin-top: 6px;">
+                                    <label class="input-label" style="margin: 0;">Type (required):</label>
+                                    <button class="icon-btn" onclick="openTypeEditor()" title="Edit types" style="font-size: 14px;">✏️</button>
+                                </div>
                                 <select onchange="updateAmbient(${i}, 'type', this.value)" 
                                         style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; margin-bottom: 6px;">
-                                    <option value="draining_positive" ${amb.type === 'draining_positive' ? 'selected' : ''}>Positive but Draining/Obsessive</option>
-                                    <option value="expansive_positive" ${amb.type === 'expansive_positive' ? 'selected' : ''}>Positive and Expansive/Calming</option>
-                                    <option value="draining_negative" ${amb.type === 'draining_negative' ? 'selected' : ''}>Negative and Draining/Obsessive</option>
-                                    <option value="productive_negative" ${amb.type === 'productive_negative' ? 'selected' : ''}>Negative with Positive Returns</option>
+                                    ${state.ambientTypes.map(type => `
+                                        <option value="${type.id}" ${amb.type === type.id ? 'selected' : ''}>${type.dropdownLabel}</option>
+                                    `).join('')}
                                 </select>
                                 
                                 <label class="input-label">Note (required):</label>
@@ -1775,6 +1952,7 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                         <div style="max-height: 450px; overflow-y: auto;">
                             ${state.entries.map(e => {
                                 const config = e.lifeAreasConfig || state.lifeAreasConfig;
+                                const types = e.ambientTypes || state.ambientTypes;
                                 return `
                                 <div class="entry-item">
                                     <div class="entry-timestamp">
@@ -1814,15 +1992,9 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                         ${e.ambient.filter(a => a.value !== 0).length === 0 ? 
                                             '<div style="font-style: italic; color: #6b7280; font-size: 12px;">No internal experiences recorded</div>' :
                                             e.ambient.filter(a => a.value !== 0).map((a, i) => {
-                                                const typeLabels = {
-                                                    'draining_positive': 'Positive/Draining',
-                                                    'expansive_positive': 'Positive/Expansive',
-                                                    'draining_negative': 'Negative/Draining',
-                                                    'productive_negative': 'Negative/Productive'
-                                                };
                                                 return `
                                                 <div class="entry-ambient">
-                                                    <div class="entry-ambient-header">[${a.value}/15] - ${typeLabels[a.type] || a.type}</div>
+                                                    <div class="entry-ambient-header">[${a.value}/15] - ${getTypeLabel(a.type, types)}</div>
                                                     <div class="entry-ambient-note">"${a.note}"</div>
                                                 </div>
                                             `;
