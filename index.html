@@ -589,6 +589,18 @@ You can add more detailed descriptions here. This text will be saved automatical
             return 'linear-gradient(to right, #d1d5db 0%, #d1d5db 100%)';
         }
 
+        function getAmbientSliderLabel(type) {
+            // Returns detailed description for slider label
+            if (type === 'threat') {
+                return 'Threat Response (Dysregulated): Fear, anxiety, activated feel, anger, hopelessness, powerlessness';
+            } else if (type === 'regulated') {
+                return 'Grounded, calm, and approachable (Regulated): Present-moment awareness, body connection, contentment';
+            } else if (type === 'opportunity') {
+                return 'Opportunity Responses: Enthusiasm, joy, sex, hunger, expansiveness or freedom feelings';
+            }
+            return 'Intensity/Loudness';
+        }
+
         function getTotal() {
             let lifeTotal = 0;
             let lifeRegulatedContribution = 0;
@@ -1319,14 +1331,38 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                         <div class="slider-container" style="position: relative;">
                             <div style="display: flex; gap: 8px; align-items: flex-start;">
                                 <div style="flex: 1;">
-                                    <label class="input-label">Note/Description:</label>
-                                    <textarea onchange="updateAmbient(${amb.id}, 'note', this.value)"
-                                              placeholder="Brief description or context..."
-                                              ${amb.locked ? 'disabled' : ''}
-                                              style="${amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : ''}">${amb.note}</textarea>
+                                    <div style="display: flex; gap: 8px; margin-bottom: 9px;">
+                                        <div style="flex: 0 0 60%;">
+                                            <label class="input-label">Note/Description:</label>
+                                            <textarea onchange="updateAmbient(${amb.id}, 'note', this.value)"
+                                                      placeholder="Brief description or context..."
+                                                      ${amb.locked ? 'disabled' : ''}
+                                                      style="width: 100%; min-height: 60px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; font-family: inherit; resize: none; ${amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : ''}">${amb.note}</textarea>
+                                        </div>
+                                        <div style="flex: 0 0 40%;">
+                                            <label class="input-label">Type:</label>
+                                            <div style="display: flex; gap: 4px;">
+                                                <button onclick="updateAmbient(${amb.id}, 'type', 'threat')" 
+                                                        ${amb.locked ? 'disabled' : ''}
+                                                        style="flex: 1; padding: 6px 4px; border: 2px solid #f44336; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${amb.type === 'threat' ? 'background: #f44336; color: white;' : 'background: white; color: #f44336;'} ${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                                                    Threat
+                                                </button>
+                                                <button onclick="updateAmbient(${amb.id}, 'type', 'regulated')" 
+                                                        ${amb.locked ? 'disabled' : ''}
+                                                        style="flex: 1; padding: 6px 4px; border: 2px solid #1976d2; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${amb.type === 'regulated' ? 'background: #1976d2; color: white;' : 'background: white; color: #1976d2;'} ${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                                                    Regulated
+                                                </button>
+                                                <button onclick="updateAmbient(${amb.id}, 'type', 'opportunity')" 
+                                                        ${amb.locked ? 'disabled' : ''}
+                                                        style="flex: 1; padding: 6px 4px; border: 2px solid #4caf50; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${amb.type === 'opportunity' ? 'background: #4caf50; color: white;' : 'background: white; color: #4caf50;'} ${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                                                    Opportunity
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                     
-                                    <div class="slider-header" style="margin-top: 9px;">
-                                        <span class="slider-label">Intensity/Loudness</span>
+                                    <div class="slider-header">
+                                        <span class="slider-label" style="font-size: 12px; line-height: 1.3;">${getAmbientSliderLabel(amb.type)}</span>
                                         <span class="slider-value" style="color: ${amb.type === 'threat' ? '#f44336' : amb.type === 'regulated' ? '#1976d2' : '#4caf50'};">${amb.value}</span>
                                     </div>
                                     <input type="range" min="0" max="10" value="${amb.value}" 
@@ -1334,18 +1370,9 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                            ${amb.locked ? 'disabled' : ''}
                                            style="background: ${getAmbientSliderGradient(amb.type, amb.value)}; ${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
                                     <div class="slider-labels"><span>0 Not present</span><span>10 Very present</span></div>
-                                    
-                                    <label class="input-label" style="margin-top: 9px;">Type:</label>
-                                    <select onchange="updateAmbient(${amb.id}, 'type', this.value)" 
-                                            ${amb.locked ? 'disabled' : ''}
-                                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; ${amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : ''}">
-                                        <option value="threat" ${amb.type === 'threat' ? 'selected' : ''}>Threat Response (Dysregulated)</option>
-                                        <option value="regulated" ${amb.type === 'regulated' ? 'selected' : ''}>Grounded, calm, and approachable (Regulated)</option>
-                                        <option value="opportunity" ${amb.type === 'opportunity' ? 'selected' : ''}>Opportunity Responses</option>
-                                    </select>
                                 </div>
                                 
-                                <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 20px;">
+                                <div style="display: flex; flex-direction: column; gap: 4px; align-self: flex-end; margin-bottom: 3px;">
                                     <button class="btn" onclick="toggleAmbientLock(${amb.id})" 
                                             style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ${amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;'}">
                                         ${amb.locked ? 'Edit' : 'Save'}
