@@ -19,30 +19,10 @@
         h1 { font-size: 22px; margin-bottom: 6px; color: #111827; }
         h2 { font-size: 18px; margin-bottom: 9px; color: #111827; }
         .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 12px; }
-        .slider-container { background: #f9fafb; padding: 6px; border-radius: 4px; margin-bottom: 5px; position: relative; }
-        .slider-container.collapsed {
-            display: inline-block;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            padding: 8px 12px;
-            background: #e5e7eb;
-            vertical-align: top;
-        }
+        .slider-container { background: #f9fafb; padding: 6px; border-radius: 4px; margin-bottom: 5px; }
         .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-        .slider-label { font-weight: 600; color: #111827; font-size: 14px; flex: 1; }
+        .slider-label { font-weight: 600; color: #111827; font-size: 14px; }
         .slider-value { font-size: 18px; font-weight: bold; }
-        .slider-actions { display: flex; gap: 4px; margin-left: 8px; }
-        .icon-btn { 
-            background: none; 
-            border: none; 
-            cursor: pointer; 
-            font-size: 16px; 
-            padding: 4px 6px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .icon-btn:hover { background: rgba(0,0,0,0.05); }
-        .icon-btn:active { background: rgba(0,0,0,0.1); }
         input[type="range"] { 
             width: 100%; 
             height: 6px; 
@@ -110,107 +90,6 @@
         .btn-success { background: #16a34a; color: white; width: 100%; padding: 10px; font-size: 15px; }
         .btn-success:hover { background: #15803d; }
         .btn-success:disabled { background: #d1d5db; cursor: not-allowed; }
-        .btn-toggle { background: #3b82f6; color: white; margin-bottom: 12px; }
-        .btn-toggle:hover { background: #2563eb; }
-        .btn-add { background: #8b5cf6; color: white; width: 100%; margin-top: 8px; }
-        .btn-add:hover { background: #7c3aed; }
-        
-        /* Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal {
-            background: white;
-            border-radius: 8px;
-            padding: 24px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        .modal-title { font-size: 20px; font-weight: 700; color: #111827; }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #6b7280;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-        }
-        .modal-close:hover { background: #f3f4f6; }
-        .modal-body { margin-bottom: 18px; }
-        .modal-footer {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-        .modal-footer .btn { padding: 10px 20px; }
-        .btn-cancel { background: #6b7280; color: white; }
-        .btn-cancel:hover { background: #4b5563; }
-        .btn-save { background: #16a34a; color: white; }
-        .btn-save:hover { background: #15803d; }
-        
-        .hidden { display: none; }
-        
-        /* Type editor styles - NEW */
-        .type-item {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 12px;
-        }
-        .type-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .type-item-title {
-            font-weight: 600;
-            color: #111827;
-            font-size: 14px;
-        }
-        .type-item-actions {
-            display: flex;
-            gap: 4px;
-        }
-        .zone-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-        .zone-badge.threat { background: #fee2e2; color: #991b1b; }
-        .zone-badge.opportunity { background: #d1fae5; color: #065f46; }
-        .zone-badge.neutral { background: #dbeafe; color: #1e40af; }
         
         .visualization {
             position: relative;
@@ -223,17 +102,12 @@
             transition: background-color 0.3s ease-out;
         }
 
-        .color-legend-container {
+        .color-legend {
             position: absolute;
             left: 10px;
             top: 10px;
-            z-index: 9;
-        }
-
-        .color-legend {
-            position: relative;
+            bottom: 10px;
             width: 25px;
-            height: 280px;
             background: linear-gradient(to bottom,
                 #ff4444 0%,
                 #ffaa44 33%,
@@ -243,103 +117,29 @@
             border: 2px solid #333;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .legend-labels {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 25px;
-            height: 280px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            pointer-events: none;
-        }
-
-        .legend-label-condensed {
-            color: white;
-            font-weight: bold;
-            font-size: 9px;
-            text-align: center;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
-            padding: 2px;
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            transform: rotate(180deg);
+            z-index: 9;
         }
 
         .zone-labels {
             position: absolute;
             left: 45px;
-            width: 220px;
+            width: 180px;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            pointer-events: auto;
+            pointer-events: none;
             z-index: 10;
         }
 
         .zone-label {
-            position: relative;
             color: white;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             font-size: 12px;
-            padding: 6px 8px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 4px;
-            border: 2px solid rgba(255,255,255,0.3);
-            transition: all 0.2s ease;
-        }
-
-        .zone-label-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0;
-        }
-
-        .zone-label.expanded .zone-label-title {
-            margin-bottom: 6px;
-        }
-
-        .zone-label-details {
-            display: none;
-            font-size: 11px;
-            font-weight: normal;
-            line-height: 1.4;
-            margin-top: 4px;
-        }
-
-        .zone-label.expanded .zone-label-details {
-            display: block;
-        }
-
-        .zone-toggle-btn {
-            background: rgba(255,255,255,0.3);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.5);
+            padding: 4px;
+            background: rgba(0,0,0,0.3);
             border-radius: 3px;
-            width: 20px;
-            height: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-left: 6px;
-        }
-
-        .zone-toggle-btn:hover {
-            background: rgba(255,255,255,0.5);
-        }
-
-        .zone-toggle-btn:active {
-            background: rgba(255,255,255,0.6);
         }
 
         .visualization svg {
@@ -524,7 +324,7 @@
         .ground-label {
             position: absolute;
             bottom: 8px;
-            right: 8px;
+            left: 8px;
             background: rgba(0,0,0,0.7);
             color: white;
             padding: 4px 8px;
@@ -651,695 +451,279 @@
 <body>
     <div class="container" id="app"></div>
 
-    <!-- Modal for Life Areas -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Edit Life Area</h3>
-                <button class="modal-close" onclick="closeModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <label class="input-label">Life Area Name:</label>
-                <input type="text" id="editName" placeholder="e.g., Mental Activity">
-                
-                <label class="input-label">Positive Label (+5):</label>
-                <textarea id="editPositive" placeholder="Description for the positive/enthusiastic end of the slider..."></textarea>
-                
-                <label class="input-label">Neutral Label (0):</label>
-                <textarea id="editNeutral" placeholder="Description for the neutral/regulated center..."></textarea>
-                
-                <label class="input-label">Negative Label (-5):</label>
-                <textarea id="editNegative" placeholder="Description for the negative/dysregulated end..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-save" onclick="saveLifeAreaEdit()">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Text Editing -->
-    <div class="modal-overlay" id="textModalOverlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="textModalTitle">Edit Text</h3>
-                <button class="modal-close" onclick="closeTextModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <label class="input-label" id="textModalLabel">Text:</label>
-                <textarea id="textModalContent" style="min-height: 300px;"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-cancel" onclick="closeTextModal()">Cancel</button>
-                <button class="btn btn-save" onclick="saveTextEdit()">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Type System Editor - NEW! -->
-    <div class="modal-overlay" id="typeEditorModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Manage Internal Experience Types</h3>
-                <button class="modal-close" onclick="closeTypeEditor()">×</button>
-            </div>
-            <div class="modal-body">
-                <div style="margin-bottom: 16px; padding: 12px; background: #f3f4f6; border-radius: 6px;">
-                    <p style="font-size: 13px; color: #374151; margin-bottom: 8px;">
-                        Each type has a <strong>dropdown label</strong> (shown in the dropdown), a <strong>short label</strong> (shown in saved entries), 
-                        and a <strong>zone assignment</strong> (determines how it affects your system load).
-                    </p>
-                </div>
-                
-                <div id="typeEditorList"></div>
-                
-                <button class="btn btn-add" onclick="addNewType()">+ Add New Type</button>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-save" onclick="saveTypeEdits()">Save Changes</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Default intro text
-        const DEFAULT_INTRO_TEXT = `<div class="how-item"><span class="how-label">Summary:</span> Offload is a tool that is a result of a long held/standing desire of wanting to be able to do something daily (if necessary) that I knew would be an effort towards improving my mental health, quality of life, and adult life navigation skills and confidence. Developmental things that got overlooked, suppressed, or ignored earlier in my life which was just how I learned to survive and make it through all those years.</div>
-                            
-<div class="how-item">Offload is based on a few concepts such as: Nervous System Regulation, Shadow Work, Inner Child Work, Polyvagal Theory, Attachment Theory, Window of Tolerance, and other relatable notions. This tool is a way to visualize how one's own thoughts, emotions and other internal experiences are affecting their own capacity to process information and make decisions. It uses concepts like flight, fight, freeze, and fawn stress responses but also includes concepts about what stability and safety look and feel like, as well as what opportunity responses look and feel like.</div>
-                            
-<div class="how-item">The Window of Tolerance concept states that how wide or narrow one's own window of tolerance is, directly affects their life experiences. So if you have internalized high stress or chronically stressed life patterns, those put pressure on and narrow your window of tolerance. The "fix" to that is to learn what calm and stability look and feel like because those are the things that help widen your window of tolerance so that you have more of a chance to experience things you need or want to experience in life.</div>
-                            
-<div class="how-item">Learning how and when to aim for and return to states of calm and stability are the foundation of creating the conditions that allow you to attract and receive more desired life experiences.</div>
-                            
-<div class="how-item"><span class="how-label">How this works:</span> Offload uses color and number scales, labels and notes to help externalize internal information which can show you how regulated or dysregulated your nervous system is and why. This is definitely NOT something to try to perfect your ratings or notes about what you are experiencing.</div>
-                            
-<div class="how-item">The main goal of rating life experiences in this tool is so that your ratings resonate with how you are thinking and/or feeling. Or another way to put it is, rate your experiences in a way that you are comfortable enough with. Good enough ratings are the goal, not perfection. Let's try to keep the shame of perfectionism to a minimum.</div>
-                            
-<div class="how-item">By doing these ratings over time, when you need to or when you want to, your shadow self patterns will start to emerge in the accumulated data. That is where things can start to get interesting and this tool can help you stop bad habits before you obey them automatically.</div>`;
-
-        // Default life areas configuration
-        const DEFAULT_LIFE_AREAS = [
-            {
-                key: 'mental',
-                label: 'Mental Activity',
-                positiveLabel: '+5 Creative, Pleasant, Enjoyable (beware overly fantasizing)',
-                neutralLabel: '0 Think about self compassion/forgiveness and body awareness',
-                negativeLabel: '-5 Avoidant/Racing Thoughts, Ruminating, Catastrophizing'
-            },
-            {
-                key: 'somaticBody',
-                label: 'Somatic &/or Body',
-                positiveLabel: '+5 Calm, relaxed, can easily tolerate discomforts',
-                neutralLabel: '0 Able to force tolerating discomforts while resting/relaxing',
-                negativeLabel: '-5 Body aches/pains or other physical symptoms'
-            },
-            {
-                key: 'emotional',
-                label: 'Emotional',
-                positiveLabel: '+5 Enthusiasm/Fun',
-                neutralLabel: '0 Deeply Calm (Regulated)',
-                negativeLabel: '-5 Fear, Anger, or Activated (Dysregulated)'
-            },
-            {
-                key: 'housingComforts',
-                label: 'Housing & Creature Comforts',
-                positiveLabel: '+5 Able to embrace, enjoy, or appreciate simple creature comforts',
-                neutralLabel: '0 Deeply Calm (Regulated)',
-                negativeLabel: '-5 Pressure to pursue or engage in home improvement projects'
-            },
-            {
-                key: 'workMoney',
-                label: 'Work Experiences & Income Generation',
-                positiveLabel: '+5 A calmable enthusiasm for work/money related tasks',
-                neutralLabel: '0 Have some willingness to pursue/engage in income generating efforts',
-                negativeLabel: '-5 Intense or persistent anticipation, rumination, or pressure to perform'
-            },
-            {
-                key: 'moneyHandling',
-                label: 'Money & Resource Handling',
-                positiveLabel: '+5 Curiosity or thinking about paying down debt or investing into business related things',
-                neutralLabel: '0 Not really thinking or worrying about money or resources at all',
-                negativeLabel: '-5 Fear about financial failure or obsessions about money monitoring'
-            },
-            {
-                key: 'spiritual',
-                label: 'Personal Relationships or Interactions',
-                positiveLabel: '+5 Able and willing to practice tolerance of information while interacting',
-                neutralLabel: '0 Can neutralize overly negative thoughts/narratives',
-                negativeLabel: '-5 Resentments, blaming, catastrophizing, external critic, and prolonged avoidance'
-            },
-            {
-                key: 'freedomLevel',
-                label: 'Spiritual Level Outlook',
-                positiveLabel: '+5 Supportive random synchronicities, consilience leading to approachability',
-                neutralLabel: '0 Neutral or between the extremes',
-                negativeLabel: '-5 Parts of society/other people are unsupportive of my needs and wants'
-            }
-        ];
-
-        // Default ambient types configuration - NEW!
-        const DEFAULT_AMBIENT_TYPES = [
-            {
-                id: 'draining_positive',
-                dropdownLabel: 'Positive but Draining/Obsessive',
-                shortLabel: 'Positive/Draining',
-                zone: 'threat'
-            },
-            {
-                id: 'expansive_positive',
-                dropdownLabel: 'Positive and Expansive/Calming',
-                shortLabel: 'Positive/Expansive',
-                zone: 'opportunity'
-            },
-            {
-                id: 'draining_negative',
-                dropdownLabel: 'Negative and Draining/Obsessive',
-                shortLabel: 'Negative/Draining',
-                zone: 'threat'
-            },
-            {
-                id: 'productive_negative',
-                dropdownLabel: 'Negative with Positive Returns',
-                shortLabel: 'Negative/Productive',
-                zone: 'opportunity'
-            }
-        ];
-
         const state = {
-            lifeAreas: {},
-            lifeAreasConfig: [],
-            ambientTypes: [], // NEW!
-            lifeAreasVisible: true,
-            tutorialVisible: true,
-            systemLoadVisible: true,
-            ambientVisible: true,
-            sliderVisible: {},
-            zoneLabelsExpanded: {
-                threat: false,
-                stable: false,
-                opportunity: false
+            lifeAreas: { 
+                mental: { value: 0, locked: true, interacted: false },
+                spiritual: { value: 0, locked: true, interacted: false },
+                somaticBody: { value: 0, locked: true, interacted: false }, 
+                emotional: { value: 0, locked: true, interacted: false }, 
+                workMoney: { value: 0, locked: true, interacted: false },
+                moneyHandling: { value: 0, locked: true, interacted: false },
+                housingComforts: { value: 0, locked: true, interacted: false }, 
+                freedomLevel: { value: 0, locked: true, interacted: false }
             },
-            introText: '',
-            ambientDescription: 'Rate and describe what you\'re carrying internally',
-            ambientExamples: '<strong>Positive:</strong> Joy, calm, contentment, enthusiasm<br><strong>Negative/Threat responses:</strong> Fear, anger, tension, shutting down',
-            ambientTitles: [
-                'Internal Activity Intensity/Loudness 1',
-                'Internal Activity Intensity/Loudness 2',
-                'Internal Activity Intensity/Loudness 3'
-            ],
             ambient: [
-                { value: 0, type: 'draining_positive', note: '' },
-                { value: 0, type: 'draining_positive', note: '' },
-                { value: 0, type: 'draining_positive', note: '' }
+                { id: Date.now(), value: 0, type: 'regulated', note: '', locked: false }
             ],
             entries: [],
             saveError: '',
-            editingKey: null,
-            tempAmbientTypes: [] // NEW! For editing types in modal
+            section2DescExpanded: false,
+            section2DescText: localStorage.getItem('offload_section2_desc') || `Three types of internal responses:
+
+THREAT RESPONSE (DYSREGULATED): Fear, anxiety, activated feel, anger, hopelessness, powerlessness, and threat of pain responses
+
+GROUNDED, CALM, AND APPROACHABLE (REGULATED): Present-moment awareness, body connection, gentle contentment, stable calm
+
+OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom feelings
+
+---
+
+You can add more detailed descriptions here. This text will be saved automatically.`
         };
 
-        // Initialize from localStorage or defaults
-        function initializeState() {
-            // Load ambient types config - NEW!
-            const savedTypes = localStorage.getItem('offload_ambient_types');
-            if (savedTypes) {
-                state.ambientTypes = JSON.parse(savedTypes);
-            } else {
-                state.ambientTypes = [...DEFAULT_AMBIENT_TYPES];
-                saveAmbientTypes();
-            }
-
-            // Load life areas config
-            const savedConfig = localStorage.getItem('offload_life_areas_config');
-            if (savedConfig) {
-                state.lifeAreasConfig = JSON.parse(savedConfig);
-            } else {
-                state.lifeAreasConfig = [...DEFAULT_LIFE_AREAS];
-                saveLifeAreasConfig();
-            }
-
-            // Initialize lifeAreas values
-            state.lifeAreasConfig.forEach(config => {
-                state.lifeAreas[config.key] = 0;
-                state.sliderVisible[config.key] = true;
-            });
-
-            // Load slider visibility preferences
-            const savedSliderVisibility = localStorage.getItem('offload_slider_visibility');
-            if (savedSliderVisibility) {
-                const savedVisibility = JSON.parse(savedSliderVisibility);
-                Object.assign(state.sliderVisible, savedVisibility);
-            }
-
-            // Load visibility preference
-            const savedVisibility = localStorage.getItem('offload_life_areas_visible');
-            if (savedVisibility !== null) {
-                state.lifeAreasVisible = savedVisibility === 'true';
-            }
-
-            // Load tutorial visibility preference (default true)
-            const savedTutorialVisibility = localStorage.getItem('offload_tutorial_visible');
-            if (savedTutorialVisibility !== null) {
-                state.tutorialVisible = savedTutorialVisibility === 'true';
-            }
-
-            // Load system load visibility preference (default true)
-            const savedSystemLoadVisibility = localStorage.getItem('offload_system_load_visible');
-            if (savedSystemLoadVisibility !== null) {
-                state.systemLoadVisible = savedSystemLoadVisibility === 'true';
-            }
-
-            // Load ambient visibility preference (default true)
-            const savedAmbientVisibility = localStorage.getItem('offload_ambient_visible');
-            if (savedAmbientVisibility !== null) {
-                state.ambientVisible = savedAmbientVisibility === 'true';
-            }
-
-            // Load intro text
-            const savedIntroText = localStorage.getItem('offload_intro_text');
-            state.introText = savedIntroText || DEFAULT_INTRO_TEXT;
-
-            // Load ambient description and examples
-            const savedAmbientDesc = localStorage.getItem('offload_ambient_description');
-            if (savedAmbientDesc) state.ambientDescription = savedAmbientDesc;
-
-            const savedAmbientExamples = localStorage.getItem('offload_ambient_examples');
-            if (savedAmbientExamples) state.ambientExamples = savedAmbientExamples;
-
-            const savedAmbientTitles = localStorage.getItem('offload_ambient_titles');
-            if (savedAmbientTitles) state.ambientTitles = JSON.parse(savedAmbientTitles);
-        }
-
-        // NEW! Save ambient types
-        function saveAmbientTypes() {
-            localStorage.setItem('offload_ambient_types', JSON.stringify(state.ambientTypes));
-        }
-
-        function saveLifeAreasConfig() {
-            localStorage.setItem('offload_life_areas_config', JSON.stringify(state.lifeAreasConfig));
-        }
-
-        function saveVisibilityPreference() {
-            localStorage.setItem('offload_life_areas_visible', state.lifeAreasVisible);
-        }
-
-        function toggleLifeAreasVisibility() {
-            state.lifeAreasVisible = !state.lifeAreasVisible;
-            saveVisibilityPreference();
+        function toggleSection2Desc() {
+            state.section2DescExpanded = !state.section2DescExpanded;
             render();
         }
 
-        function toggleTutorialVisibility() {
-            state.tutorialVisible = !state.tutorialVisible;
-            localStorage.setItem('offload_tutorial_visible', state.tutorialVisible);
-            render();
+        function updateSection2Desc(text) {
+            state.section2DescText = text;
+            localStorage.setItem('offload_section2_desc', text);
         }
 
-        function toggleSystemLoadVisibility() {
-            state.systemLoadVisible = !state.systemLoadVisible;
-            localStorage.setItem('offload_system_load_visible', state.systemLoadVisible);
-            render();
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
         }
 
-        function toggleAmbientVisibility() {
-            state.ambientVisible = !state.ambientVisible;
-            localStorage.setItem('offload_ambient_visible', state.ambientVisible);
-            render();
-        }
-
-        // Type Editor Functions - NEW!
-        function openTypeEditor() {
-            // Copy current types to temp for editing
-            state.tempAmbientTypes = JSON.parse(JSON.stringify(state.ambientTypes));
-            renderTypeEditor();
-            document.getElementById('typeEditorModal').classList.add('active');
-        }
-
-        function closeTypeEditor() {
-            document.getElementById('typeEditorModal').classList.remove('active');
-            state.tempAmbientTypes = [];
-        }
-
-        function renderTypeEditor() {
-            const list = document.getElementById('typeEditorList');
-            
-            const html = state.tempAmbientTypes.map((type, index) => `
-                <div class="type-item">
-                    <div class="type-item-header">
-                        <span class="type-item-title">Type ${index + 1}</span>
-                        <div class="type-item-actions">
-                            ${index > 0 ? `<button class="icon-btn" onclick="moveType(${index}, -1)" title="Move up">↑</button>` : ''}
-                            ${index < state.tempAmbientTypes.length - 1 ? `<button class="icon-btn" onclick="moveType(${index}, 1)" title="Move down">↓</button>` : ''}
-                            <button class="icon-btn" onclick="deleteType(${index})" title="Delete">🗑️</button>
-                        </div>
-                    </div>
-                    
-                    <label class="input-label">Dropdown Label (shown in dropdown):</label>
-                    <input type="text" value="${type.dropdownLabel}" 
-                           onchange="updateTypeField(${index}, 'dropdownLabel', this.value)"
-                           placeholder="e.g., Positive but Draining/Obsessive">
-                    
-                    <label class="input-label">Short Label (shown in saved entries):</label>
-                    <input type="text" value="${type.shortLabel}" 
-                           onchange="updateTypeField(${index}, 'shortLabel', this.value)"
-                           placeholder="e.g., Positive/Draining">
-                    
-                    <label class="input-label">Zone Assignment:</label>
-                    <select onchange="updateTypeField(${index}, 'zone', this.value)" 
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
-                        <option value="threat" ${type.zone === 'threat' ? 'selected' : ''}>Threat (adds to system load)</option>
-                        <option value="opportunity" ${type.zone === 'opportunity' ? 'selected' : ''}>Opportunity (reduces system load)</option>
-                        <option value="neutral" ${type.zone === 'neutral' ? 'selected' : ''}>Neutral (no effect on load)</option>
-                    </select>
-                    
-                    <span class="zone-badge ${type.zone}">${type.zone.toUpperCase()}</span>
-                </div>
-            `).join('');
-            
-            list.innerHTML = html;
-        }
-
-        function updateTypeField(index, field, value) {
-            state.tempAmbientTypes[index][field] = value;
-            renderTypeEditor();
-        }
-
-        function moveType(index, direction) {
-            const newIndex = index + direction;
-            if (newIndex < 0 || newIndex >= state.tempAmbientTypes.length) return;
-            
-            const temp = state.tempAmbientTypes[index];
-            state.tempAmbientTypes[index] = state.tempAmbientTypes[newIndex];
-            state.tempAmbientTypes[newIndex] = temp;
-            
-            renderTypeEditor();
-        }
-
-        function deleteType(index) {
-            if (state.tempAmbientTypes.length <= 1) {
-                alert('You must have at least one type');
-                return;
-            }
-            if (!confirm('Delete this type? Any saved entries using this type will still show the old label.')) {
-                return;
-            }
-            state.tempAmbientTypes.splice(index, 1);
-            renderTypeEditor();
-        }
-
-        function addNewType() {
-            const newId = 'custom_' + Date.now();
-            state.tempAmbientTypes.push({
-                id: newId,
-                dropdownLabel: 'New Type',
-                shortLabel: 'New',
-                zone: 'neutral'
-            });
-            renderTypeEditor();
-        }
-
-        function saveTypeEdits() {
-            // Validate all types have required fields
-            for (let type of state.tempAmbientTypes) {
-                if (!type.dropdownLabel.trim() || !type.shortLabel.trim()) {
-                    alert('All types must have both dropdown and short labels');
-                    return;
-                }
-            }
-            
-            // Save to state and localStorage
-            state.ambientTypes = JSON.parse(JSON.stringify(state.tempAmbientTypes));
-            saveAmbientTypes();
-            
-            closeTypeEditor();
-            render();
-        }
-        // End Type Editor Functions
-
-        function openEditModal(key) {
-            state.editingKey = key;
-            const config = state.lifeAreasConfig.find(c => c.key === key);
-            
-            document.getElementById('modalTitle').textContent = 'Edit Life Area';
-            document.getElementById('editName').value = config.label;
-            document.getElementById('editPositive').value = config.positiveLabel;
-            document.getElementById('editNeutral').value = config.neutralLabel;
-            document.getElementById('editNegative').value = config.negativeLabel;
-            
-            document.getElementById('modalOverlay').classList.add('active');
-        }
-
-        function openAddModal() {
-            if (state.lifeAreasConfig.length >= 10) {
-                alert('Maximum of 10 life areas allowed');
-                return;
-            }
-            
-            state.editingKey = null;
-            
-            document.getElementById('modalTitle').textContent = 'Add Life Area';
-            document.getElementById('editName').value = '';
-            document.getElementById('editPositive').value = '';
-            document.getElementById('editNeutral').value = '';
-            document.getElementById('editNegative').value = '';
-            
-            document.getElementById('modalOverlay').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-            state.editingKey = null;
-        }
-
-        function toggleZoneLabel(zone) {
-            state.zoneLabelsExpanded[zone] = !state.zoneLabelsExpanded[zone];
-            render();
-        }
-
-        function toggleLifeAreaSlider(key) {
-            state.sliderVisible[key] = !state.sliderVisible[key];
-            localStorage.setItem('offload_slider_visibility', JSON.stringify(state.sliderVisible));
-            render();
-        }
-
-        let currentTextEdit = null;
-
-        function openTextEditModal(type, index = null) {
-            currentTextEdit = { type, index };
-            const modal = document.getElementById('textModalOverlay');
-            const title = document.getElementById('textModalTitle');
-            const content = document.getElementById('textModalContent');
-
-            switch(type) {
-                case 'intro':
-                    title.textContent = 'Edit Introduction Text';
-                    content.value = state.introText.replace(/<div class="how-item">/g, '\n\n').replace(/<\/div>/g, '').replace(/<span class="how-label">(.*?)<\/span>/g, '$1').replace(/<br>/g, '\n').replace(/<strong>/g, '').replace(/<\/strong>/g, '');
-                    break;
-                case 'ambient_desc':
-                    title.textContent = 'Edit Section Description';
-                    content.value = state.ambientDescription;
-                    break;
-                case 'ambient_examples':
-                    title.textContent = 'Edit Examples Text';
-                    content.value = state.ambientExamples.replace(/<br>/g, '\n').replace(/<strong>/g, '').replace(/<\/strong>/g, '');
-                    break;
-                case 'ambient_title':
-                    title.textContent = `Edit Slider ${index + 1} Title`;
-                    content.value = state.ambientTitles[index];
-                    break;
-            }
-
-            modal.classList.add('active');
-        }
-
-        function closeTextModal() {
-            document.getElementById('textModalOverlay').classList.remove('active');
-            currentTextEdit = null;
-        }
-
-        function saveTextEdit() {
-            if (!currentTextEdit) return;
-
-            const content = document.getElementById('textModalContent').value;
-            const { type, index } = currentTextEdit;
-
-            switch(type) {
-                case 'intro':
-                    const paragraphs = content.split('\n\n').filter(p => p.trim());
-                    state.introText = paragraphs.map(p => `<div class="how-item">${p.trim()}</div>`).join('\n                            \n');
-                    localStorage.setItem('offload_intro_text', state.introText);
-                    break;
-                case 'ambient_desc':
-                    state.ambientDescription = content;
-                    localStorage.setItem('offload_ambient_description', content);
-                    break;
-                case 'ambient_examples':
-                    state.ambientExamples = content.replace(/\n/g, '<br>');
-                    localStorage.setItem('offload_ambient_examples', state.ambientExamples);
-                    break;
-                case 'ambient_title':
-                    state.ambientTitles[index] = content;
-                    localStorage.setItem('offload_ambient_titles', JSON.stringify(state.ambientTitles));
-                    break;
-            }
-
-            closeTextModal();
-            render();
-        }
-
-        function saveLifeAreaEdit() {
-            const name = document.getElementById('editName').value.trim();
-            const positive = document.getElementById('editPositive').value.trim();
-            const neutral = document.getElementById('editNeutral').value.trim();
-            const negative = document.getElementById('editNegative').value.trim();
-
-            if (!name || !positive || !neutral || !negative) {
-                alert('All fields are required');
-                return;
-            }
-
-            if (state.editingKey) {
-                const config = state.lifeAreasConfig.find(c => c.key === state.editingKey);
-                config.label = name;
-                config.positiveLabel = positive;
-                config.neutralLabel = neutral;
-                config.negativeLabel = negative;
-            } else {
-                const newKey = 'custom_' + Date.now();
-                state.lifeAreasConfig.push({
-                    key: newKey,
-                    label: name,
-                    positiveLabel: positive,
-                    neutralLabel: neutral,
-                    negativeLabel: negative
-                });
-                state.lifeAreas[newKey] = 0;
-                state.sliderVisible[newKey] = true;
-            }
-
-            saveLifeAreasConfig();
-            closeModal();
-            render();
-        }
-
-        function deleteLifeArea(key) {
-            if (!confirm('Delete this life area? This cannot be undone.')) {
-                return;
-            }
-
-            state.lifeAreasConfig = state.lifeAreasConfig.filter(c => c.key !== key);
-            delete state.lifeAreas[key];
-            
-            saveLifeAreasConfig();
-            render();
+        function getLifeAreaDisplayValue(internalValue) {
+            // Convert internal -7 to +7 scale to display labels
+            if (internalValue === 0) return '00';
+            if (internalValue === -1) return '+0';
+            if (internalValue === 1) return '-0';
+            if (internalValue < -1) return '+' + Math.abs(internalValue + 1); // -7 to -2 becomes +5 to +1
+            if (internalValue > 1) return '-' + (internalValue - 1); // +7 to +2 becomes -5 to -1
+            return '00';
         }
 
         function getSliderColor(value) {
+            // Value comes in negated for display
             if (value > 0) {
-                const intensity = value / 5;
-                const red = Math.round(100 - (100 * intensity));
-                const green = Math.round(220 + (35 * intensity));
-                const blue = Math.round(100 - (100 * intensity));
+                // Green gradient: lighter at +1, darker at +5 (energizing)
+                const intensity = value / 5; // 0.2 to 1.0
+                const red = Math.round(100 - (100 * intensity)); // 100 to 0
+                const green = Math.round(220 + (35 * intensity)); // 220 to 255
+                const blue = Math.round(100 - (100 * intensity)); // 100 to 0
                 return `rgb(${red}, ${green}, ${blue})`;
             } else if (value < 0) {
                 const absValue = Math.abs(value);
                 if (absValue <= 1.5) {
-                    const intensity = absValue / 1.5;
-                    const red = Math.round(68 + (200 * intensity));
-                    const green = Math.round(136 + (100 * intensity));
-                    const blue = Math.round(255 - (155 * intensity));
+                    // Transition from blue to yellow/orange (0 to -1.5)
+                    const intensity = absValue / 1.5; // 0 to 1
+                    const red = Math.round(68 + (200 * intensity)); // 68 to 268 -> capped at 255
+                    const green = Math.round(136 + (100 * intensity)); // 136 to 236
+                    const blue = Math.round(255 - (155 * intensity)); // 255 to 100
                     return `rgb(${Math.min(red, 255)}, ${Math.min(green, 255)}, ${blue})`;
                 } else {
-                    const intensity = (absValue - 1.5) / 3.5;
-                    const red = 255;
-                    const green = Math.round(236 - (136 * intensity));
-                    const blue = Math.round(100 - (100 * intensity));
+                    // Yellow/orange to red gradient (-1.5 to -5)
+                    const intensity = (absValue - 1.5) / 3.5; // 0 to 1
+                    const red = 255; // Stay at max red
+                    const green = Math.round(236 - (136 * intensity)); // 236 to 100
+                    const blue = Math.round(100 - (100 * intensity)); // 100 to 0
                     return `rgb(${red}, ${green}, ${blue})`;
                 }
             } else {
-                return 'rgb(68, 136, 255)';
+                return 'rgb(68, 136, 255)'; // Blue for 0
             }
         }
 
-        // MODIFIED: getTotal now uses zone assignments from types
+        function toggleLifeAreaLock(key) {
+            state.lifeAreas[key].locked = !state.lifeAreas[key].locked;
+            render();
+        }
+
+        function addAmbientSlider() {
+            if (state.ambient.length >= 6) return;
+            state.ambient.push({
+                id: Date.now(),
+                value: 0,
+                type: 'regulated',
+                note: '',
+                locked: false
+            });
+            render();
+        }
+
+        function toggleAmbientLock(id) {
+            const amb = state.ambient.find(a => a.id === id);
+            if (amb) {
+                amb.locked = !amb.locked;
+                render();
+            }
+        }
+
+        function deleteAmbientSlider(id) {
+            if (state.ambient.length <= 1) {
+                alert('Must keep at least one internal experience slider');
+                return;
+            }
+            if (confirm('Delete this internal experience?')) {
+                state.ambient = state.ambient.filter(a => a.id !== id);
+                render();
+            }
+        }
+
+        function getAmbientSliderGradient(type, value) {
+            // Returns a CSS gradient based on the type and value
+            if (type === 'threat') {
+                // Yellow → Orange → Red (0 to 10)
+                return 'linear-gradient(to right, #ffeb3b 0%, #ff9800 50%, #f44336 100%)';
+            } else if (type === 'regulated') {
+                // Light blue → Deep blue (0 to 10)
+                return 'linear-gradient(to right, #bbdefb 0%, #1976d2 100%)';
+            } else if (type === 'opportunity') {
+                // Light hazy green → Green → Yellow (0 to 10)
+                return 'linear-gradient(to right, #c8e6c9 0%, #4caf50 50%, #cddc39 100%)';
+            }
+            return 'linear-gradient(to right, #d1d5db 0%, #d1d5db 100%)';
+        }
+
         function getTotal() {
-            const lifeTotal = -Object.values(state.lifeAreas).reduce((sum, val) => sum + val, 0);
+            let lifeTotal = 0;
+            let lifeRegulatedContribution = 0;
             
+            // Process life areas with new scale - only if interacted
+            Object.values(state.lifeAreas).forEach(area => {
+                if (!area.interacted) return; // Skip non-interacted sliders
+                
+                const val = area.value;
+                if (val === 0) {
+                    // 00 (true center) = 0 contribution (neutral/inactive)
+                    // Do nothing
+                } else if (val === -1 || val === 1) {
+                    // 0 (one step either way) adds +1 to regulated
+                    lifeRegulatedContribution += 1;
+                } else if (val < -1) {
+                    // Opportunity side: -7 to -2 becomes actual values +5 to +1
+                    const actualValue = Math.abs(val + 1);
+                    lifeTotal += actualValue; // Positive contribution (opportunity)
+                } else if (val > 1) {
+                    // Threat side: +7 to +2 becomes actual values -5 to -1
+                    const actualValue = -(val - 1);
+                    lifeTotal += actualValue; // Negative contribution (threat)
+                }
+            });
+            
+            // Calculate ambient contribution based on type
             let ambientContribution = 0;
             state.ambient.forEach(amb => {
                 if (amb.value !== 0) {
-                    const typeConfig = state.ambientTypes.find(t => t.id === amb.type);
-                    if (typeConfig) {
-                        if (typeConfig.zone === 'threat') {
-                            ambientContribution -= amb.value; // Threat adds to load
-                        } else if (typeConfig.zone === 'opportunity') {
-                            ambientContribution += amb.value; // Opportunity reduces load
-                        }
-                        // neutral zone contributes 0
+                    if (amb.type === 'threat') {
+                        ambientContribution -= amb.value;
+                    } else if (amb.type === 'opportunity') {
+                        ambientContribution += amb.value;
+                    } else if (amb.type === 'regulated') {
+                        ambientContribution += amb.value;
                     }
                 }
             });
+            
+            // Add life area regulated contribution to ambient
+            ambientContribution += lifeRegulatedContribution;
             
             return lifeTotal + ambientContribution;
         }
 
-        // MODIFIED: getThreatLoad now uses zone assignments
         function getThreatLoad() {
+            // Sum all threat values
             let threatTotal = 0;
             let lifeAreaThreat = 0;
             let ambientThreat = 0;
             
-            Object.values(state.lifeAreas).forEach(val => {
-                if (val > 0) {
-                    lifeAreaThreat += val;
+            Object.values(state.lifeAreas).forEach(area => {
+                if (!area.interacted) return; // Skip non-interacted sliders
+                
+                const val = area.value;
+                if (val > 1) {
+                    // Threat side: +7 to +2 becomes actual values 5 to 1
+                    lifeAreaThreat += (val - 1);
                 }
             });
             
+            // Add threat ambient experiences
             state.ambient.forEach(amb => {
-                if (amb.value !== 0) {
-                    const typeConfig = state.ambientTypes.find(t => t.id === amb.type);
-                    if (typeConfig && typeConfig.zone === 'threat') {
-                        ambientThreat += amb.value;
-                    }
+                if (amb.value !== 0 && amb.type === 'threat') {
+                    ambientThreat += amb.value;
                 }
             });
             
             threatTotal = lifeAreaThreat + ambientThreat;
+            console.log('Threat Load - Life:', lifeAreaThreat, 'Ambient:', ambientThreat, 'Total:', threatTotal);
             return threatTotal;
         }
 
-        // MODIFIED: getOpportunityLoad now uses zone assignments
         function getOpportunityLoad() {
+            // Sum all opportunity values
             let opportunityTotal = 0;
             let lifeAreaOpp = 0;
             let ambientOpp = 0;
             
-            Object.values(state.lifeAreas).forEach(val => {
-                if (val < 0) {
-                    lifeAreaOpp += Math.abs(val);
+            Object.values(state.lifeAreas).forEach(area => {
+                if (!area.interacted) return; // Skip non-interacted sliders
+                
+                const val = area.value;
+                if (val < -1) {
+                    // Opportunity side: -7 to -2 becomes actual values 5 to 1
+                    lifeAreaOpp += Math.abs(val + 1);
                 }
             });
             
+            // Add opportunity ambient experiences
             state.ambient.forEach(amb => {
-                if (amb.value !== 0) {
-                    const typeConfig = state.ambientTypes.find(t => t.id === amb.type);
-                    if (typeConfig && typeConfig.zone === 'opportunity') {
-                        ambientOpp += amb.value;
-                    }
+                if (amb.value !== 0 && amb.type === 'opportunity') {
+                    ambientOpp += amb.value;
                 }
             });
             
             opportunityTotal = lifeAreaOpp + ambientOpp;
+            console.log('Opportunity Load - Life:', lifeAreaOpp, 'Ambient:', ambientOpp, 'Total:', opportunityTotal);
             return opportunityTotal;
         }
 
-        function getNeutralCount() {
-            return Object.values(state.lifeAreas).filter(val => val === 0).length;
+        function getRegulatedLoad() {
+            // Sum all regulated values (from ambient AND from life areas at 0)
+            let regulatedTotal = 0;
+            
+            // Life areas contribution - only if interacted
+            Object.values(state.lifeAreas).forEach(area => {
+                if (!area.interacted) return; // Skip non-interacted sliders
+                
+                const val = area.value;
+                if (val === 0) {
+                    // 00 = 0 contribution (neutral/inactive)
+                    // Do nothing
+                } else if (val === -1 || val === 1) {
+                    regulatedTotal += 1; // 0 adds +1
+                }
+            });
+            
+            // Ambient contribution
+            state.ambient.forEach(amb => {
+                if (amb.value !== 0 && amb.type === 'regulated') {
+                    regulatedTotal += amb.value;
+                }
+            });
+            
+            console.log('Regulated Load:', regulatedTotal);
+            return regulatedTotal;
         }
 
         function getPercentage() {
             const total = getTotal();
-            const normalized = (-total + 10) / 40;
+            // Map -30 (max load) to 100%, +10 (min load) to 0%
+            // Range is 40 total: from -30 to +10
+            const normalized = (-total + 10) / 40; // Convert to 0-1 range (flip sign so -30 maps to 1)
             return Math.round(Math.max(0, Math.min(100, normalized * 100)));
         }
 
@@ -1352,15 +736,23 @@
         }
 
         function updateSlider(category, key, value) {
-            if (category === 'life') state.lifeAreas[key] = parseInt(value);
-            render();
+            if (category === 'life') {
+                if (!state.lifeAreas[key].locked) {
+                    state.lifeAreas[key].value = parseInt(value);
+                    state.lifeAreas[key].interacted = true;
+                    render();
+                }
+            }
         }
 
-        function updateAmbient(index, field, value) {
+        function updateAmbient(id, field, value) {
+            const amb = state.ambient.find(a => a.id === id);
+            if (!amb || amb.locked) return;
+            
             if (field === 'value') {
-                state.ambient[index].value = parseInt(value);
+                amb.value = parseInt(value);
             } else {
-                state.ambient[index][field] = value;
+                amb[field] = value;
             }
             render();
         }
@@ -1385,27 +777,48 @@
             }
 
             state.saveError = '';
-            const lifeTotal = -Object.values(state.lifeAreas).reduce((sum, val) => sum + val, 0);
+            
+            // Extract display values for saving
+            const lifeAreasDisplay = {};
+            Object.keys(state.lifeAreas).forEach(key => {
+                lifeAreasDisplay[key] = getLifeAreaDisplayValue(state.lifeAreas[key].value);
+            });
+            
+            // Calculate life total based on actual threat/opportunity contributions
+            let lifeTotal = 0;
+            Object.values(state.lifeAreas).forEach(area => {
+                const val = area.value;
+                if (val < -1) {
+                    lifeTotal += Math.abs(val + 1); // Opportunity
+                } else if (val > 1) {
+                    lifeTotal -= (val - 1); // Threat
+                }
+                // 00 and 0 don't contribute to lifeTotal, they go to regulated
+            });
+            
             const threatLoad = getThreatLoad();
             const opportunityLoad = getOpportunityLoad();
-            const neutralCount = getNeutralCount();
+            const regulatedLoad = getRegulatedLoad();
             
             const entry = {
                 timestamp: new Date().toISOString(),
-                lifeAreas: {...state.lifeAreas},
-                lifeAreasConfig: [...state.lifeAreasConfig],
-                ambientTypes: [...state.ambientTypes], // NEW! Save types config with entry
-                ambient: state.ambient.map(a => ({...a})),
+                lifeAreas: {...lifeAreasDisplay},
+                ambient: state.ambient.map(a => ({
+                    value: a.value,
+                    type: a.type,
+                    note: a.note
+                })),
                 lifeTotal,
                 total: getTotal(),
                 pct: getPercentage(),
                 threatLoad,
                 opportunityLoad,
-                neutralCount
+                regulatedLoad
             };
             
             state.entries.unshift(entry);
             
+            // Send to Google Sheets
             fetch('https://script.google.com/macros/s/AKfycbyre8dXSoVH3LDvBa-SsfPjX0gpKbNcjrF7p-YLQB6fhkQQNRcxmFyoqhp-Xp45VlLU0Q/exec', {
                 method: 'POST',
                 mode: 'no-cors',
@@ -1422,26 +835,30 @@
             render();
         }
 
-        // NEW! Helper function to get type label from saved config
-        function getTypeLabel(typeId, types) {
-            const typeConfig = types.find(t => t.id === typeId);
-            return typeConfig ? typeConfig.shortLabel : typeId;
-        }
-
         function copyEntries() {
             const text = state.entries.map(e => {
                 const date = new Date(e.timestamp).toLocaleString();
-                
-                const config = e.lifeAreasConfig || state.lifeAreasConfig;
-                const types = e.ambientTypes || state.ambientTypes; // NEW!
-                
-                const lifeAreasText = config.map(c => {
-                    const value = -(e.lifeAreas[c.key] || 0);
-                    return `${c.label}: ${value}`;
+                const lifeAreasText = Object.entries(e.lifeAreas).map(([key, val]) => {
+                    const labels = {
+                        mental: 'Mental',
+                        somaticBody: 'Somatic/Body',
+                        emotional: 'Emotional',
+                        housingComforts: 'Housing/Comforts',
+                        workMoney: 'Work/Income',
+                        moneyHandling: 'Money/Resources',
+                        spiritual: 'Perception of Mankind',
+                        freedomLevel: 'Friendly Universe'
+                    };
+                    return `${labels[key]}: ${val}`;
                 }).join(', ');
                 
                 const ambientText = e.ambient.filter(a => a.value !== 0).map((a, i) => {
-                    return `  [${a.value}/15, ${getTypeLabel(a.type, types)}]: ${a.note}`; // MODIFIED!
+                    const typeLabels = {
+                        'threat': 'Threat Response',
+                        'regulated': 'Regulated/Grounded',
+                        'opportunity': 'Opportunity Response'
+                    };
+                    return `  [${a.value}/10, ${typeLabels[a.type]}]: ${a.note}`;
                 }).join('\n');
                 return `=== ${date} ===
 Life Areas (Net: ${e.lifeTotal}):
@@ -1451,8 +868,8 @@ Internal Experiences:
 ${ambientText || '  (none)'}
 
 Threat Load: ${e.threatLoad || 0}
-Opportunity Load: ${e.opportunityLoad || 0}  
-Neutral Count: ${e.neutralCount || 0}
+Regulated Load: ${e.regulatedLoad || 0}
+Opportunity Load: ${e.opportunityLoad || 0}
 Total Load: ${e.total} (${e.pct}%)\n`;
             }).join('\n');
             navigator.clipboard.writeText(text);
@@ -1466,7 +883,7 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             }
         }
 
-        function updateVisualization(threatLoad, opportunityLoad, neutralCount) {
+        function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
             const visualization = document.getElementById('visualization');
             if (!visualization) return;
             
@@ -1479,15 +896,18 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             const riverText = document.getElementById('riverText');
             
             const height = 300;
-            const maxLoad = 50;
+            const maxLoad = 50; // Max possible load on either end
             
+            // Calculate raw gate heights - each can go up to 90%
             let topGateHeight = Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9);
             let bottomGateHeight = Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9);
             
+            // Ensure combined gates never exceed 90% of total height
             const combinedHeight = topGateHeight + bottomGateHeight;
             const maxCombined = height * 0.9;
             
             if (combinedHeight > maxCombined) {
+                // Scale both gates down proportionally
                 const scaleFactor = maxCombined / combinedHeight;
                 topGateHeight = topGateHeight * scaleFactor;
                 bottomGateHeight = bottomGateHeight * scaleFactor;
@@ -1502,32 +922,47 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             gateTextBottom.style.bottom = bottomGateHeight + 'px';
             gateTextBottom.textContent = 'OPPORTUNITY\n' + opportunityLoad;
             
+            // Calculate background color based on gate positions
+            // Regulated load widens the blue river space
             const availableSpace = height - topGateHeight - bottomGateHeight;
-            const topGateFactor = topGateHeight / height;
-            const bottomGateFactor = bottomGateHeight / height;
+            const topGateFactor = topGateHeight / height; // 0 to 0.48
+            const bottomGateFactor = bottomGateHeight / height; // 0 to 0.48
+            const regulatedFactor = regulatedLoad / 30; // 0 to 1 (assuming max regulated is 30)
             
             let r, g, b;
             
-            if (topGateFactor > bottomGateFactor) {
-                const threatIntensity = topGateFactor * 2.2;
+            // If there's significant regulated load, bias toward blue
+            if (regulatedFactor > 0.2) {
+                // More regulated = more blue, less responsive to gates
+                const blueIntensity = Math.min(regulatedFactor * 1.5, 1); // 0 to 1
+                r = Math.round(68 + ((1 - blueIntensity) * 50));
+                g = Math.round(136 + ((1 - blueIntensity) * 50));
+                b = Math.round(255);
+            } else if (topGateFactor > bottomGateFactor) {
+                // Threat is dominant - blend from blue toward red/yellow
+                const threatIntensity = topGateFactor * 2.2; // Amplify (0 to ~1)
                 if (threatIntensity < 0.5) {
+                    // Blue to yellow transition
                     const factor = threatIntensity * 2;
-                    r = Math.round(68 + (187 * factor));
-                    g = Math.round(136 + (100 * factor));
-                    b = Math.round(255 - (155 * factor));
+                    r = Math.round(68 + (187 * factor)); // 68 to 255
+                    g = Math.round(136 + (100 * factor)); // 136 to 236
+                    b = Math.round(255 - (155 * factor)); // 255 to 100
                 } else {
+                    // Yellow to red transition
                     const factor = (threatIntensity - 0.5) * 2;
                     r = 255;
-                    g = Math.round(236 - (136 * factor));
-                    b = Math.round(100 - (100 * factor));
+                    g = Math.round(236 - (136 * factor)); // 236 to 100
+                    b = Math.round(100 - (100 * factor)); // 100 to 0
                 }
             } else if (bottomGateFactor > topGateFactor) {
-                const oppIntensity = bottomGateFactor * 2.2;
+                // Opportunity is dominant - blend from blue toward green
+                const oppIntensity = bottomGateFactor * 2.2; // Amplify (0 to ~1)
                 const factor = Math.min(oppIntensity, 1);
-                r = Math.round(68 - (0 * factor));
-                g = Math.round(136 + (119 * factor));
-                b = Math.round(255 - (187 * factor));
+                r = Math.round(68 - (0 * factor)); // Stay at 68
+                g = Math.round(136 + (119 * factor)); // 136 to 255
+                b = Math.round(255 - (187 * factor)); // 255 to 68
             } else {
+                // Balanced or both low - stay blue
                 r = 68;
                 g = 136;
                 b = 255;
@@ -1535,20 +970,28 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             
             visualization.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
             
+            // River channel flows through available space between gates
+            // Regulated load makes the river wider
             const width = 600;
             const riverTop = topGateHeight;
             const riverBottom = height - bottomGateHeight;
             const riverHeight = riverBottom - riverTop;
             
+            // Calculate channel width with regulated load bonus
             const spaceFactor = availableSpace / height;
             const maxChannelWidth = height * 0.5;
             const minChannelWidth = height * 0.08;
             
+            // Base channel width
             let channelWidth = minChannelWidth + (spaceFactor * (maxChannelWidth - minChannelWidth));
-            channelWidth = Math.min(channelWidth, riverHeight * 0.9);
+            
+            // Add regulated bonus - up to 20% wider
+            const regulatedBonus = regulatedFactor * (height * 0.2);
+            channelWidth = Math.min(channelWidth + regulatedBonus, riverHeight * 0.95);
             
             const waterWidth = channelWidth * 0.85;
             
+            // Center the channel in the available space between gates
             const channelTopY = riverTop + Math.max(0, (riverHeight - channelWidth) / 2);
             const channelBottomY = channelTopY + channelWidth;
             
@@ -1561,14 +1004,24 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             riverChannel.setAttribute('d', channelPath);
             riverWater.setAttribute('d', waterPath);
             
+            // Position river text in the center of the available space between gates
             const centerY = topGateHeight + (availableSpace / 2);
             riverText.style.top = centerY + 'px';
             
+            // Update text to show regulated contribution
+            if (regulatedLoad > 0) {
+                riverText.innerHTML = `Window of Tolerance Width<br>or Internal Information<br>Processing Capacity<br><span style="font-size: 11px; color: #bbdefb;">(+${regulatedLoad} regulated)</span>`;
+            } else {
+                riverText.innerHTML = 'Window of Tolerance Width<br>or Internal Information<br>Processing Capacity';
+            }
+            
+            // Position neutral list at same vertical center
             const neutralList = document.getElementById('neutralList');
             if (neutralList) {
                 neutralList.style.top = centerY + 'px';
             }
             
+            // Adjust font size and letter spacing based on available vertical space
             const availablePercent = availableSpace / height;
             
             if (availablePercent < 0.3) {
@@ -1581,10 +1034,10 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                 riverText.style.letterSpacing = '0px';
             }
             
+            // Update contributor lists
             updateContributorLists();
         }
         
-        // MODIFIED: updateContributorLists now uses zone assignments
         function updateContributorLists() {
             const contributorsThreat = document.getElementById('contributorsThreat');
             const contributorsOpportunity = document.getElementById('contributorsOpportunity');
@@ -1592,272 +1045,341 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             
             if (!contributorsThreat || !contributorsOpportunity || !neutralList) return;
             
+            const lifeAreasLabels = {
+                mental: 'Mental Activity',
+                somaticBody: 'Somatic &/or Body',
+                emotional: 'Emotional',
+                housingComforts: 'Housing & Creature Comforts',
+                workMoney: 'Work Experiences & Income Generation',
+                moneyHandling: 'Money & Resource Handling',
+                spiritual: 'Personal Relationships or Interactions',
+                freedomLevel: 'Spiritual Level Outlook'
+            };
+            
+            const typeLabels = {
+                'threat': 'Threat Response',
+                'regulated': 'Regulated/Grounded',
+                'opportunity': 'Opportunity Response'
+            };
+            
             let threatItems = [];
             let opportunityItems = [];
-            let neutralItems = [];
+            let regulatedItems = [];
             
-            state.lifeAreasConfig.forEach(config => {
-                const value = state.lifeAreas[config.key];
-                if (value > 0) {
-                    threatItems.push({ label: config.label, value: value });
-                } else if (value < 0) {
-                    opportunityItems.push({ label: config.label, value: Math.abs(value) });
-                } else {
-                    neutralItems.push(config.label);
+            // Collect life area contributors - only if interacted
+            Object.entries(state.lifeAreas).forEach(([key, area]) => {
+                if (!area.interacted) return; // Skip non-interacted sliders
+                
+                const val = area.value;
+                if (val > 1) {
+                    // Threat side
+                    threatItems.push({ label: lifeAreasLabels[key], value: val - 1 });
+                } else if (val < -1) {
+                    // Opportunity side
+                    opportunityItems.push({ label: lifeAreasLabels[key], value: Math.abs(val + 1) });
+                } else if (val === -1 || val === 1) {
+                    // 0 = +1 regulated
+                    regulatedItems.push({ label: lifeAreasLabels[key], value: 1 });
                 }
+                // 00 (val === 0) contributes nothing
             });
             
+            // Collect internal experience contributors
             state.ambient.forEach((amb, i) => {
                 if (amb.value !== 0) {
-                    const typeConfig = state.ambientTypes.find(t => t.id === amb.type);
-                    const typeLabel = typeConfig ? typeConfig.shortLabel : amb.type;
+                    const typeLabel = typeLabels[amb.type] || amb.type;
                     const label = `Internal Experience ${i+1} (${typeLabel})`;
                     
-                    if (typeConfig) {
-                        if (typeConfig.zone === 'threat') {
-                            threatItems.push({ label: label, value: amb.value });
-                        } else if (typeConfig.zone === 'opportunity') {
-                            opportunityItems.push({ label: label, value: amb.value });
-                        }
+                    if (amb.type === 'threat') {
+                        threatItems.push({ label: label, value: amb.value });
+                    } else if (amb.type === 'opportunity') {
+                        opportunityItems.push({ label: label, value: amb.value });
+                    } else if (amb.type === 'regulated') {
+                        regulatedItems.push({ label: label, value: amb.value });
                     }
                 }
             });
             
+            // Sort by value descending
             threatItems.sort((a, b) => b.value - a.value);
             opportunityItems.sort((a, b) => b.value - a.value);
+            regulatedItems.sort((a, b) => b.value - a.value);
             
+            // Render threat list
             contributorsThreat.innerHTML = threatItems.length > 0 
                 ? threatItems.map(item => `<div class="contributor-item">${item.label}: ${item.value}</div>`).join('')
                 : '';
             
+            // Render opportunity list
             contributorsOpportunity.innerHTML = opportunityItems.length > 0
                 ? opportunityItems.map(item => `<div class="contributor-item">${item.label}: ${item.value}</div>`).join('')
                 : '';
             
-            neutralList.innerHTML = neutralItems.length > 0
-                ? '<div style="font-weight: bold; margin-bottom: 3px;">Neutral (0):</div>' + 
-                  neutralItems.map(label => `<div class="neutral-item">• ${label}</div>`).join('')
-                : '';
+            // Render regulated list
+            let regulatedContent = '';
+            if (regulatedItems.length > 0) {
+                regulatedContent = '<div style="font-weight: bold; margin-bottom: 3px; color: #bbdefb;">Regulated:</div>' +
+                  regulatedItems.map(item => `<div class="neutral-item" style="color: #bbdefb;">• ${item.label}: ${item.value}</div>`).join('');
+            }
+            neutralList.innerHTML = regulatedContent;
         }
 
         function render() {
             const total = getTotal();
             const pct = getPercentage();
             const status = getStatus();
-            const lifeTotal = -Object.values(state.lifeAreas).reduce((sum, val) => sum + val, 0);
+            
+            // Calculate life total for display
+            let lifeTotal = 0;
+            Object.values(state.lifeAreas).forEach(area => {
+                if (!area.interacted) return; // Skip non-interacted sliders
+                
+                const val = area.value;
+                if (val < -1) {
+                    lifeTotal += Math.abs(val + 1); // Opportunity
+                } else if (val > 1) {
+                    lifeTotal -= (val - 1); // Threat
+                }
+            });
             
             const threatLoad = getThreatLoad();
             const opportunityLoad = getOpportunityLoad();
-            const neutralCount = getNeutralCount();
+            const regulatedLoad = getRegulatedLoad();
+
+            const lifeAreasConfig = [
+                { key: 'mental', label: 'Mental Activity' },
+                { key: 'somaticBody', label: 'Somatic &/or Body' },
+                { key: 'emotional', label: 'Emotional' },
+                { key: 'housingComforts', label: 'Housing & Creature Comforts' },
+                { key: 'workMoney', label: 'Work Experiences & Income Generation' },
+                { key: 'moneyHandling', label: 'Money & Resource Handling' },
+                { key: 'spiritual', label: 'Personal Relationships or Interactions' },
+                { key: 'freedomLevel', label: 'Spiritual Level Outlook' }
+            ];
 
             const html = `
-                <div class="card header" style="border-left: 4px solid #3b82f6;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${state.tutorialVisible ? '12px' : '0'};">
-                        <div>
-                            <h1 style="margin-bottom: 6px;">Offload: A nervous system validation companion</h1>
+                <div class="card header">
+                    <h1>Offload: A nervous system validation companion</h1>
+                    <div class="subtitle">(Based on the concepts of Polyvagal Theory, Shadow Work, Window of Tolerance, Inner Child Work, and RAS and default mode reprogramming)<br><em style="font-size: 11px; color: #9333ea;">Saves to Google Sheets</em></div>
+                </div>
+
+                <div class="card">
+                    <h2>How This Works:</h2>
+                    <div class="how-it-works">
+                        <div class="how-item"><span class="how-label">Dual Gates System:</span> Top gate (red) closes down with threat load, bottom gate (green) closes up with opportunity load. Blue river flows between them showing your window of tolerance.</div>
+                        <div class="how-item"><span class="how-label">Life Areas (00, 0, 1-5 each):</span> Start at 00 (inactive). Unlock to adjust. 0 positions add +1 to regulated. Negative values (threat) close top gate, positive values (opportunity) close bottom gate.</div>
+                        <div class="how-item"><span class="how-label">Internal Experiences (0-10 each):</span> Rate intensity, then select type:
+                            <ul style="margin-left: 20px; margin-top: 3px;">
+                                <li><strong>Threat Response (Dysregulated):</strong> Adds to threat gate (yellow→orange→red gradient)</li>
+                                <li><strong>Grounded, calm, and approachable (Regulated):</strong> Widens the blue river / window of tolerance (light blue→deep blue gradient)</li>
+                                <li><strong>Opportunity Responses:</strong> Adds to opportunity gate (light green→green→yellow gradient)</li>
+                            </ul>
                         </div>
-                        <div style="display: flex; gap: 8px;">
-                            ${state.tutorialVisible ? `<button class="icon-btn" onclick="openTextEditModal('intro')" title="Edit intro text">✏️</button>` : ''}
-                            <button class="btn btn-toggle" onclick="toggleTutorialVisibility()" style="margin-left: 0;">
-                                ${state.tutorialVisible ? '▲' : '▼'}
-                            </button>
-                        </div>
+                        <div class="how-item"><span class="how-label">Regulated State:</span> More 0 positions + regulated load = wider blue river = more capacity available</div>
                     </div>
-                    
-                    ${state.tutorialVisible ? `
-                        <div class="how-it-works">
-                            ${state.introText}
-                        </div>
-                        <div style="text-align: center; margin-top: 12px;">
-                            <button class="btn btn-toggle" onclick="toggleTutorialVisibility()">
-                                ▲ Collapse
-                            </button>
-                        </div>
-                    ` : ''}
                 </div>
 
                 <div class="card section-blue">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
                         <h2 style="margin: 0;">1. Current Life Areas (How big or small are your internal experiences, are they good, bad, or neutral?)</h2>
-                        <button class="btn btn-toggle" onclick="toggleLifeAreasVisibility()">
-                            ${state.lifeAreasVisible ? '👁️ Hide' : '👁️ Show'} Life Areas
-                        </button>
                     </div>
                     
-                    <div class="${state.lifeAreasVisible ? '' : 'hidden'}">
-                        <div class="meta-layer">
-                            <div class="meta-labels">
-                                <div class="meta-label">Regulated Opportunity Responses</div>
-                                <div class="meta-label">Neutral or Mixed</div>
-                                <div class="meta-label">Dysregulated Threat Responses</div>
-                            </div>
-                            <div class="meta-lines">
-                                <div class="meta-line meta-line-left"></div>
-                                <div class="meta-line meta-line-right"></div>
-                            </div>
+                    <div class="meta-layer">
+                        <div class="meta-labels">
+                            <div class="meta-label">Regulated Opportunity Responses</div>
+                            <div class="meta-label">Neutral or Mixed</div>
+                            <div class="meta-label">Dysregulated Threat Responses</div>
                         </div>
+                        <div class="meta-lines">
+                            <div class="meta-line meta-line-left"></div>
+                            <div class="meta-line meta-line-right"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="life-areas-container">
+                        <div class="life-areas-dividers">
+                            <div class="divider-line divider-left"></div>
+                            <div class="divider-line divider-right"></div>
+                        </div>
+                    
+                    ${lifeAreasConfig.map(({ key, label }) => {
+                        const area = state.lifeAreas[key];
+                        const isMental = key === 'mental';
+                        const isSomatic = key === 'somaticBody';
+                        const isHousing = key === 'housingComforts';
+                        const isWorkMoney = key === 'workMoney';
+                        const isMoneyHandling = key === 'moneyHandling';
+                        const isSpiritual = key === 'spiritual';
+                        const isFreedomLevel = key === 'freedomLevel';
                         
-                        <div class="life-areas-container">
-                            <div class="life-areas-dividers">
-                                <div class="divider-line divider-left"></div>
-                                <div class="divider-line divider-right"></div>
-                            </div>
+                        let positiveLabel, neutralLabel, negativeLabel;
                         
-                        ${state.lifeAreasConfig.filter(config => !state.sliderVisible[config.key]).map(config => {
-                            const firstName = config.label.split(' ')[0];
-                            return `
-                            <div class="slider-container collapsed">
-                                <div class="slider-header">
-                                    <span class="slider-label">
-                                        ${firstName}
-                                        <button class="icon-btn" onclick="toggleLifeAreaSlider('${config.key}')" title="Show slider" style="margin-left: 4px;">▲</button>
-                                        : ${-state.lifeAreas[config.key] > 0 ? '+' : ''}${-state.lifeAreas[config.key]}
-                                    </span>
-                                </div>
-                            </div>
-                        `;
-                        }).join('')}
+                        if (isMental) {
+                            positiveLabel = '+5 Creative, Pleasant, Enjoyable (beware overly fantasizing)';
+                            neutralLabel = '0 Think about self compassion/forgiveness and body awareness';
+                            negativeLabel = '-5 Avoidant/Racing Thoughts, Ruminating, Catastrophizing';
+                        } else if (isSomatic) {
+                            positiveLabel = '+5 Calm, relaxed, can easily tolerate discomforts';
+                            neutralLabel = '0 Able to force tolerating discomforts while resting/relaxing';
+                            negativeLabel = '-5 Body aches/pains or other physical symptoms';
+                        } else if (isHousing) {
+                            positiveLabel = '+5 Able to embrace, enjoy, or appreciate simple creature comforts';
+                            neutralLabel = '0 Deeply Calm (Regulated)';
+                            negativeLabel = '-5 Pressure to pursue or engage in home improvement projects';
+                        } else if (isWorkMoney) {
+                            positiveLabel = '+5 A calmable enthusiasm for work/money related tasks';
+                            neutralLabel = '0 Have some willingness to pursue/engage in income generating efforts';
+                            negativeLabel = '-5 Intense or persistent anticipation, rumination, or pressure to perform';
+                        } else if (isMoneyHandling) {
+                            positiveLabel = '+5 Curiosity or thinking about paying down debt or investing into business related things';
+                            neutralLabel = '0 Not really thinking or worrying about money or resources at all';
+                            negativeLabel = '-5 Fear about financial failure or obsessions about money monitoring';
+                        } else if (isSpiritual) {
+                            positiveLabel = '+5 Able and willing to practice tolerance of information while interacting';
+                            neutralLabel = '0 Can neutralize overly negative thoughts/narratives';
+                            negativeLabel = '-5 Resentments, blaming, catastrophizing, external critic, and prolonged avoidance';
+                        } else if (isFreedomLevel) {
+                            positiveLabel = '+5 Supportive random synchronicities, consilience leading to approachability';
+                            neutralLabel = '0 Neutral or between the extremes';
+                            negativeLabel = '-5 Parts of society/other people are unsupportive of my needs and wants';
+                        } else {
+                            positiveLabel = '+5 Enthusiasm/Fun';
+                            neutralLabel = '0 Deeply Calm (Regulated)';
+                            negativeLabel = '-5 Fear, Anger, or Activated (Dysregulated)';
+                        }
                         
-                        ${state.lifeAreasConfig.filter(config => state.sliderVisible[config.key]).map(config => {
-                            return `
-                            <div class="slider-container">
-                                <div class="slider-header">
-                                    <span class="slider-label">
-                                        ${config.label}
-                                        <button class="icon-btn" onclick="toggleLifeAreaSlider('${config.key}')" title="Hide slider" style="margin-left: 4px;">▼</button>
-                                    </span>
-                                    <div class="slider-actions">
-                                        <button class="icon-btn" onclick="openEditModal('${config.key}')" title="Edit">✏️</button>
-                                        <button class="icon-btn" onclick="deleteLifeArea('${config.key}')" title="Delete">🗑️</button>
+                        return `
+                        <div class="slider-container">
+                            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px;">
+                                <div style="flex: 1;">
+                                    <div class="slider-header" style="margin-bottom: 0;">
+                                        <span class="slider-label">${label}</span>
+                                        <span class="slider-value" style="color: ${getSliderColor(-area.value)};">${getLifeAreaDisplayValue(area.value)}</span>
                                     </div>
-                                    <span class="slider-value" style="color: ${getSliderColor(-state.lifeAreas[config.key])};">${-state.lifeAreas[config.key] > 0 ? '+' : ''}${-state.lifeAreas[config.key]}</span>
                                 </div>
-                                <div class="slider-labels"><span>${config.positiveLabel}</span><span>${config.neutralLabel}</span><span>${config.negativeLabel}</span></div>
-                                <input type="range" min="-5" max="5" value="${state.lifeAreas[config.key]}" 
-                                       onchange="updateSlider('life', '${config.key}', this.value)"
-                                       style="background: linear-gradient(to right, #64ff64 0%, #4488ff 50%, #ffaa44 75%, #ff4444 100%);">
+                                <div style="display: flex; gap: 4px;">
+                                    <button class="btn" onclick="toggleLifeAreaLock('${key}')" 
+                                            style="padding: 4px 8px; font-size: 11px; ${area.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;'}">
+                                        ${area.locked ? 'Unlock' : 'Lock'}
+                                    </button>
+                                </div>
                             </div>
-                        `;
-                        }).join('')}
-                        
+                            <div class="slider-labels"><span>${positiveLabel}</span><span>${neutralLabel}</span><span>${negativeLabel}</span></div>
+                            <input type="range" min="-7" max="7" value="${area.value}" 
+                                   onchange="updateSlider('life', '${key}', this.value)"
+                                   ${area.locked ? 'disabled' : ''}
+                                   style="background: linear-gradient(to right, #64ff64 0%, #4488ff 50%, #ffaa44 75%, #ff4444 100%); ${area.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
                         </div>
-                        
-                        ${state.lifeAreasConfig.length < 10 ? `
-                            <button class="btn btn-add" onclick="openAddModal()">+ Add Life Area</button>
-                        ` : ''}
-                        
-                        <div class="subtotal">
-                            <div class="subtotal-text">Life Areas Net: ${lifeTotal} (negative = draining, positive = energizing)</div>
-                        </div>
+                    `;
+                    }).join('')}
+                    
                     </div>
                     
-                    ${!state.lifeAreasVisible ? `
-                        <div class="subtotal">
-                            <div class="subtotal-text">Life Areas Net: ${lifeTotal} (${state.lifeAreasConfig.length} areas configured)</div>
-                        </div>
-                    ` : ''}
+                    <div class="subtotal">
+                        <div class="subtotal-text">Life Areas Net: ${lifeTotal} (negative = draining, positive = energizing)</div>
+                    </div>
                 </div>
 
                 <div class="card section-purple">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${state.ambientVisible ? '12px' : '0'};">
-                        <h2 style="margin: 0;">2. Specific Internal Experiences (Emotions, Vibes, Somatic/Bodily Activity) (0-15 each)</h2>
-                        <button class="btn btn-toggle" onclick="toggleAmbientVisibility()">
-                            ${state.ambientVisible ? '▲ Collapse' : '▼ Expand'}
-                        </button>
-                    </div>
-                    
-                    ${state.ambientVisible ? `
-                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
-                        <div class="subtitle" style="margin: 0;"><em>${state.ambientDescription}</em></div>
-                        <button class="icon-btn" onclick="openTextEditModal('ambient_desc')" title="Edit description" style="font-size: 14px;">✏️</button>
-                    </div>
+                    <h2>2. Specific Internal Experiences (Emotions, Vibes, Somatic/Bodily Activity) (0-10 each)</h2>
+                    <div class="subtitle"><em>Rate and describe what you're carrying internally</em></div>
                     
                     <div class="examples-box">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="flex: 1;">
-                                <div class="examples-title">Could be positive or negative internal responses:</div>
-                                <div class="examples-list">${state.ambientExamples}</div>
+                        ${!state.section2DescExpanded ? `
+                            <div style="margin-bottom: 6px;">
+                                <div style="font-size: 13px; color: #374151; line-height: 1.6;">
+                                    <strong>Threat Response (Dysregulated)</strong> • <strong>Grounded, calm, and approachable (Regulated)</strong> • <strong>Opportunity Responses</strong>
+                                </div>
                             </div>
-                            <button class="icon-btn" onclick="openTextEditModal('ambient_examples')" title="Edit examples" style="font-size: 14px; flex-shrink: 0;">✏️</button>
-                        </div>
+                            <button class="btn" onclick="toggleSection2Desc()" 
+                                    style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">
+                                Show More ▼
+                            </button>
+                        ` : `
+                            <div style="margin-bottom: 9px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <div class="examples-title">Three types of internal responses:</div>
+                                    <button class="btn" onclick="toggleSection2Desc()" 
+                                            style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">
+                                        Hide ▲
+                                    </button>
+                                </div>
+                                <textarea id="section2DescTextarea" 
+                                          onchange="updateSection2Desc(this.value)" 
+                                          oninput="autoResizeTextarea(this)"
+                                          style="width: 100%; min-height: 120px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; font-family: inherit; line-height: 1.5; resize: none; overflow: hidden;">${state.section2DescText}</textarea>
+                                <div style="font-size: 11px; color: #6b7280; margin-top: 3px; font-style: italic;">
+                                    Changes are saved automatically
+                                </div>
+                            </div>
+                        `}
                     </div>
 
                     ${state.ambient.map((amb, i) => `
-                        <div class="slider-container">
-                            <div class="slider-header">
-                                <span class="slider-label">
-                                    ${state.ambientTitles[i]}
-                                    <button class="icon-btn" onclick="openTextEditModal('ambient_title', ${i})" title="Edit title" style="font-size: 14px; margin-left: 4px;">✏️</button>
-                                </span>
-                                <span class="slider-value" style="color: #9333ea;">${amb.value}</span>
-                            </div>
-                            <input type="range" min="0" max="15" value="${amb.value}" 
-                                   onchange="updateAmbient(${i}, 'value', this.value)"
-                                   style="background: #d1d5db;">
-                            <div class="slider-labels"><span>0 Not present</span><span>15 Very present</span></div>
-                            
-                            ${amb.value !== 0 ? `
-                                <div style="display: flex; align-items: center; gap: 4px; margin-top: 6px;">
-                                    <label class="input-label" style="margin: 0;">Type (required):</label>
-                                    <button class="icon-btn" onclick="openTypeEditor()" title="Edit types" style="font-size: 14px;">✏️</button>
+                        <div class="slider-container" style="position: relative;">
+                            <div style="display: flex; gap: 8px; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <label class="input-label">Note/Description:</label>
+                                    <textarea onchange="updateAmbient(${amb.id}, 'note', this.value)"
+                                              placeholder="Brief description or context..."
+                                              ${amb.locked ? 'disabled' : ''}
+                                              style="${amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : ''}">${amb.note}</textarea>
+                                    
+                                    <div class="slider-header" style="margin-top: 9px;">
+                                        <span class="slider-label">Intensity/Loudness</span>
+                                        <span class="slider-value" style="color: ${amb.type === 'threat' ? '#f44336' : amb.type === 'regulated' ? '#1976d2' : '#4caf50'};">${amb.value}</span>
+                                    </div>
+                                    <input type="range" min="0" max="10" value="${amb.value}" 
+                                           onchange="updateAmbient(${amb.id}, 'value', this.value)"
+                                           ${amb.locked ? 'disabled' : ''}
+                                           style="background: ${getAmbientSliderGradient(amb.type, amb.value)}; ${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                                    <div class="slider-labels"><span>0 Not present</span><span>10 Very present</span></div>
+                                    
+                                    <label class="input-label" style="margin-top: 9px;">Type:</label>
+                                    <select onchange="updateAmbient(${amb.id}, 'type', this.value)" 
+                                            ${amb.locked ? 'disabled' : ''}
+                                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; ${amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : ''}">
+                                        <option value="threat" ${amb.type === 'threat' ? 'selected' : ''}>Threat Response (Dysregulated)</option>
+                                        <option value="regulated" ${amb.type === 'regulated' ? 'selected' : ''}>Grounded, calm, and approachable (Regulated)</option>
+                                        <option value="opportunity" ${amb.type === 'opportunity' ? 'selected' : ''}>Opportunity Responses</option>
+                                    </select>
                                 </div>
-                                <select onchange="updateAmbient(${i}, 'type', this.value)" 
-                                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; margin-bottom: 6px;">
-                                    ${state.ambientTypes.map(type => `
-                                        <option value="${type.id}" ${amb.type === type.id ? 'selected' : ''}>${type.dropdownLabel}</option>
-                                    `).join('')}
-                                </select>
                                 
-                                <label class="input-label">Note (required):</label>
-                                <textarea onchange="updateAmbient(${i}, 'note', this.value)"
-                                          placeholder="Brief description or context...">${amb.note}</textarea>
-                            ` : ''}
+                                <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 20px;">
+                                    <button class="btn" onclick="toggleAmbientLock(${amb.id})" 
+                                            style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ${amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;'}">
+                                        ${amb.locked ? 'Edit' : 'Save'}
+                                    </button>
+                                    <button class="btn" onclick="deleteAmbientSlider(${amb.id})" 
+                                            style="padding: 4px 8px; font-size: 11px; white-space: nowrap; background: #dc2626; color: white;">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     `).join('')}
-                    ` : ''}
+                    
+                    ${state.ambient.length < 6 ? `
+                        <button class="btn" onclick="addAmbientSlider()" 
+                                style="background: #9333ea; color: white; width: 100%; padding: 10px; margin-top: 9px;">
+                            + Add Topic
+                        </button>
+                    ` : `
+                        <div style="text-align: center; padding: 9px; color: #6b7280; font-style: italic; font-size: 13px;">
+                            Maximum of 6 internal experiences reached
+                        </div>
+                    `}
                 </div>
 
                 <div class="card">
                     <h2>Window of Tolerance Visualization</h2>
                     <div class="visualization" id="visualization">
-                        <div class="color-legend-container">
-                            <div class="color-legend">
-                                <div class="legend-labels">
-                                    <div class="legend-label-condensed">STRESS</div>
-                                    <div class="legend-label-condensed">STABLE</div>
-                                    <div class="legend-label-condensed">OPPORTUNITY</div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="color-legend"></div>
                         
                         <div class="zone-labels">
-                            <div class="zone-label ${state.zoneLabelsExpanded.threat ? 'expanded' : ''}">
-                                <div class="zone-label-title">
-                                    <span>🔴 Threat Response</span>
-                                    <button class="zone-toggle-btn" onclick="toggleZoneLabel('threat')">${state.zoneLabelsExpanded.threat ? '-' : '?'}</button>
-                                </div>
-                                <div class="zone-label-details">
-                                    Fear, anxiety, activated feelings, anger, hopelessness, powerlessness, threat of pain responses
-                                </div>
-                            </div>
-                            <div class="zone-label ${state.zoneLabelsExpanded.stable ? 'expanded' : ''}">
-                                <div class="zone-label-title">
-                                    <span>🔵 Regulated State</span>
-                                    <button class="zone-toggle-btn" onclick="toggleZoneLabel('stable')">${state.zoneLabelsExpanded.stable ? '-' : '?'}</button>
-                                </div>
-                                <div class="zone-label-details">
-                                    Grounded, calm, approachable, present
-                                </div>
-                            </div>
-                            <div class="zone-label ${state.zoneLabelsExpanded.opportunity ? 'expanded' : ''}">
-                                <div class="zone-label-title">
-                                    <span>🟢 Opportunity Response</span>
-                                    <button class="zone-toggle-btn" onclick="toggleZoneLabel('opportunity')">${state.zoneLabelsExpanded.opportunity ? '-' : '?'}</button>
-                                </div>
-                                <div class="zone-label-details">
-                                    Enthusiasm, joy, sexual feelings, hunger, expansiveness, freedom feelings
-                                </div>
-                            </div>
+                            <div class="zone-label">Threat Response (Dysregulated):<br>Fear, anxiety, activated feel, anger,<br>hopelessness, powerlessness,<br>and threat of pain responses</div>
+                            <div class="zone-label">Grounded, calm,<br>and approachable (Regulated)</div>
+                            <div class="zone-label">Opportunity Responses:<br>Enthusiasm, joy, sex, hunger,<br>expansiveness or freedom feelings</div>
                         </div>
 
                         <svg viewBox="0 0 600 300" preserveAspectRatio="none">
@@ -1893,29 +1415,22 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                         <div class="contributors-list contributors-threat" id="contributorsThreat"></div>
                         <div class="contributors-list contributors-opportunity" id="contributorsOpportunity"></div>
 
-                        <div class="ground-label">Window of Tolerance<br>Threat: ${threatLoad} | Neutral: ${neutralCount} | Opportunity: ${opportunityLoad}</div>
+                        <div class="ground-label">Window of Tolerance<br>Threat: ${threatLoad} | Regulated: ${regulatedLoad} | Opportunity: ${opportunityLoad}</div>
                     </div>
                 </div>
 
                 <div class="card" style="border: 2px solid #9333ea;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ${state.systemLoadVisible ? '12px' : '0'};">
-                        <h2 style="margin: 0;">System Load Summary</h2>
-                        <button class="btn btn-toggle" onclick="toggleSystemLoadVisibility()">
-                            ${state.systemLoadVisible ? '▲ Collapse' : '▼ Expand'}
-                        </button>
-                    </div>
-                    
-                    ${state.systemLoadVisible ? `
+                    <h2>System Load Summary</h2>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 12px 0;">
                         <div style="background: #fee2e2; padding: 9px; border-radius: 5px; text-align: center;">
                             <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Threat Load</div>
                             <div style="font-size: 28px; font-weight: bold; color: #dc2626;">${threatLoad}</div>
                             <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Dysregulated</div>
                         </div>
-                        <div style="background: #dbeafe; padding: 9px; border-radius: 5px; text-align: center;">
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Neutral Areas</div>
-                            <div style="font-size: 28px; font-weight: bold; color: #3b82f6;">${neutralCount}</div>
-                            <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Regulated</div>
+                        <div style="background: #e3f2fd; padding: 9px; border-radius: 5px; text-align: center;">
+                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Regulated Load</div>
+                            <div style="font-size: 28px; font-weight: bold; color: #1976d2;">${regulatedLoad}</div>
+                            <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Grounded</div>
                         </div>
                         <div style="background: #d1fae5; padding: 9px; border-radius: 5px; text-align: center;">
                             <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Opportunity Load</div>
@@ -1927,7 +1442,6 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                         <span class="status-icon">${status.icon}</span>
                         <span style="font-weight: 600;">${status.text}</span>
                     </div>
-                    ` : ''}
                 </div>
 
                 <div class="card" style="border: 2px solid #16a34a;">
@@ -1950,10 +1464,7 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                     
                     ${state.entries.length === 0 ? '<div style="text-align: center; padding: 36px 0; color: #6b7280;">No saved entries yet</div>' : `
                         <div style="max-height: 450px; overflow-y: auto;">
-                            ${state.entries.map(e => {
-                                const config = e.lifeAreasConfig || state.lifeAreasConfig;
-                                const types = e.ambientTypes || state.ambientTypes;
-                                return `
+                            ${state.entries.map(e => `
                                 <div class="entry-item">
                                     <div class="entry-timestamp">
                                         ${new Date(e.timestamp).toLocaleString()}
@@ -1966,9 +1477,9 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                                 <div style="font-size: 10px; color: #6b7280;">Threat</div>
                                                 <div style="font-size: 18px; font-weight: bold; color: #dc2626;">${e.threatLoad || 0}</div>
                                             </div>
-                                            <div style="background: #dbeafe; padding: 6px; border-radius: 4px; text-align: center;">
-                                                <div style="font-size: 10px; color: #6b7280;">Neutral</div>
-                                                <div style="font-size: 18px; font-weight: bold; color: #3b82f6;">${e.neutralCount || 0}</div>
+                                            <div style="background: #e3f2fd; padding: 6px; border-radius: 4px; text-align: center;">
+                                                <div style="font-size: 10px; color: #6b7280;">Regulated</div>
+                                                <div style="font-size: 18px; font-weight: bold; color: #1976d2;">${e.regulatedLoad || 0}</div>
                                             </div>
                                             <div style="background: #d1fae5; padding: 6px; border-radius: 4px; text-align: center;">
                                                 <div style="font-size: 10px; color: #6b7280;">Opportunity</div>
@@ -1980,10 +1491,14 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                     <div class="entry-section">
                                         <div class="entry-section-title">Life Areas (Total: ${e.lifeTotal})</div>
                                         <div class="entry-life-areas">
-                                            ${config.map(c => {
-                                                const value = -(e.lifeAreas[c.key] || 0);
-                                                return `<div>${c.label}: <strong>${value}</strong></div>`;
-                                            }).join('')}
+                                            <div>Mental: <strong>${e.lifeAreas.mental}</strong></div>
+                                            <div>Somatic/Body: <strong>${e.lifeAreas.somaticBody}</strong></div>
+                                            <div>Emotional: <strong>${e.lifeAreas.emotional}</strong></div>
+                                            <div>Housing/Comforts: <strong>${e.lifeAreas.housingComforts}</strong></div>
+                                            <div>Work/Income: <strong>${e.lifeAreas.workMoney}</strong></div>
+                                            <div>Money/Resources: <strong>${e.lifeAreas.moneyHandling || '00'}</strong></div>
+                                            <div>Personal Relations: <strong>${e.lifeAreas.spiritual}</strong></div>
+                                            <div>Spiritual Outlook: <strong>${e.lifeAreas.freedomLevel}</strong></div>
                                         </div>
                                     </div>
 
@@ -1992,9 +1507,14 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                         ${e.ambient.filter(a => a.value !== 0).length === 0 ? 
                                             '<div style="font-style: italic; color: #6b7280; font-size: 12px;">No internal experiences recorded</div>' :
                                             e.ambient.filter(a => a.value !== 0).map((a, i) => {
+                                                const typeLabels = {
+                                                    'threat': 'Threat Response',
+                                                    'regulated': 'Regulated/Grounded',
+                                                    'opportunity': 'Opportunity Response'
+                                                };
                                                 return `
                                                 <div class="entry-ambient">
-                                                    <div class="entry-ambient-header">[${a.value}/15] - ${getTypeLabel(a.type, types)}</div>
+                                                    <div class="entry-ambient-header">[${a.value}/10] - ${typeLabels[a.type] || a.type}</div>
                                                     <div class="entry-ambient-note">"${a.note}"</div>
                                                 </div>
                                             `;
@@ -2006,8 +1526,7 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                         Total Load: ${e.total} (${e.pct}%)
                                     </div>
                                 </div>
-                            `;
-                            }).join('')}
+                            `).join('')}
                         </div>
                     `}
                 </div>
@@ -2015,11 +1534,15 @@ Total Load: ${e.total} (${e.pct}%)\n`;
 
             document.getElementById('app').innerHTML = html;
             
-            setTimeout(() => updateVisualization(threatLoad, opportunityLoad, neutralCount), 0);
+            // Auto-resize section 2 description textarea if it exists
+            const section2Textarea = document.getElementById('section2DescTextarea');
+            if (section2Textarea) {
+                autoResizeTextarea(section2Textarea);
+            }
+            
+            setTimeout(() => updateVisualization(threatLoad, opportunityLoad, regulatedLoad), 0);
         }
 
-        // Initialize and render
-        initializeState();
         render();
     </script>
 </body>
