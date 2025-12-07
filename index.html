@@ -453,21 +453,27 @@
 
     <script>
         const state = {
+            selfCare: {
+                regulation: { value: 0, interacted: false, locked: true },
+                flexibility: { value: 0, interacted: false, locked: true }
+            },
             lifeAreas: { 
-                mental: { value: 0, locked: true, interacted: false },
-                spiritual: { value: 0, locked: true, interacted: false },
-                somaticBody: { value: 0, locked: true, interacted: false }, 
-                emotional: { value: 0, locked: true, interacted: false }, 
-                workMoney: { value: 0, locked: true, interacted: false },
-                moneyHandling: { value: 0, locked: true, interacted: false },
-                housingComforts: { value: 0, locked: true, interacted: false }, 
-                freedomLevel: { value: 0, locked: true, interacted: false }
+                mental: { value: 0, locked: true, interacted: false, visible: false },
+                spiritual: { value: 0, locked: true, interacted: false, visible: false },
+                somaticBody: { value: 0, locked: true, interacted: false, visible: false }, 
+                emotional: { value: 0, locked: true, interacted: false, visible: false },
+                homeImprovement: { value: 0, locked: true, interacted: false, visible: false },
+                workMoney: { value: 0, locked: true, interacted: false, visible: false },
+                moneyHandling: { value: 0, locked: true, interacted: false, visible: false },
+                housingComforts: { value: 0, locked: true, interacted: false, visible: false }, 
+                freedomLevel: { value: 0, locked: true, interacted: false, visible: false }
             },
             ambient: [
                 { id: Date.now(), value: 0, type: 'regulated', note: '', locked: false }
             ],
             entries: [],
             saveError: '',
+            section1Expanded: false,
             section2DescExpanded: false,
             section2DescText: localStorage.getItem('offload_section2_desc') || `Three types of internal responses:
 
@@ -484,6 +490,11 @@ You can add more detailed descriptions here. This text will be saved automatical
 
         function toggleSection2Desc() {
             state.section2DescExpanded = !state.section2DescExpanded;
+            render();
+        }
+
+        function toggleSection1() {
+            state.section1Expanded = !state.section1Expanded;
             render();
         }
 
@@ -538,8 +549,23 @@ You can add more detailed descriptions here. This text will be saved automatical
             }
         }
 
+        function getSelfCareSliderGradient() {
+            // Blue on positive side, gray in middle, yellow-orange-red on negative side
+            return 'linear-gradient(to right, #4488ff 0%, #bbdefb 30%, #d3d3d3 50%, #ffeb3b 65%, #ff9800 82.5%, #f44336 100%)';
+        }
+
         function toggleLifeAreaLock(key) {
             state.lifeAreas[key].locked = !state.lifeAreas[key].locked;
+            render();
+        }
+
+        function toggleLifeAreaVisible(key) {
+            state.lifeAreas[key].visible = !state.lifeAreas[key].visible;
+            render();
+        }
+
+        function toggleSelfCareLock(key) {
+            state.selfCare[key].locked = !state.selfCare[key].locked;
             render();
         }
 
@@ -605,25 +631,69 @@ You can add more detailed descriptions here. This text will be saved automatical
             let lifeTotal = 0;
             let lifeRegulatedContribution = 0;
             
-            // Process life areas with new scale - only if interacted
-            Object.values(state.lifeAreas).forEach(area => {
-                if (!area.interacted) return; // Skip non-interacted sliders
+            // Process self-care sliders - positive = regulated, negative = threat
+            Object.values(state.selfCare).forEach(slider => {
+                if (!slider.interacted) return;
                 
-                const val = area.value;
+                const val = slider.value;
                 if (val === 0) {
-                    // 00 (true center) = 0 contribution (neutral/inactive)
-                    // Do nothing
+                    // 00 (true center) = 0 contribution
                 } else if (val === -1 || val === 1) {
                     // 0 (one step either way) adds +1 to regulated
                     lifeRegulatedContribution += 1;
-                } else if (val < -1) {
-                    // Opportunity side: -7 to -2 becomes actual values +5 to +1
-                    const actualValue = Math.abs(val + 1);
-                    lifeTotal += actualValue; // Positive contribution (opportunity)
                 } else if (val > 1) {
-                    // Threat side: +7 to +2 becomes actual values -5 to -1
-                    const actualValue = -(val - 1);
-                    lifeTotal += actualValue; // Negative contribution (threat)
+                    // Positive side: regulated contribution
+                    const actualValue = val - 1; // +2 to +7 becomes 1 to 6
+                    lifeRegulatedContribution += actualValue;
+                } else if (val < -1) {
+                    // Negative side: threat contribution
+                    const actualValue = -(Math.abs(val) - 1); // -2 to -7 becomes -1 to -6
+                    lifeTotal += actualValue;
+                }
+            });
+            
+            // Process life areas with new scale - only if interacted
+            Object.values(state.lifeAreas).forEach((area, index) => {
+                if (!area.interacted) return; // Skip non-interacted sliders
+                
+                // Get the key for this area to check if it's housingComforts
+                const areaKey = Object.keys(state.lifeAreas)[index];
+                const isHousingComforts = areaKey === 'housingComforts';
+                
+                const val = area.value;
+                
+                if (isHousingComforts) {
+                    // housingComforts works like selfCare: positive = regulated, negative = threat
+                    if (val === 0) {
+                        // 00 (true center) = 0 contribution
+                    } else if (val === -1 || val === 1) {
+                        // 0 (one step either way) adds +1 to regulated
+                        lifeRegulatedContribution += 1;
+                    } else if (val > 1) {
+                        // Positive side: regulated contribution
+                        const actualValue = val - 1;
+                        lifeRegulatedContribution += actualValue;
+                    } else if (val < -1) {
+                        // Negative side: threat contribution
+                        const actualValue = -(Math.abs(val) - 1);
+                        lifeTotal += actualValue;
+                    }
+                } else {
+                    // All other life areas use opportunity/threat model
+                    if (val === 0) {
+                        // 00 (true center) = 0 contribution (neutral/inactive)
+                    } else if (val === -1 || val === 1) {
+                        // 0 (one step either way) adds +1 to regulated
+                        lifeRegulatedContribution += 1;
+                    } else if (val < -1) {
+                        // Opportunity side: -7 to -2 becomes actual values +5 to +1
+                        const actualValue = Math.abs(val + 1);
+                        lifeTotal += actualValue; // Positive contribution (opportunity)
+                    } else if (val > 1) {
+                        // Threat side: +7 to +2 becomes actual values -5 to -1
+                        const actualValue = -(val - 1);
+                        lifeTotal += actualValue; // Negative contribution (threat)
+                    }
                 }
             });
             
@@ -650,16 +720,37 @@ You can add more detailed descriptions here. This text will be saved automatical
         function getThreatLoad() {
             // Sum all threat values
             let threatTotal = 0;
+            let selfCareThreat = 0;
             let lifeAreaThreat = 0;
             let ambientThreat = 0;
             
-            Object.values(state.lifeAreas).forEach(area => {
+            // Self-care threat - only negative side
+            Object.values(state.selfCare).forEach(slider => {
+                if (!slider.interacted) return;
+                const val = slider.value;
+                if (val < -1) {
+                    // -2 to -7 becomes 1 to 6
+                    selfCareThreat += Math.abs(val) - 1;
+                }
+            });
+            
+            Object.values(state.lifeAreas).forEach((area, index) => {
                 if (!area.interacted) return; // Skip non-interacted sliders
                 
+                const areaKey = Object.keys(state.lifeAreas)[index];
+                const isHousingComforts = areaKey === 'housingComforts';
                 const val = area.value;
-                if (val > 1) {
-                    // Threat side: +7 to +2 becomes actual values 5 to 1
-                    lifeAreaThreat += (val - 1);
+                
+                if (isHousingComforts) {
+                    // housingComforts: negative side = threat
+                    if (val < -1) {
+                        lifeAreaThreat += Math.abs(val) - 1;
+                    }
+                } else {
+                    // Other areas: positive side = threat
+                    if (val > 1) {
+                        lifeAreaThreat += (val - 1);
+                    }
                 }
             });
             
@@ -670,8 +761,8 @@ You can add more detailed descriptions here. This text will be saved automatical
                 }
             });
             
-            threatTotal = lifeAreaThreat + ambientThreat;
-            console.log('Threat Load - Life:', lifeAreaThreat, 'Ambient:', ambientThreat, 'Total:', threatTotal);
+            threatTotal = selfCareThreat + lifeAreaThreat + ambientThreat;
+            console.log('Threat Load - SelfCare:', selfCareThreat, 'Life:', lifeAreaThreat, 'Ambient:', ambientThreat, 'Total:', threatTotal);
             return threatTotal;
         }
 
@@ -681,11 +772,17 @@ You can add more detailed descriptions here. This text will be saved automatical
             let lifeAreaOpp = 0;
             let ambientOpp = 0;
             
-            Object.values(state.lifeAreas).forEach(area => {
+            // Self-care does NOT contribute to opportunity
+            
+            Object.values(state.lifeAreas).forEach((area, index) => {
                 if (!area.interacted) return; // Skip non-interacted sliders
                 
+                const areaKey = Object.keys(state.lifeAreas)[index];
+                const isHousingComforts = areaKey === 'housingComforts';
                 const val = area.value;
-                if (val < -1) {
+                
+                // housingComforts doesn't contribute to opportunity (it goes to regulated instead)
+                if (!isHousingComforts && val < -1) {
                     // Opportunity side: -7 to -2 becomes actual values 5 to 1
                     lifeAreaOpp += Math.abs(val + 1);
                 }
@@ -707,16 +804,40 @@ You can add more detailed descriptions here. This text will be saved automatical
             // Sum all regulated values (from ambient AND from life areas at 0)
             let regulatedTotal = 0;
             
+            // Self-care contribution - positive side goes to regulated
+            Object.values(state.selfCare).forEach(slider => {
+                if (!slider.interacted) return;
+                const val = slider.value;
+                if (val === -1 || val === 1) {
+                    regulatedTotal += 1; // 0 adds +1
+                } else if (val > 1) {
+                    // Positive side: +2 to +7 becomes 1 to 6
+                    regulatedTotal += (val - 1);
+                }
+            });
+            
             // Life areas contribution - only if interacted
-            Object.values(state.lifeAreas).forEach(area => {
+            Object.values(state.lifeAreas).forEach((area, index) => {
                 if (!area.interacted) return; // Skip non-interacted sliders
                 
+                const areaKey = Object.keys(state.lifeAreas)[index];
+                const isHousingComforts = areaKey === 'housingComforts';
                 const val = area.value;
-                if (val === 0) {
-                    // 00 = 0 contribution (neutral/inactive)
-                    // Do nothing
-                } else if (val === -1 || val === 1) {
-                    regulatedTotal += 1; // 0 adds +1
+                
+                if (isHousingComforts) {
+                    // housingComforts: positive side = regulated
+                    if (val === -1 || val === 1) {
+                        regulatedTotal += 1; // 0 adds +1
+                    } else if (val > 1) {
+                        regulatedTotal += (val - 1);
+                    }
+                } else {
+                    // Other areas: only 0 positions contribute to regulated
+                    if (val === 0) {
+                        // 00 = 0 contribution (neutral/inactive)
+                    } else if (val === -1 || val === 1) {
+                        regulatedTotal += 1; // 0 adds +1
+                    }
                 }
             });
             
@@ -748,7 +869,13 @@ You can add more detailed descriptions here. This text will be saved automatical
         }
 
         function updateSlider(category, key, value) {
-            if (category === 'life') {
+            if (category === 'selfCare') {
+                if (!state.selfCare[key].locked) {
+                    state.selfCare[key].value = parseInt(value);
+                    state.selfCare[key].interacted = true;
+                    render();
+                }
+            } else if (category === 'life') {
                 if (!state.lifeAreas[key].locked) {
                     state.lifeAreas[key].value = parseInt(value);
                     state.lifeAreas[key].interacted = true;
@@ -941,46 +1068,74 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             const bottomGateFactor = bottomGateHeight / height; // 0 to 0.48
             const regulatedFactor = regulatedLoad / 30; // 0 to 1 (assuming max regulated is 30)
             
-            let r, g, b;
+            // THREE INDEPENDENT ZONES
+            // Calculate intensity factors for each zone
+            const maxThreatForColor = 40;
+            const maxOppForColor = 40;
+            const maxRegForColor = 30;
             
-            // If there's significant regulated load, bias toward blue
-            if (regulatedFactor > 0.2) {
-                // More regulated = more blue, less responsive to gates
-                const blueIntensity = Math.min(regulatedFactor * 1.5, 1); // 0 to 1
-                r = Math.round(68 + ((1 - blueIntensity) * 50));
-                g = Math.round(136 + ((1 - blueIntensity) * 50));
-                b = Math.round(255);
-            } else if (topGateFactor > bottomGateFactor) {
-                // Threat is dominant - blend from blue toward red/yellow
-                const threatIntensity = topGateFactor * 2.2; // Amplify (0 to ~1)
-                if (threatIntensity < 0.5) {
-                    // Blue to yellow transition
-                    const factor = threatIntensity * 2;
-                    r = Math.round(68 + (187 * factor)); // 68 to 255
-                    g = Math.round(136 + (100 * factor)); // 136 to 236
-                    b = Math.round(255 - (155 * factor)); // 255 to 100
-                } else {
-                    // Yellow to red transition
-                    const factor = (threatIntensity - 0.5) * 2;
-                    r = 255;
-                    g = Math.round(236 - (136 * factor)); // 236 to 100
-                    b = Math.round(100 - (100 * factor)); // 100 to 0
-                }
-            } else if (bottomGateFactor > topGateFactor) {
-                // Opportunity is dominant - blend from blue toward green
-                const oppIntensity = bottomGateFactor * 2.2; // Amplify (0 to ~1)
-                const factor = Math.min(oppIntensity, 1);
-                r = Math.round(68 - (0 * factor)); // Stay at 68
-                g = Math.round(136 + (119 * factor)); // 136 to 255
-                b = Math.round(255 - (187 * factor)); // 255 to 68
+            const threatIntensity = Math.min(threatLoad / maxThreatForColor, 1);
+            const opportunityIntensity = Math.min(opportunityLoad / maxOppForColor, 1);
+            const regulatedIntensity = Math.min(regulatedLoad / maxRegForColor, 1);
+            
+            // THREAT ZONE (top) - Yellow → Orange → Red
+            let threatR, threatG, threatB;
+            if (threatIntensity === 0) {
+                // No threat = light yellow/pale
+                threatR = 255; threatG = 250; threatB = 220;
+            } else if (threatIntensity < 0.5) {
+                // Yellow to Orange
+                const factor = threatIntensity * 2; // 0 to 1
+                threatR = 255;
+                threatG = Math.round(235 - (83 * factor)); // 235 to 152
+                threatB = Math.round(59 - (59 * factor)); // 59 to 0
             } else {
-                // Balanced or both low - stay blue
-                r = 68;
-                g = 136;
-                b = 255;
+                // Orange to Red
+                const factor = (threatIntensity - 0.5) * 2; // 0 to 1
+                threatR = 255;
+                threatG = Math.round(152 - (84 * factor)); // 152 to 68
+                threatB = 0;
             }
             
-            visualization.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            // RIVER ZONE (middle) - Blue/Gray scale
+            let riverR, riverG, riverB;
+            if (regulatedIntensity === 0) {
+                // No regulated = gray
+                riverR = 180; riverG = 180; riverB = 180;
+            } else {
+                // Gray to Blue
+                riverR = Math.round(180 - (112 * regulatedIntensity)); // 180 to 68
+                riverG = Math.round(180 - (44 * regulatedIntensity)); // 180 to 136
+                riverB = Math.round(180 + (75 * regulatedIntensity)); // 180 to 255
+            }
+            
+            // OPPORTUNITY ZONE (bottom) - Light green → Green → Yellow
+            let oppR, oppG, oppB;
+            if (opportunityIntensity === 0) {
+                // No opportunity = very pale green
+                oppR = 230; oppG = 250; oppB = 230;
+            } else if (opportunityIntensity < 0.5) {
+                // Light green to Green
+                const factor = opportunityIntensity * 2; // 0 to 1
+                oppR = Math.round(200 - (132 * factor)); // 200 to 68
+                oppG = Math.round(230 - (25 * factor)); // 230 to 205
+                oppB = Math.round(200 - (132 * factor)); // 200 to 68
+            } else {
+                // Green to Yellow-green
+                const factor = (opportunityIntensity - 0.5) * 2; // 0 to 1
+                oppR = Math.round(68 + (137 * factor)); // 68 to 205
+                oppG = Math.round(205 + (30 * factor)); // 205 to 235
+                oppB = Math.round(68 - (9 * factor)); // 68 to 59
+            }
+            
+            // Create gradient background with three zones
+            visualization.style.background = `linear-gradient(to bottom, 
+                rgb(${threatR}, ${threatG}, ${threatB}) 0%, 
+                rgb(${threatR}, ${threatG}, ${threatB}) ${(topGateHeight / height) * 100}%, 
+                rgb(${riverR}, ${riverG}, ${riverB}) ${(topGateHeight / height) * 100}%, 
+                rgb(${riverR}, ${riverG}, ${riverB}) ${((height - bottomGateHeight) / height) * 100}%, 
+                rgb(${oppR}, ${oppG}, ${oppB}) ${((height - bottomGateHeight) / height) * 100}%, 
+                rgb(${oppR}, ${oppG}, ${oppB}) 100%)`;
             
             // River channel flows through available space between gates
             // Regulated load makes the river wider
@@ -1057,11 +1212,17 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             
             if (!contributorsThreat || !contributorsOpportunity || !neutralList) return;
             
+            const selfCareLabels = {
+                regulation: 'Recent Regulation State',
+                flexibility: 'Flexibility to Disengage'
+            };
+            
             const lifeAreasLabels = {
                 mental: 'Mental Activity',
                 somaticBody: 'Somatic &/or Body',
                 emotional: 'Emotional',
-                housingComforts: 'Housing & Creature Comforts',
+                homeImprovement: 'Home Improvement Efforts',
+                housingComforts: 'Self Care Supports',
                 workMoney: 'Work Experiences & Income Generation',
                 moneyHandling: 'Money & Resource Handling',
                 spiritual: 'Personal Relationships or Interactions',
@@ -1078,20 +1239,51 @@ Total Load: ${e.total} (${e.pct}%)\n`;
             let opportunityItems = [];
             let regulatedItems = [];
             
+            // Collect self-care contributors - positive = regulated, negative = threat
+            Object.entries(state.selfCare).forEach(([key, slider]) => {
+                if (!slider.interacted) return;
+                
+                const val = slider.value;
+                if (val < -1) {
+                    // Negative side = threat
+                    threatItems.push({ label: selfCareLabels[key], value: Math.abs(val) - 1 });
+                } else if (val === -1 || val === 1) {
+                    // 0 position = regulated
+                    regulatedItems.push({ label: selfCareLabels[key], value: 1 });
+                } else if (val > 1) {
+                    // Positive side = regulated
+                    regulatedItems.push({ label: selfCareLabels[key], value: val - 1 });
+                }
+            });
+            
             // Collect life area contributors - only if interacted
             Object.entries(state.lifeAreas).forEach(([key, area]) => {
                 if (!area.interacted) return; // Skip non-interacted sliders
                 
+                const isHousingComforts = key === 'housingComforts';
                 const val = area.value;
-                if (val > 1) {
-                    // Threat side
-                    threatItems.push({ label: lifeAreasLabels[key], value: val - 1 });
-                } else if (val < -1) {
-                    // Opportunity side
-                    opportunityItems.push({ label: lifeAreasLabels[key], value: Math.abs(val + 1) });
-                } else if (val === -1 || val === 1) {
-                    // 0 = +1 regulated
-                    regulatedItems.push({ label: lifeAreasLabels[key], value: 1 });
+                
+                if (isHousingComforts) {
+                    // housingComforts works like selfCare: positive = regulated, negative = threat
+                    if (val < -1) {
+                        threatItems.push({ label: lifeAreasLabels[key], value: Math.abs(val) - 1 });
+                    } else if (val === -1 || val === 1) {
+                        regulatedItems.push({ label: lifeAreasLabels[key], value: 1 });
+                    } else if (val > 1) {
+                        regulatedItems.push({ label: lifeAreasLabels[key], value: val - 1 });
+                    }
+                } else {
+                    // Other areas use opportunity/threat model
+                    if (val > 1) {
+                        // Threat side
+                        threatItems.push({ label: lifeAreasLabels[key], value: val - 1 });
+                    } else if (val < -1) {
+                        // Opportunity side
+                        opportunityItems.push({ label: lifeAreasLabels[key], value: Math.abs(val + 1) });
+                    } else if (val === -1 || val === 1) {
+                        // 0 = +1 regulated
+                        regulatedItems.push({ label: lifeAreasLabels[key], value: 1 });
+                    }
                 }
                 // 00 (val === 0) contributes nothing
             });
@@ -1162,12 +1354,21 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                 { key: 'mental', label: 'Mental Activity' },
                 { key: 'somaticBody', label: 'Somatic &/or Body' },
                 { key: 'emotional', label: 'Emotional' },
-                { key: 'housingComforts', label: 'Housing & Creature Comforts' },
+                { key: 'homeImprovement', label: 'Home Improvement Efforts' },
+                { key: 'housingComforts', label: 'Self Care Supports like enjoying creature comforts, gentle hobbies, or gentle socializing' },
                 { key: 'workMoney', label: 'Work Experiences & Income Generation' },
                 { key: 'moneyHandling', label: 'Money & Resource Handling' },
                 { key: 'spiritual', label: 'Personal Relationships or Interactions' },
                 { key: 'freedomLevel', label: 'Spiritual Level Outlook' }
             ];
+            
+            // Sort so visible areas come first, hidden areas at bottom
+            const sortedLifeAreas = lifeAreasConfig.sort((a, b) => {
+                const aVisible = state.lifeAreas[a.key].visible;
+                const bVisible = state.lifeAreas[b.key].visible;
+                if (aVisible === bVisible) return 0;
+                return aVisible ? -1 : 1; // visible items first
+            });
 
             const html = `
                 <div class="card header">
@@ -1191,11 +1392,69 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                     </div>
                 </div>
 
-                <div class="card section-blue">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
-                        <h2 style="margin: 0;">1. Current Life Areas (How big or small are your internal experiences, are they good, bad, or neutral?)</h2>
+                <div class="card" style="border-left: 4px solid #16a34a;">
+                    <h2>Self-Care Check-In</h2>
+                    <div class="subtitle" style="margin-bottom: 12px;"><em>Foundation assessment - always visible</em></div>
+                    
+                    <div class="slider-container">
+                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <div class="slider-header" style="margin-bottom: 0;">
+                                    <span class="slider-label" style="font-size: 13px;">How regulated or dysregulated have things been for you in the past few days?</span>
+                                    <span class="slider-value" style="color: ${getSliderColor(-state.selfCare.regulation.value)};">${getLifeAreaDisplayValue(state.selfCare.regulation.value)}</span>
+                                </div>
+                            </div>
+                            <button class="btn" onclick="toggleSelfCareLock('regulation')" 
+                                    style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ${state.selfCare.regulation.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;'}">
+                                ${state.selfCare.regulation.locked ? 'Unlock' : 'Lock'}
+                            </button>
+                        </div>
+                        <div class="slider-labels">
+                            <span>+5 Consistently regulated</span>
+                            <span>0 Mixed</span>
+                            <span>-5 Dysregulated</span>
+                        </div>
+                        <input type="range" min="-7" max="7" value="${state.selfCare.regulation.value}" 
+                               onchange="updateSlider('selfCare', 'regulation', this.value)"
+                               ${state.selfCare.regulation.locked ? 'disabled' : ''}
+                               style="background: ${getSelfCareSliderGradient()}; ${state.selfCare.regulation.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
                     </div>
                     
+                    <div class="slider-container">
+                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <div class="slider-header" style="margin-bottom: 0;">
+                                    <span class="slider-label" style="font-size: 13px;">How much flexibility do you have to stay disengaged from "productive efforts"?</span>
+                                    <span class="slider-value" style="color: ${getSliderColor(-state.selfCare.flexibility.value)};">${getLifeAreaDisplayValue(state.selfCare.flexibility.value)}</span>
+                                </div>
+                            </div>
+                            <button class="btn" onclick="toggleSelfCareLock('flexibility')" 
+                                    style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ${state.selfCare.flexibility.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;'}">
+                                ${state.selfCare.flexibility.locked ? 'Unlock' : 'Lock'}
+                            </button>
+                        </div>
+                        <div class="slider-labels">
+                            <span>+5 Complete freedom</span>
+                            <span>0 Some flexibility</span>
+                            <span>-5 Locked in</span>
+                        </div>
+                        <input type="range" min="-7" max="7" value="${state.selfCare.flexibility.value}" 
+                               onchange="updateSlider('selfCare', 'flexibility', this.value)"
+                               ${state.selfCare.flexibility.locked ? 'disabled' : ''}
+                               style="background: ${getSelfCareSliderGradient()}; ${state.selfCare.flexibility.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                    </div>
+                </div>
+
+                <div class="card section-blue">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
+                        <h2 style="margin: 0;">1. General Scan (for if you are bored or curious)</h2>
+                        <button class="btn" onclick="toggleSection1()" 
+                                style="padding: 6px 12px; font-size: 12px; background: #3b82f6; color: white;">
+                            ${state.section1Expanded ? 'Hide ▲' : 'Expand ▼'}
+                        </button>
+                    </div>
+                    
+                    ${state.section1Expanded ? `
                     <div class="meta-layer">
                         <div class="meta-labels">
                             <div class="meta-label">Regulated Opportunity Responses</div>
@@ -1214,10 +1473,11 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                             <div class="divider-line divider-right"></div>
                         </div>
                     
-                    ${lifeAreasConfig.map(({ key, label }) => {
+                    ${sortedLifeAreas.map(({ key, label }) => {
                         const area = state.lifeAreas[key];
                         const isMental = key === 'mental';
                         const isSomatic = key === 'somaticBody';
+                        const isHomeImprovement = key === 'homeImprovement';
                         const isHousing = key === 'housingComforts';
                         const isWorkMoney = key === 'workMoney';
                         const isMoneyHandling = key === 'moneyHandling';
@@ -1234,10 +1494,14 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                             positiveLabel = '+5 Calm, relaxed, can easily tolerate discomforts';
                             neutralLabel = '0 Able to force tolerating discomforts while resting/relaxing';
                             negativeLabel = '-5 Body aches/pains or other physical symptoms';
+                        } else if (isHomeImprovement) {
+                            positiveLabel = '+5 Enjoying creative home projects, satisfying progress';
+                            neutralLabel = '0 Neutral about home maintenance';
+                            negativeLabel = '-5 Pressured by overdue repairs, overwhelming obligations';
                         } else if (isHousing) {
-                            positiveLabel = '+5 Able to embrace, enjoy, or appreciate simple creature comforts';
-                            neutralLabel = '0 Deeply Calm (Regulated)';
-                            negativeLabel = '-5 Pressure to pursue or engage in home improvement projects';
+                            positiveLabel = '+5 Enjoying restorative activities, gentle connection';
+                            neutralLabel = '0 Neutral or mixed feelings about self-care';
+                            negativeLabel = '-5 Avoiding rest, isolated, depleted';
                         } else if (isWorkMoney) {
                             positiveLabel = '+5 A calmable enthusiasm for work/money related tasks';
                             neutralLabel = '0 Have some willingness to pursue/engage in income generating efforts';
@@ -1261,7 +1525,16 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                         }
                         
                         return `
-                        <div class="slider-container">
+                        <div class="slider-container" style="${!area.visible ? 'padding: 4px 10px; background: #f3f4f6; margin-bottom: 4px;' : ''}">
+                            ${!area.visible ? `
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 12px; color: #6b7280; font-weight: 500;">${label}</span>
+                                    <button class="btn" onclick="toggleLifeAreaVisible('${key}')" 
+                                            style="padding: 3px 6px; font-size: 10px; background: #6b7280; color: white;">
+                                        Show
+                                    </button>
+                                </div>
+                            ` : `
                             <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px;">
                                 <div style="flex: 1;">
                                     <div class="slider-header" style="margin-bottom: 0;">
@@ -1270,6 +1543,10 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                     </div>
                                 </div>
                                 <div style="display: flex; gap: 4px;">
+                                    <button class="btn" onclick="toggleLifeAreaVisible('${key}')" 
+                                            style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">
+                                        Hide
+                                    </button>
                                     <button class="btn" onclick="toggleLifeAreaLock('${key}')" 
                                             style="padding: 4px 8px; font-size: 11px; ${area.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;'}">
                                         ${area.locked ? 'Unlock' : 'Lock'}
@@ -1280,7 +1557,8 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                             <input type="range" min="-7" max="7" value="${area.value}" 
                                    onchange="updateSlider('life', '${key}', this.value)"
                                    ${area.locked ? 'disabled' : ''}
-                                   style="background: linear-gradient(to right, #64ff64 0%, #4488ff 50%, #ffaa44 75%, #ff4444 100%); ${area.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                                   style="background: ${key === 'housingComforts' ? getSelfCareSliderGradient() : 'linear-gradient(to right, #64ff64 0%, #4488ff 50%, #ffaa44 75%, #ff4444 100%)'}; ${area.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                            `}
                         </div>
                     `;
                     }).join('')}
@@ -1290,11 +1568,16 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                     <div class="subtotal">
                         <div class="subtotal-text">Life Areas Net: ${lifeTotal} (negative = draining, positive = energizing)</div>
                     </div>
+                    ` : `
+                    <div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">
+                        Click "Expand" to check in on life areas
+                    </div>
+                    `}
                 </div>
 
                 <div class="card section-purple">
-                    <h2>2. Specific Internal Experiences (Emotions, Vibes, Somatic/Bodily Activity) (0-10 each)</h2>
-                    <div class="subtitle"><em>Rate and describe what you're carrying internally</em></div>
+                    <h2>2. Specific Experience or Topic Offloading</h2>
+                    <div class="subtitle"><em>Rate and describe what you're carrying internally (0-10 each)</em></div>
                     
                     <div class="examples-box">
                         ${!state.section2DescExpanded ? `
