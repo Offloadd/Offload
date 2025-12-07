@@ -1329,17 +1329,17 @@ Total Load: ${e.total} (${e.pct}%)\n`;
 
                     ${state.ambient.map((amb, i) => `
                         <div class="slider-container" style="position: relative;">
-                            <div style="display: flex; gap: 8px; align-items: flex-start;">
-                                <div style="flex: 1;">
-                                    <div style="display: flex; gap: 8px; margin-bottom: 9px;">
-                                        <div style="flex: 0 0 60%;">
+                            <div style="display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 250px;">
+                                    <div style="display: flex; gap: 8px; margin-bottom: 9px; flex-wrap: wrap;">
+                                        <div style="flex: 1 1 60%; min-width: 200px;">
                                             <label class="input-label">Note/Description:</label>
                                             <textarea onchange="updateAmbient(${amb.id}, 'note', this.value)"
                                                       placeholder="Brief description or context..."
                                                       ${amb.locked ? 'disabled' : ''}
                                                       style="width: 100%; min-height: 60px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; font-family: inherit; resize: none; ${amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : ''}">${amb.note}</textarea>
                                         </div>
-                                        <div style="flex: 0 0 40%;">
+                                        <div style="flex: 1 1 35%; min-width: 150px;">
                                             <label class="input-label">Type:</label>
                                             <div style="display: flex; gap: 4px;">
                                                 <button onclick="updateAmbient(${amb.id}, 'type', 'threat')" 
@@ -1350,12 +1350,12 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                                 <button onclick="updateAmbient(${amb.id}, 'type', 'regulated')" 
                                                         ${amb.locked ? 'disabled' : ''}
                                                         style="flex: 1; padding: 6px 4px; border: 2px solid #1976d2; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${amb.type === 'regulated' ? 'background: #1976d2; color: white;' : 'background: white; color: #1976d2;'} ${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
-                                                    Regulated
+                                                    Reg
                                                 </button>
                                                 <button onclick="updateAmbient(${amb.id}, 'type', 'opportunity')" 
                                                         ${amb.locked ? 'disabled' : ''}
                                                         style="flex: 1; padding: 6px 4px; border: 2px solid #4caf50; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${amb.type === 'opportunity' ? 'background: #4caf50; color: white;' : 'background: white; color: #4caf50;'} ${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
-                                                    Opportunity
+                                                    Opp
                                                 </button>
                                             </div>
                                         </div>
@@ -1372,14 +1372,14 @@ Total Load: ${e.total} (${e.pct}%)\n`;
                                     <div class="slider-labels"><span>0 Not present</span><span>10 Very present</span></div>
                                 </div>
                                 
-                                <div style="display: flex; flex-direction: column; gap: 4px; align-self: flex-end; margin-bottom: 3px;">
+                                <div style="display: flex; gap: 4px; align-self: flex-end; margin-bottom: 3px;">
                                     <button class="btn" onclick="toggleAmbientLock(${amb.id})" 
                                             style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ${amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;'}">
                                         ${amb.locked ? 'Edit' : 'Save'}
                                     </button>
                                     <button class="btn" onclick="deleteAmbientSlider(${amb.id})" 
                                             style="padding: 4px 8px; font-size: 11px; white-space: nowrap; background: #dc2626; color: white;">
-                                        Delete
+                                        Del
                                     </button>
                                 </div>
                             </div>
