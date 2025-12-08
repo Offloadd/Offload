@@ -582,20 +582,21 @@ function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
     
     const height = 300;
     const maxLoad = 50; // Max possible load on either end
+    const minGateHeight = 15; // Minimum height for gates so they never fully close
     
     // Calculate raw gate heights - each can go up to 90%
-    let topGateHeight = Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9);
-    let bottomGateHeight = Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9);
+    let topGateHeight = Math.max(minGateHeight, Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9));
+    let bottomGateHeight = Math.max(minGateHeight, Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9));
     
     // Ensure combined gates never exceed 90% of total height
     const combinedHeight = topGateHeight + bottomGateHeight;
     const maxCombined = height * 0.9;
     
     if (combinedHeight > maxCombined) {
-        // Scale both gates down proportionally
+        // Scale both gates down proportionally, but keep minimum heights
         const scaleFactor = maxCombined / combinedHeight;
-        topGateHeight = topGateHeight * scaleFactor;
-        bottomGateHeight = bottomGateHeight * scaleFactor;
+        topGateHeight = Math.max(minGateHeight, topGateHeight * scaleFactor);
+        bottomGateHeight = Math.max(minGateHeight, bottomGateHeight * scaleFactor);
     }
     
     gateShapeTop.style.height = topGateHeight + 'px';
@@ -692,25 +693,27 @@ function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
     
     // Calculate channel width with regulated load bonus
     const spaceFactor = availableSpace / height;
-    const maxChannelWidth = height * 0.5;
-    const minChannelWidth = height * 0.08;
+    const maxChannelWidth = riverHeight * 0.95; // Max 95% of available space
+    const minChannelWidth = Math.min(riverHeight * 0.3, 30); // At least 30% or 30px
     
     // Base channel width
     let channelWidth = minChannelWidth + (spaceFactor * (maxChannelWidth - minChannelWidth));
     
-    // Add regulated bonus - up to 20% wider
-    const regulatedBonus = regulatedFactor * (height * 0.2);
-    channelWidth = Math.min(channelWidth + regulatedBonus, riverHeight * 0.95);
+    // Add regulated bonus - up to 30% wider
+    const regulatedBonus = regulatedFactor * (riverHeight * 0.3);
+    channelWidth = Math.min(channelWidth + regulatedBonus, maxChannelWidth);
     
     const waterWidth = channelWidth * 0.85;
     
-    // Center the channel in the available space between gates
-    const channelTopY = riverTop + Math.max(0, (riverHeight - channelWidth) / 2);
-    const channelBottomY = channelTopY + channelWidth;
+    // FIXED: River touches gate edges exactly - no centering, no gaps
+    const channelTopY = riverTop;  // Start exactly where top gate ends
+    const channelBottomY = riverBottom;  // End exactly where bottom gate starts
+    const actualChannelHeight = channelBottomY - channelTopY;
     
     const channelPath = `M 0,${channelTopY} L ${width},${channelTopY} L ${width},${channelBottomY} L 0,${channelBottomY} Z`;
     
-    const waterTopY = channelTopY + (channelWidth - waterWidth) / 2;
+    // Water centered within the full channel
+    const waterTopY = channelTopY + (actualChannelHeight - waterWidth) / 2;
     const waterBottomY = waterTopY + waterWidth;
     const waterPath = `M 0,${waterTopY} L ${width},${waterTopY} L ${width},${waterBottomY} L 0,${waterBottomY} Z`;
     
