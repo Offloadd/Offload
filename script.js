@@ -21,6 +21,15 @@ const state = {
     saveError: '',
     section1Expanded: false,
     section2DescExpanded: false,
+    instructionsExpanded: false,
+    titleDescText: localStorage.getItem('offload_title_desc') || 'A nervous system validation companion for tracking your internal state.',
+    instructionsText: localStorage.getItem('offload_instructions') || `Instructions:
+
+1. Start with the Self-Care Check-In sliders at the top
+2. Expand "General Scan" if you want to check specific life areas
+3. Use "Specific Experience" section to offload what you're carrying
+4. Watch the visualization show your window of tolerance
+5. Save entries to track patterns over time`,
     section2DescText: localStorage.getItem('offload_section2_desc') || `Three types of internal responses:
 
 THREAT RESPONSE (DYSREGULATED): Fear, anxiety, activated feel, anger, hopelessness, powerlessness, and threat of pain responses
@@ -39,9 +48,24 @@ function toggleSection2Desc() {
     render();
 }
 
+function toggleInstructions() {
+    state.instructionsExpanded = !state.instructionsExpanded;
+    render();
+}
+
 function toggleSection1() {
     state.section1Expanded = !state.section1Expanded;
     render();
+}
+
+function updateTitleDesc(text) {
+    state.titleDescText = text;
+    localStorage.setItem('offload_title_desc', text);
+}
+
+function updateInstructions(text) {
+    state.instructionsText = text;
+    localStorage.setItem('offload_instructions', text);
 }
 
 function updateSection2Desc(text) {
@@ -924,8 +948,35 @@ function render() {
 
     const html = `
         <div class="card header">
-            <h1>Offload: A nervous system validation companion</h1>
-            <div class="subtitle">(Based on the concepts of Polyvagal Theory, Shadow Work, Window of Tolerance, Inner Child Work, and RAS and default mode reprogramming)<br><em style="font-size: 11px; color: #9333ea;">Saves to Google Sheets</em></div>
+            <h1>Offload</h1>
+            <textarea id="titleDescTextarea" 
+                      onchange="updateTitleDesc(this.value)" 
+                      oninput="autoResizeTextarea(this)"
+                      style="width: 100%; min-height: 40px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; font-family: inherit; line-height: 1.5; resize: none; overflow: hidden; margin-top: 8px;">${state.titleDescText}</textarea>
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
+                <h2 style="margin: 0;">Instructions</h2>
+                <button class="btn" onclick="toggleInstructions()" 
+                        style="padding: 6px 12px; font-size: 12px; background: #6b7280; color: white;">
+                    ${state.instructionsExpanded ? 'Hide ▲' : 'Show ▼'}
+                </button>
+            </div>
+            
+            ${state.instructionsExpanded ? `
+                <textarea id="instructionsTextarea" 
+                          onchange="updateInstructions(this.value)" 
+                          oninput="autoResizeTextarea(this)"
+                          style="width: 100%; min-height: 120px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; font-family: inherit; line-height: 1.5; resize: none; overflow: hidden;">${state.instructionsText}</textarea>
+                <div style="font-size: 11px; color: #6b7280; margin-top: 3px; font-style: italic;">
+                    Changes are saved automatically
+                </div>
+            ` : `
+                <div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">
+                    Click "Show" to view or edit instructions
+                </div>
+            `}
         </div>
 
         <div class="card">
@@ -1236,12 +1287,19 @@ function render() {
         <div class="card">
             <h2>Window of Tolerance Visualization</h2>
             <div class="visualization" id="visualization">
-                <div class="color-legend"></div>
-                
-                <div class="zone-labels">
-                    <div class="zone-label">Threat Response<br>(Dysregulated):<br>Fear, anxiety, activated feel,<br>anger, hopelessness,<br>powerlessness,<br>and threat of pain responses</div>
-                    <div class="zone-label">Grounded, calm,<br>and approachable<br>(Regulated)</div>
-                    <div class="zone-label">Opportunity Responses:<br>Enthusiasm, joy, sex,<br>hunger, expansiveness<br>or freedom feelings</div>
+                <div class="color-legend">
+                    <div class="legend-section legend-section-1">
+                        <div class="legend-text">High Stress<br>Overwhelm<br>Red</div>
+                    </div>
+                    <div class="legend-section legend-section-2">
+                        <div class="legend-text">Mid Stress<br>Worry<br>Orange</div>
+                    </div>
+                    <div class="legend-section legend-section-3">
+                        <div class="legend-text">Calm Focus<br>Regulated<br>Blue</div>
+                    </div>
+                    <div class="legend-section legend-section-4">
+                        <div class="legend-text">Opportunity<br>Broad<br>Green</div>
+                    </div>
                 </div>
 
                 <svg viewBox="0 0 600 300" preserveAspectRatio="none">
@@ -1394,7 +1452,17 @@ function render() {
 
     document.getElementById('app').innerHTML = html;
     
-    // Auto-resize section 2 description textarea if it exists
+    // Auto-resize all textareas
+    const titleDescTextarea = document.getElementById('titleDescTextarea');
+    if (titleDescTextarea) {
+        autoResizeTextarea(titleDescTextarea);
+    }
+    
+    const instructionsTextarea = document.getElementById('instructionsTextarea');
+    if (instructionsTextarea) {
+        autoResizeTextarea(instructionsTextarea);
+    }
+    
     const section2Textarea = document.getElementById('section2DescTextarea');
     if (section2Textarea) {
         autoResizeTextarea(section2Textarea);
