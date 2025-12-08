@@ -1239,9 +1239,9 @@ function render() {
                 <div class="color-legend"></div>
                 
                 <div class="zone-labels">
-                    <div class="zone-label">Threat Response (Dysregulated):<br>Fear, anxiety, activated feel, anger,<br>hopelessness, powerlessness,<br>and threat of pain responses</div>
-                    <div class="zone-label">Grounded, calm,<br>and approachable (Regulated)</div>
-                    <div class="zone-label">Opportunity Responses:<br>Enthusiasm, joy, sex, hunger,<br>expansiveness or freedom feelings</div>
+                    <div class="zone-label">Threat Response<br>(Dysregulated):<br>Fear, anxiety, activated feel,<br>anger, hopelessness,<br>powerlessness,<br>and threat of pain responses</div>
+                    <div class="zone-label">Grounded, calm,<br>and approachable<br>(Regulated)</div>
+                    <div class="zone-label">Opportunity Responses:<br>Enthusiasm, joy, sex,<br>hunger, expansiveness<br>or freedom feelings</div>
                 </div>
 
                 <svg viewBox="0 0 600 300" preserveAspectRatio="none">
