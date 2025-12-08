@@ -585,18 +585,19 @@ function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
     const minGateHeight = 15; // Minimum height for gates so they never fully close
     
     // Calculate raw gate heights - each can go up to 90%
-    let topGateHeight = Math.max(minGateHeight, Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9));
-    let bottomGateHeight = Math.max(minGateHeight, Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9));
+    // Only apply minimum if there's actual load (don't show gates when load is 0)
+    let topGateHeight = threatLoad > 0 ? Math.max(minGateHeight, Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9)) : 0;
+    let bottomGateHeight = opportunityLoad > 0 ? Math.max(minGateHeight, Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9)) : 0;
     
     // Ensure combined gates never exceed 90% of total height
     const combinedHeight = topGateHeight + bottomGateHeight;
     const maxCombined = height * 0.9;
     
     if (combinedHeight > maxCombined) {
-        // Scale both gates down proportionally, but keep minimum heights
+        // Scale both gates down proportionally, but keep minimum heights if load exists
         const scaleFactor = maxCombined / combinedHeight;
-        topGateHeight = Math.max(minGateHeight, topGateHeight * scaleFactor);
-        bottomGateHeight = Math.max(minGateHeight, bottomGateHeight * scaleFactor);
+        topGateHeight = threatLoad > 0 ? Math.max(minGateHeight, topGateHeight * scaleFactor) : 0;
+        bottomGateHeight = opportunityLoad > 0 ? Math.max(minGateHeight, bottomGateHeight * scaleFactor) : 0;
     }
     
     gateShapeTop.style.height = topGateHeight + 'px';
@@ -1275,8 +1276,6 @@ function render() {
                 
                 <div class="contributors-list contributors-threat" id="contributorsThreat"></div>
                 <div class="contributors-list contributors-opportunity" id="contributorsOpportunity"></div>
-
-                <div class="ground-label">Window of Tolerance<br>Threat: ${threatLoad} | Regulated: ${regulatedLoad} | Opportunity: ${opportunityLoad}</div>
             </div>
         </div>
 
