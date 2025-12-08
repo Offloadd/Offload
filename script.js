@@ -705,9 +705,11 @@ function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
     
     const waterWidth = channelWidth * 0.85;
     
-    // FIXED: River touches gate edges exactly - no centering, no gaps
-    const channelTopY = riverTop;  // Start exactly where top gate ends
-    const channelBottomY = riverBottom;  // End exactly where bottom gate starts
+    // FIXED: River touches gate edges exactly - accounting for 2px stroke
+    // Stroke is centered on path, so extends 1px outside on each side
+    // Need to extend channel by 1px up and 1px down so stroke edge touches gates
+    const channelTopY = riverTop - 1;  // Extend 1px up so stroke touches top gate
+    const channelBottomY = riverBottom + 1;  // Extend 1px down so stroke touches bottom gate
     const actualChannelHeight = channelBottomY - channelTopY;
     
     const channelPath = `M 0,${channelTopY} L ${width},${channelTopY} L ${width},${channelBottomY} L 0,${channelBottomY} Z`;
