@@ -949,10 +949,6 @@ function render() {
     const html = `
         <div class="card header">
             <h1>Offload</h1>
-            <textarea id="titleDescTextarea" 
-                      onchange="updateTitleDesc(this.value)" 
-                      oninput="autoResizeTextarea(this)"
-                      style="width: 100%; min-height: 40px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; font-family: inherit; line-height: 1.5; resize: none; overflow: hidden; margin-top: 8px;">${state.titleDescText}</textarea>
         </div>
 
         <div class="card">
@@ -1473,17 +1469,7 @@ function render() {
 
     document.getElementById('app').innerHTML = html;
     
-    // Auto-resize all textareas
-    const titleDescTextarea = document.getElementById('titleDescTextarea');
-    if (titleDescTextarea) {
-        autoResizeTextarea(titleDescTextarea);
-    }
-    
-    const instructionsTextarea = document.getElementById('instructionsTextarea');
-    if (instructionsTextarea) {
-        autoResizeTextarea(instructionsTextarea);
-    }
-    
+    // Auto-resize textareas
     const section2Textarea = document.getElementById('section2DescTextarea');
     if (section2Textarea) {
         autoResizeTextarea(section2Textarea);
