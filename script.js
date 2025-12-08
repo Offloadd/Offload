@@ -956,43 +956,64 @@ function render() {
         </div>
 
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
-                <h2 style="margin: 0;">Instructions</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0;">Introduction</h2>
                 <button class="btn" onclick="toggleInstructions()" 
-                        style="padding: 6px 12px; font-size: 12px; background: #6b7280; color: white;">
+                        style="padding: 4px 10px; font-size: 11px; background: #6b7280; color: white;">
                     ${state.instructionsExpanded ? 'Hide ▲' : 'Show ▼'}
                 </button>
             </div>
             
             ${state.instructionsExpanded ? `
-                <textarea id="instructionsTextarea" 
-                          onchange="updateInstructions(this.value)" 
-                          oninput="autoResizeTextarea(this)"
-                          style="width: 100%; min-height: 120px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; font-family: inherit; line-height: 1.5; resize: none; overflow: hidden;">${state.instructionsText}</textarea>
-                <div style="font-size: 11px; color: #6b7280; margin-top: 3px; font-style: italic;">
-                    Changes are saved automatically
+                <div style="margin-top: 12px; font-size: 13px; color: #374151; line-height: 1.6;">
+                    <p style="margin-bottom: 12px;">Many people carry unprocessed traumas and chronic stressors that keep their nervous systems in long lasting patterns of high activation. These chronic stress patterns can cause mental health issues which can contribute to relationship issues and physical health problems like digestive issues and chronic pain. These patterns can persist for many years and even pass down generationally.</p>
+                    
+                    <p style="margin-bottom: 12px;">Some of us want off that crazy-making train of engrained high stress habits and patterns that are causing problems in other areas of our lives. Some of us get forced to face it head on because of illnesses or relationship issues that never seem to get resolved, even with help or support.</p>
+                    
+                    <p style="margin-bottom: 12px;">There are several support systems that exist to help a person who desires to change their life for the better. Supports like therapy, meditation, high quality sleep, somatic experiencing, journaling, exercising, nutritious foods, and other grounding or calming activities can start to show a person what it looks and feels like to truly feel safe, calm, and grounded in their own body or in the moment. It is from this calm and stabilized state of body and mind that allows a person to take back control from the high stress or emotional hijacking patterns than have been secretly in the driver's seat of their life.</p>
+                    
+                    <p style="margin-bottom: 12px;">Offload is a self help tool that can help capture and interrupt emotional hijackings or chronic stress patterns when they happen and can help lead a person back towards more calming and stabilizing supports that they have access to. It can also be used when things are not all that bad, but not quite right, to find deeper levels of groundedness and clarity. Offload is a self help tool designed to help a person learn when and how to return to that feeling of calm, safety and stability in one's own life. So that their actions are more aligned with their needs and goals. It uses an interactive visual tool to give a person a way to see what is happening to their nervous system and their ability to make decisions during high or low stress experiences.</p>
+                    
+                    <p style="margin-bottom: 12px;">Why would anyone want to be calm and stable more often? Isn't that boring and lazy? In my experience the answer is both yes and no. This calm, grounded stability is also known as a state of mind and body where your nervous system is well regulated, where your body is recovering or idling instead of using up precious internal resources during a stress response or emotional hijacking event. It is from this stabilized state of body and mind where more desired experiences can emerge organically. Where your body can heal from the erosions of chronic stress or trauma adaptations and where you can start to implement skills like boundary setting, grounding techniques, and learn about somatic and emotional tolerance. A person can learn how to use these brain tools to help protect their precious internal resources that can be used to help them manifest a more satisfying life.</p>
+                    
+                    <p style="margin-bottom: 0;">I will warn you. Even though using this can be fairly easy to use or doesn't have to take very long to capture an experience. It can take several entries over the course of a few days before you can start to get "in tune" with how the tool looks and feels to the point where it agrees with you or you agree with it. It is not something meant to get hung up on details about. It is meant to be a safe space where a person can externalize and visualize emotional or somatic information. Externalizing these experiences in a safe way can help that person see them differently than if they are caught up with them while they are active in their mind or body. It can create mental and emotional distance between the person's nervous system and the event or memory of the event itself. That space is a resource they can use to make different choices than what they feel they must or should do based on old habits or beliefs.</p>
                 </div>
-            ` : `
-                <div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">
-                    Click "Show" to view or edit instructions
-                </div>
-            `}
+            ` : ''}
         </div>
 
         <div class="card">
-            <h2>How This Works:</h2>
-            <div class="how-it-works">
-                <div class="how-item"><span class="how-label">Dual Gates System:</span> Top gate (red) closes down with threat load, bottom gate (green) closes up with opportunity load. Blue river flows between them showing your window of tolerance.</div>
-                <div class="how-item"><span class="how-label">Life Areas (00, 0, 1-5 each):</span> Start at 00 (inactive). Unlock to adjust. 0 positions add +1 to regulated. Negative values (threat) close top gate, positive values (opportunity) close bottom gate.</div>
-                <div class="how-item"><span class="how-label">Internal Experiences (0-10 each):</span> Rate intensity, then select type:
-                    <ul style="margin-left: 20px; margin-top: 3px;">
-                        <li><strong>Threat Response (Dysregulated):</strong> Adds to threat gate (yellow→orange→red gradient)</li>
-                        <li><strong>Grounded, calm, and approachable (Regulated):</strong> Widens the blue river / window of tolerance (light blue→deep blue gradient)</li>
-                        <li><strong>Opportunity Responses:</strong> Adds to opportunity gate (light green→green→yellow gradient)</li>
-                    </ul>
-                </div>
-                <div class="how-item"><span class="how-label">Regulated State:</span> More 0 positions + regulated load = wider blue river = more capacity available</div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0;">How It Works</h2>
+                <button class="btn" onclick="toggleSection1()" 
+                        style="padding: 4px 10px; font-size: 11px; background: #3b82f6; color: white;">
+                    ${state.section1Expanded ? 'Hide ▲' : 'Show ▼'}
+                </button>
             </div>
+            
+            ${state.section1Expanded ? `
+                <div style="margin-top: 12px; font-size: 13px; color: #374151; line-height: 1.6;">
+                    <p style="margin-bottom: 12px;">There are at least 2 ways you could go about this. You could simply hide this entire introduction section and just hop right in and start trying things out. Or you could continue reading.</p>
+                    
+                    <p style="margin-bottom: 12px;">There are 3 sections in this tool that are interactive. Each of these sections uses sliding scales, colors, numbers and boxes for notes and descriptions of the experience and trigger or topic.</p>
+                    
+                    <p style="margin-bottom: 12px;"><strong>The first section</strong> is for self care and chronic stress awareness. Is a good way to just have a base line for how things have been going for the user the past few days and how much flexibility they have to make changes.</p>
+                    
+                    <p style="margin-bottom: 12px;"><strong>The second section</strong> is for a general overview of one's own important life areas. Things like housing, work, relationships, and self care resources. This is a good section for understanding how all the parts of one's life are doing and sometimes how they can affect each other.</p>
+                    
+                    <p style="margin-bottom: 12px;"><strong>The third section</strong> is for those much more specific topics or experiences. This is the section to use first to offload internal information during an emotional hijacking event. It gives a person something to do that is actually helpful and can lead them back to peace and clarity vs. whatever their engrained habitual response is to those kinds of events or experiences.</p>
+                    
+                    <p style="margin-bottom: 12px; font-style: italic;">These 3 sections can be reorganized (or I can just create a "use map" as guidance).</p>
+                    
+                    <p style="margin-bottom: 6px;"><strong>Combination tips and tricks:</strong></p>
+                    <ul style="margin-left: 20px; margin-bottom: 12px;">
+                        <li>Combo 1: Self check in for times of uncertainty and option weighing.</li>
+                        <li>Combo 2: For an emotional hijacking.</li>
+                        <li>Combo 3: For needs and goals balancing.</li>
+                    </ul>
+                    
+                    <p style="margin-bottom: 0;">This self help tool is not exactly laid out in clinical terms and structures. There are a few added or hybrid concepts that I thought are worth recognizing. Such as how positive emotional experiences can be as internally resource (bandwidth or capacity) consuming as the more negative stress response topics that are more well known. I added that feature for those times when opportunities can become problematic. Getting obsessed over something you enjoy that ends up creating issues in other areas of life is another form of emotional hijacking.</p>
+                </div>
+            ` : ''}
         </div>
 
         <div class="card" style="border-left: 4px solid #16a34a;">
