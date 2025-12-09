@@ -19,6 +19,7 @@ const state = {
     ],
     entries: [],
     saveError: '',
+    mode: 'A',
     section1Expanded: false,
     section2DescExpanded: false,
     instructionsExpanded: false,
@@ -45,6 +46,11 @@ You can add more detailed descriptions here. This text will be saved automatical
 
 function toggleSection2Desc() {
     state.section2DescExpanded = !state.section2DescExpanded;
+    render();
+}
+
+function setMode(mode) {
+    state.mode = mode;
     render();
 }
 
@@ -949,6 +955,10 @@ function render() {
     const html = `
         <div class="card header">
             <h1>Offload</h1>
+            <textarea id="titleDescTextarea" 
+                      onchange="updateTitleDesc(this.value)" 
+                      oninput="autoResizeTextarea(this)"
+                      style="width: 100%; min-height: 40px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; font-family: inherit; line-height: 1.5; resize: none; overflow: hidden; margin-top: 8px;">${state.titleDescText}</textarea>
         </div>
 
         <div class="card">
@@ -1012,8 +1022,28 @@ function render() {
             ` : ''}
         </div>
 
+        <div class="card" style="background: #f9fafb; border: 2px solid #9333ea;">
+            <div style="text-align: center;">
+                <h3 style="margin: 0 0 10px 0; color: #4b5563;">Select Workflow Mode</h3>
+                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="setMode('A')" 
+                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #6b7280; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'A' ? 'background: #6b7280; color: white;' : 'background: white; color: #6b7280;'}">
+                        Mode A
+                    </button>
+                    <button onclick="setMode('B')" 
+                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #dc2626; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'B' ? 'background: #dc2626; color: white;' : 'background: white; color: #dc2626;'}">
+                        Mode B<br><span style="font-size: 10px;">Hijacking Stopper</span>
+                    </button>
+                    <button onclick="setMode('C')" 
+                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #2563eb; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'C' ? 'background: #2563eb; color: white;' : 'background: white; color: #2563eb;'}">
+                        Mode C
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="card" style="border-left: 4px solid #16a34a;">
-            <h2>Self-Care Check-In</h2>
+            <h2>1. Self-Care Check-In</h2>
             <div class="subtitle" style="margin-bottom: 12px;"><em>Foundation assessment - always visible</em></div>
             
             <div class="slider-container">
@@ -1067,7 +1097,7 @@ function render() {
 
         <div class="card section-blue">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
-                <h2 style="margin: 0;">1. General Scan (for if you are bored or curious)</h2>
+                <h2 style="margin: 0;">2. General Scan</h2>
                 <button class="btn" onclick="toggleSection1()" 
                         style="padding: 6px 12px; font-size: 12px; background: #3b82f6; color: white;">
                     ${state.section1Expanded ? 'Hide ▲' : 'Expand ▼'}
@@ -1196,7 +1226,7 @@ function render() {
         </div>
 
         <div class="card section-purple">
-            <h2>2. Specific Experience or Topic Offloading</h2>
+            <h2>3. Specific Experience or Topic Offloading</h2>
             <div class="subtitle"><em>Rate and describe what you're carrying internally (0-10 each)</em></div>
             
             <div class="examples-box">
@@ -1469,7 +1499,17 @@ function render() {
 
     document.getElementById('app').innerHTML = html;
     
-    // Auto-resize textareas
+    // Auto-resize all textareas
+    const titleDescTextarea = document.getElementById('titleDescTextarea');
+    if (titleDescTextarea) {
+        autoResizeTextarea(titleDescTextarea);
+    }
+    
+    const instructionsTextarea = document.getElementById('instructionsTextarea');
+    if (instructionsTextarea) {
+        autoResizeTextarea(instructionsTextarea);
+    }
+    
     const section2Textarea = document.getElementById('section2DescTextarea');
     if (section2Textarea) {
         autoResizeTextarea(section2Textarea);
