@@ -19,7 +19,6 @@ const state = {
     ],
     entries: [],
     saveError: '',
-    mode: 'A',
     section1Expanded: false,
     section2DescExpanded: false,
     instructionsExpanded: false,
@@ -49,11 +48,6 @@ function toggleSection2Desc() {
     render();
 }
 
-
-function setMode(mode) {
-    state.mode = mode;
-    render();
-}
 function toggleInstructions() {
     state.instructionsExpanded = !state.instructionsExpanded;
     render();
@@ -910,38 +904,6 @@ function updateContributorLists() {
     neutralList.innerHTML = regulatedContent;
 }
 
-
-// Get section number based on mode
-function getSectionNumber(sectionId) {
-    const orders = {
-        'A': { selfCare: 1, generalScan: 2, specificExp: 3 },
-        'B': { specificExp: 1, selfCare: 2, generalScan: 3 },
-        'C': { generalScan: 1, specificExp: 2, selfCare: 3 }
-    };
-    return orders[state.mode][sectionId];
-}
-
-// Generate sections in correct order
-function renderSectionsInOrder(html) {
-    const sec1Start = html.indexOf('<!-- SECTION_1_START -->');
-    const sec2Start = html.indexOf('<!-- SECTION_2_START -->');
-    const sec3Start = html.indexOf('<!-- SECTION_3_START -->');
-    const secEnd = html.indexOf('<!-- SECTIONS_END -->');
-    
-    const beforeSections = html.substring(0, sec1Start);
-    const section1 = html.substring(sec1Start, sec2Start);
-    const section2 = html.substring(sec2Start, sec3Start);
-    const section3 = html.substring(sec3Start, secEnd);
-    const afterSections = html.substring(secEnd);
-    
-    const orders = {
-        'A': [section1, section2, section3],
-        'B': [section3, section1, section2],
-        'C': [section2, section3, section1]
-    };
-    
-    return beforeSections + orders[state.mode].join('') + afterSections;
-}
 function render() {
     const total = getTotal();
     const pct = getPercentage();
@@ -1054,30 +1016,8 @@ function render() {
             ` : ''}
         </div>
 
-        <div class="card" style="background: #f9fafb; border: 2px solid #9333ea;">
-            <div style="text-align: center;">
-                <h3 style="margin: 0 0 10px 0; color: #4b5563;">Select Workflow Mode</h3>
-                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                    <button onclick="setMode('A')" 
-                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #6b7280; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'A' ? 'background: #6b7280; color: white;' : 'background: white; color: #6b7280;'}">
-                        Mode A
-                    </button>
-                    <button onclick="setMode('B')" 
-                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #dc2626; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'B' ? 'background: #dc2626; color: white;' : 'background: white; color: #dc2626;'}">
-                        Mode B<br><span style="font-size: 10px;">Hijacking Stopper</span>
-                    </button>
-                    <button onclick="setMode('C')" 
-                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #2563eb; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'C' ? 'background: #2563eb; color: white;' : 'background: white; color: #2563eb;'}">
-                        Mode C
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- SECTION_1_START -->
         <div class="card" style="border-left: 4px solid #16a34a;">
-            <h2>${getSectionNumber("selfCare")}. Self-Care Check-In</h2>
+            <h2>Self-Care Check-In</h2>
             <div class="subtitle" style="margin-bottom: 12px;"><em>Foundation assessment - always visible</em></div>
             
             <div class="slider-container">
@@ -1128,11 +1068,10 @@ function render() {
                        style="background: ${getSelfCareSliderGradient()}; ${state.selfCare.flexibility.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
             </div>
         </div>
-        <!-- SECTION_2_START -->
 
         <div class="card section-blue">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
-                <h2 style="margin: 0;">${getSectionNumber("generalScan")}. General Scan</h2>
+                <h2 style="margin: 0;">1. General Scan (for if you are bored or curious)</h2>
                 <button class="btn" onclick="toggleSection1()" 
                         style="padding: 6px 12px; font-size: 12px; background: #3b82f6; color: white;">
                     ${state.section1Expanded ? 'Hide ▲' : 'Expand ▼'}
@@ -1259,10 +1198,9 @@ function render() {
             </div>
             `}
         </div>
-        <!-- SECTION_3_START -->
 
         <div class="card section-purple">
-            <h2>${getSectionNumber("specificExp")}. Specific Experience or Topic Offloading</h2>
+            <h2>2. Specific Experience or Topic Offloading</h2>
             <div class="subtitle"><em>Rate and describe what you're carrying internally (0-10 each)</em></div>
             
             <div class="examples-box">
@@ -1366,7 +1304,6 @@ function render() {
                 </div>
             `}
         </div>
-        <!-- SECTIONS_END -->
 
         <div class="card">
             <h2>Window of Tolerance Visualization</h2>
@@ -1534,7 +1471,7 @@ function render() {
         </div>
     `;
 
-    document.getElementById('app').innerHTML = renderSectionsInOrder(html);
+    document.getElementById('app').innerHTML = html;
     
     // Auto-resize all textareas
     const titleDescTextarea = document.getElementById('titleDescTextarea');
