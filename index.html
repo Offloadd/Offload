@@ -3,11 +3,1717 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offload: A nervous system validation companion</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Mode Reordering - Full Life Areas Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f9fafb;
+            padding: 15px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card { 
+            background: white; 
+            border-radius: 6px; 
+            padding: 18px; 
+            margin-bottom: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        }
+        .section-green { border-left: 4px solid #16a34a; }
+        .section-blue { border-left: 4px solid #3b82f6; }
+        .section-purple { border-left: 4px solid #9333ea; }
+        
+        h1 { font-size: 22px; margin-bottom: 6px; color: #111827; }
+        h2 { font-size: 18px; margin-bottom: 9px; color: #111827; }
+        .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 12px; }
+        
+        .mode-selector {
+            background: #f9fafb;
+            border: 2px solid #9333ea;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            min-width: 120px;
+            max-width: 160px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid;
+        }
+        
+        .mode-btn.active {
+            color: white !important;
+        }
+        
+        .mode-a { border-color: #6b7280; color: #6b7280; background: white; }
+        .mode-a.active { background: #6b7280; }
+        
+        .mode-b { border-color: #dc2626; color: #dc2626; background: white; }
+        .mode-b.active { background: #dc2626; }
+        
+        .mode-c { border-color: #2563eb; color: #2563eb; background: white; }
+        .mode-c.active { background: #2563eb; }
+        
+        .slider-container { 
+            background: #f9fafb; 
+            padding: 6px; 
+            border-radius: 4px; 
+            margin-bottom: 5px; 
+        }
+        
+        .slider-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 3px; 
+        }
+        
+        .slider-label { 
+            font-weight: 600; 
+            color: #111827; 
+            font-size: 14px; 
+        }
+        
+        .slider-value { 
+            font-size: 18px; 
+            font-weight: bold; 
+        }
+        
+        input[type="range"] { 
+            width: 100%; 
+            height: 6px; 
+            border-radius: 3px; 
+            outline: none; 
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #333;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #333;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .slider-labels { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 10px; 
+            color: #6b7280; 
+            margin-bottom: 2px;
+        }
+        
+        .btn { 
+            padding: 8px 14px; 
+            border-radius: 6px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 600; 
+        }
+        
+        textarea { 
+            width: 100%; 
+            padding: 8px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 4px; 
+            font-size: 14px;
+            font-family: inherit;
+            min-height: 50px; 
+            resize: vertical; 
+        }
+        
+        .input-label { 
+            font-size: 13px; 
+            font-weight: 600; 
+            color: #374151; 
+            margin-top: 6px; 
+            margin-bottom: 3px; 
+            display: block; 
+        }
+        
+        /* Visualization styles */
+        .visualization {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            overflow: hidden;
+            background: #44ff44;
+            transition: background-color 0.3s ease-out;
+        }
+
+        .color-legend {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            bottom: 10px;
+            width: 80px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .legend-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            border-bottom: 2px solid #000;
+            position: relative;
+        }
+
+        .legend-section:last-child {
+            border-bottom: none;
+        }
+
+        .legend-section-1 { background: #ff4444; }
+        .legend-section-2 { background: #ffaa44; }
+        .legend-section-3 { background: #4488ff; }
+        .legend-section-4 { background: #44ff44; }
+
+        .legend-text {
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+            font-size: 9px;
+            line-height: 1.1;
+            text-align: center;
+            word-wrap: break-word;
+            z-index: 11;
+        }
+
+        .zone-labels {
+            position: absolute;
+            left: 100px;
+            width: 180px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .zone-label {
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            font-size: 12px;
+            padding: 4px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 3px;
+        }
+
+        .visualization svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .river-channel {
+            fill: rgba(135, 206, 250, 0.6);
+            stroke: #4682b4;
+            stroke-width: 2;
+            transition: d 0.3s ease-out;
+        }
+
+        .river-water {
+            fill: url(#waterGradient);
+            opacity: 0.8;
+            transition: d 0.3s ease-out;
+        }
+
+        .gate-top {
+            position: absolute;
+            left: 35%;
+            top: 0;
+            width: 100px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            z-index: 5;
+            transform: translateX(-50%);
+        }
+
+        .gate-bottom {
+            position: absolute;
+            left: 35%;
+            bottom: 0;
+            width: 100px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            z-index: 5;
+            transform: translateX(-50%);
+        }
+
+        .gate-shape-top, .gate-shape-bottom {
+            width: 100%;
+            position: relative;
+            transition: height 0.3s ease-out;
+        }
+
+        .gate-interior-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 100%;
+            background: rgba(255, 100, 100, 0.3);
+            border-radius: 0 0 50% 50%;
+            z-index: 1;
+        }
+
+        .gate-interior-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 100%;
+            background: rgba(100, 255, 100, 0.3);
+            border-radius: 50% 50% 0 0;
+            z-index: 1;
+        }
+
+        .gate-outline-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            border: 4px solid #222;
+            border-top: none;
+            border-radius: 0 0 50% 50%;
+            background: transparent;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+
+        .gate-outline-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            border: 4px solid #222;
+            border-bottom: none;
+            border-radius: 50% 50% 0 0;
+            background: transparent;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+
+        .gate-text-top {
+            position: absolute;
+            left: 35%;
+            transform: translateX(-50%);
+            top: 0;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            text-align: center;
+            z-index: 6;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            transition: top 0.3s ease-out;
+            pointer-events: none;
+        }
+
+        .gate-text-bottom {
+            position: absolute;
+            left: 35%;
+            transform: translateX(-50%);
+            bottom: 0;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            text-align: center;
+            z-index: 6;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            transition: bottom 0.3s ease-out;
+            pointer-events: none;
+        }
+
+        .river-text {
+            position: absolute;
+            left: 45%;
+            right: auto;
+            width: 200px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            z-index: 6;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            pointer-events: none;
+            transition: top 0.3s ease-out, font-size 0.3s ease-out, letter-spacing 0.3s ease-out;
+            transform: translateY(-50%);
+            white-space: normal;
+            line-height: 1.2;
+        }
+        
+        .neutral-list {
+            position: absolute;
+            left: 80%;
+            color: white;
+            font-size: 11px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            z-index: 6;
+            pointer-events: none;
+            transition: top 0.3s ease-out;
+            transform: translateY(-50%);
+            max-width: 250px;
+        }
+        
+        .neutral-item {
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+
+        .ground-label {
+            display: none;
+        }
+        
+        .contributors-list {
+            position: absolute;
+            right: 40px;
+            color: white;
+            font-size: 11px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            z-index: 6;
+            pointer-events: none;
+            max-width: 300px;
+        }
+        
+        .contributors-threat { top: 10px; }
+        .contributors-opportunity { bottom: 10px; }
+        
+        .contributor-item {
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+    </style>
 </head>
 <body>
     <div class="container" id="app"></div>
-    <script src="script.js"></script>
+
+    <script>
+        // State with ALL life areas from full version
+        const state = {
+            mode: 'A',
+            selfCare: {
+                regulation: { value: 0, interacted: false, locked: true },
+                flexibility: { value: 0, interacted: false, locked: true }
+            },
+            lifeAreas: {
+                mental: { value: 0, locked: true, interacted: false, visible: false },
+                spiritual: { value: 0, locked: true, interacted: false, visible: false },
+                somaticBody: { value: 0, locked: true, interacted: false, visible: false },
+                emotional: { value: 0, locked: true, interacted: false, visible: false },
+                homeImprovement: { value: 0, locked: true, interacted: false, visible: false },
+                workMoney: { value: 0, locked: true, interacted: false, visible: false },
+                moneyHandling: { value: 0, locked: true, interacted: false, visible: false },
+                housingComforts: { value: 0, locked: true, interacted: false, visible: false },
+                freedomLevel: { value: 0, locked: true, interacted: false, visible: false }
+            },
+            ambient: [
+                { id: Date.now(), value: 0, type: 'regulated', note: '', locked: false }
+            ],
+            entries: [],
+            saveError: '',
+            section1Expanded: true,  // Mode A default - Self-Care is first
+            section2Expanded: false,
+            section3Expanded: false,
+            section2DescExpanded: false,
+            instructionsExpanded: false,
+            howItWorksExpanded: false,
+            titleDescText: 'A nervous system validation companion for tracking your internal state.',
+            introductionText: `Many people carry unprocessed traumas and chronic stressors that keep their nervous systems in long lasting patterns of high activation. These chronic stress patterns can cause mental health issues which can contribute to relationship issues and physical health problems like digestive issues and chronic pain. These patterns can persist for many years and even pass down generationally.
+
+Some of us want off that crazy-making train of engrained high stress habits and patterns that are causing problems in other areas of our lives. Some of us get forced to face it head on because of illnesses or relationship issues that never seem to get resolved, even with help or support.
+
+There are several support systems that exist to help a person who desires to change their life for the better. Supports like therapy, meditation, high quality sleep, somatic experiencing, journaling, exercising, nutritious foods, and other grounding or calming activities can start to show a person what it looks and feels like to truly feel safe, calm, and grounded in their own body or in the moment. It is from this calm and stabilized state of body and mind that allows a person to take back control from the high stress or emotional hijacking patterns than have been secretly in the driver's seat of their life.
+
+Offload is a self help tool that can help capture and interrupt emotional hijackings or chronic stress patterns when they happen and can help lead a person back towards more calming and stabilizing supports that they have access to. It can also be used when things are not all that bad, but not quite right, to find deeper levels of groundedness and clarity. Offload is a self help tool designed to help a person learn when and how to return to that feeling of calm, safety and stability in one's own life. So that their actions are more aligned with their needs and goals. It uses an interactive visual tool to give a person a way to see what is happening to their nervous system and their ability to make decisions during high or low stress experiences.
+
+Why would anyone want to be calm and stable more often? Isn't that boring and lazy? In my experience the answer is both yes and no. This calm, grounded stability is also known as a state of mind and body where your nervous system is well regulated, where your body is recovering or idling instead of using up precious internal resources during a stress response or emotional hijacking event. It is from this stabilized state of body and mind where more desired experiences can emerge organically. Where your body can heal from the erosions of chronic stress or trauma adaptations and where you can start to implement skills like boundary setting, grounding techniques, and learn about somatic and emotional tolerance. A person can learn how to use these brain tools to help protect their precious internal resources that can be used to help them manifest a more satisfying life.
+
+I will warn you. Even though using this can be fairly easy to use or doesn't have to take very long to capture an experience. It can take several entries over the course of a few days before you can start to get "in tune" with how the tool looks and feels to the point where it agrees with you or you agree with it. It is not something meant to get hung up on details about. It is meant to be a safe space where a person can externalize and visualize emotional or somatic information. Externalizing these experiences in a safe way can help that person see them differently than if they are caught up with them while they are active in their mind or body. It can create mental and emotional distance between the person's nervous system and the event or memory of the event itself. That space is a resource they can use to make different choices than what they feel they must or should do based on old habits or beliefs.`,
+            howItWorksText: `There are at least 2 ways you could go about this. You could simply hide this entire introduction section and just hop right in and start trying things out. Or you could continue reading.
+
+There are 3 sections in this tool that are interactive. Each of these sections uses sliding scales, colors, numbers and boxes for notes and descriptions of the experience and trigger or topic.
+
+The first section is for self care and chronic stress awareness. Is a good way to just have a base line for how things have been going for the user the past few days and how much flexibility they have to make changes.
+
+The second section is for a general overview of one's own important life areas. Things like housing, work, relationships, and self care resources. This is a good section for understanding how all the parts of one's life are doing and sometimes how they can affect each other.
+
+The third section is for those much more specific topics or experiences. This is the section to use first to offload internal information during an emotional hijacking event. It gives a person something to do that is actually helpful and can lead them back to peace and clarity vs. whatever their engrained habitual response is to those kinds of events or experiences.
+
+These 3 sections can be reorganized using the mode selector.
+
+Combination tips and tricks:
+• Combo 1 (Mode A): Self check in for times of uncertainty and option weighing
+• Combo 2 (Mode B): For an emotional hijacking
+• Combo 3 (Mode C): For needs and goals balancing
+
+This self help tool is not exactly laid out in clinical terms and structures. There are a few added or hybrid concepts that I thought are worth recognizing. Such as how positive emotional experiences can be as internally resource (bandwidth or capacity) consuming as the more negative stress response topics that are more well known. I added that feature for those times when opportunities can become problematic. Getting obsessed over something you enjoy that ends up creating issues in other areas of life is another form of emotional hijacking.`,
+            section2DescText: `Three types of internal responses:
+
+THREAT RESPONSE (DYSREGULATED): Fear, anxiety, activated feel, anger, hopelessness, powerlessness, and threat of pain responses
+
+GROUNDED, CALM, AND APPROACHABLE (REGULATED): Present-moment awareness, body connection, gentle contentment, stable calm
+
+OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom feelings`
+        };
+
+        // Mode switching
+        function setMode(mode) {
+            state.mode = mode;
+            // Expand only the first section based on mode
+            if (mode === 'A') {
+                state.section1Expanded = true;
+                state.section2Expanded = false;
+                state.section3Expanded = false;
+            } else if (mode === 'B') {
+                state.section1Expanded = false;
+                state.section2Expanded = false;
+                state.section3Expanded = true;
+            } else if (mode === 'C') {
+                state.section1Expanded = false;
+                state.section2Expanded = true;
+                state.section3Expanded = false;
+            }
+            render();
+        }
+
+        // Toggle section expansion
+        function toggleSection(section) {
+            if (section === 1) state.section1Expanded = !state.section1Expanded;
+            if (section === 2) state.section2Expanded = !state.section2Expanded;
+            if (section === 3) state.section3Expanded = !state.section3Expanded;
+            render();
+        }
+
+        // Toggle editable sections
+        function toggleSection2Desc() {
+            state.section2DescExpanded = !state.section2DescExpanded;
+            render();
+        }
+
+        function toggleInstructions() {
+            state.instructionsExpanded = !state.instructionsExpanded;
+            render();
+        }
+
+        function toggleHowItWorks() {
+            state.howItWorksExpanded = !state.howItWorksExpanded;
+            render();
+        }
+
+        // Update editable text and save to localStorage
+        function updateTitleDesc(text) {
+            state.titleDescText = text;
+            localStorage.setItem('offload_title_desc', text);
+        }
+
+        function updateInstructions(text) {
+            state.instructionsText = text;
+            localStorage.setItem('offload_instructions', text);
+        }
+
+        function updateSection2Desc(text) {
+            state.section2DescText = text;
+            localStorage.setItem('offload_section2_desc', text);
+        }
+
+        // Auto-resize textarea as user types
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        // Toggle life area visibility
+        function toggleLifeAreaVisible(key) {
+            state.lifeAreas[key].visible = !state.lifeAreas[key].visible;
+            render();
+        }
+
+        // Section number mapping (stays fixed)
+        function getSectionNumber(sectionId) {
+            const numbers = {
+                selfCare: 1,
+                generalScan: 2,
+                specificExp: 3
+            };
+            return numbers[sectionId];
+        }
+
+        // EXACT functions from full version
+        function getLifeAreaDisplayValue(internalValue) {
+            if (internalValue === 0) return '00';
+            if (internalValue === -1) return '+0';
+            if (internalValue === 1) return '-0';
+            if (internalValue < -1) return '+' + Math.abs(internalValue + 1);
+            if (internalValue > 1) return '-' + (internalValue - 1);
+            return '00';
+        }
+
+        function getSliderColor(value) {
+            if (value > 0) {
+                const intensity = value / 5;
+                const red = Math.round(100 - (100 * intensity));
+                const green = Math.round(220 + (35 * intensity));
+                const blue = Math.round(100 - (100 * intensity));
+                return 'rgb(' + red + ', ' + green + ', ' + blue + ')';
+            } else if (value < 0) {
+                const absValue = Math.abs(value);
+                if (absValue <= 1.5) {
+                    const intensity = absValue / 1.5;
+                    const red = Math.round(68 + (200 * intensity));
+                    const green = Math.round(136 + (100 * intensity));
+                    const blue = Math.round(255 - (155 * intensity));
+                    return 'rgb(' + Math.min(red, 255) + ', ' + Math.min(green, 255) + ', ' + blue + ')';
+                } else {
+                    const intensity = (absValue - 1.5) / 3.5;
+                    const red = 255;
+                    const green = Math.round(236 - (136 * intensity));
+                    const blue = Math.round(100 - (100 * intensity));
+                    return 'rgb(' + red + ', ' + green + ', ' + blue + ')';
+                }
+            } else {
+                return 'rgb(68, 136, 255)';
+            }
+        }
+
+        function getSelfCareSliderGradient() {
+            return 'linear-gradient(to right, #4488ff 0%, #bbdefb 30%, #d3d3d3 50%, #ffeb3b 65%, #ff9800 82.5%, #f44336 100%)';
+        }
+
+        function toggleSelfCareLock(key) {
+            state.selfCare[key].locked = !state.selfCare[key].locked;
+            render();
+        }
+
+        function toggleLifeAreaLock(key) {
+            state.lifeAreas[key].locked = !state.lifeAreas[key].locked;
+            render();
+        }
+
+        function toggleAmbientLock(id) {
+            const amb = state.ambient.find(a => a.id === id);
+            if (amb) {
+                amb.locked = !amb.locked;
+                render();
+            }
+        }
+
+        function addAmbientSlider() {
+            if (state.ambient.length >= 6) return;
+            state.ambient.push({
+                id: Date.now(),
+                value: 0,
+                type: 'regulated',
+                note: '',
+                locked: false
+            });
+            render();
+        }
+
+        function deleteAmbientSlider(id) {
+            if (state.ambient.length <= 1) {
+                alert('Must keep at least one internal experience slider');
+                return;
+            }
+            // Delete directly without confirm
+            state.ambient = state.ambient.filter(a => a.id !== id);
+            render();
+        }
+
+        function updateSlider(category, key, value) {
+            if (category === 'selfCare') {
+                if (!state.selfCare[key].locked) {
+                    state.selfCare[key].value = parseInt(value);
+                    state.selfCare[key].interacted = true;
+                    render();
+                }
+            } else if (category === 'life') {
+                if (!state.lifeAreas[key].locked) {
+                    state.lifeAreas[key].value = parseInt(value);
+                    state.lifeAreas[key].interacted = true;
+                    render();
+                }
+            }
+        }
+
+        function updateAmbient(id, field, value) {
+            const amb = state.ambient.find(a => a.id === id);
+            if (!amb || amb.locked) return;
+            
+            if (field === 'value') {
+                amb.value = parseInt(value);
+            } else {
+                amb[field] = value;
+            }
+            render();
+        }
+
+        // Calculation functions for loads
+        function getThreatLoad() {
+            let threatTotal = 0;
+            
+            // Self-care threat (negate because display is flipped)
+            Object.values(state.selfCare).forEach(slider => {
+                if (!slider.interacted) return;
+                const val = -slider.value; // NEGATE: positive display = negative internal
+                if (val < -1) {
+                    threatTotal += Math.abs(val) - 1;
+                }
+            });
+            
+            // Life areas threat
+            Object.values(state.lifeAreas).forEach((area, index) => {
+                if (!area.interacted) return;
+                
+                const areaKey = Object.keys(state.lifeAreas)[index];
+                const isHousingComforts = areaKey === 'housingComforts';
+                const val = isHousingComforts ? -area.value : area.value; // Negate housing too
+                
+                if (isHousingComforts) {
+                    if (val < -1) {
+                        threatTotal += Math.abs(val) - 1;
+                    }
+                } else {
+                    if (val > 1) {
+                        threatTotal += (val - 1);
+                    }
+                }
+            });
+            
+            // Ambient threat
+            state.ambient.forEach(amb => {
+                if (amb.value !== 0 && amb.type === 'threat') {
+                    threatTotal += amb.value;
+                }
+            });
+            
+            return threatTotal;
+        }
+
+        function getOpportunityLoad() {
+            let opportunityTotal = 0;
+            
+            // Life areas opportunity (not self-care or housing)
+            Object.values(state.lifeAreas).forEach((area, index) => {
+                if (!area.interacted) return;
+                
+                const areaKey = Object.keys(state.lifeAreas)[index];
+                const isHousingComforts = areaKey === 'housingComforts';
+                const val = area.value;
+                
+                if (!isHousingComforts && val < -1) {
+                    opportunityTotal += Math.abs(val + 1);
+                }
+            });
+            
+            // Ambient opportunity
+            state.ambient.forEach(amb => {
+                if (amb.value !== 0 && amb.type === 'opportunity') {
+                    opportunityTotal += amb.value;
+                }
+            });
+            
+            return opportunityTotal;
+        }
+
+        function getRegulatedLoad() {
+            let regulatedTotal = 0;
+            
+            // Self-care regulated (negate because display is flipped)
+            Object.values(state.selfCare).forEach(slider => {
+                if (!slider.interacted) return;
+                const val = -slider.value; // NEGATE: positive display = negative internal
+                if (val === -1 || val === 1) {
+                    regulatedTotal += 1;
+                } else if (val > 1) {
+                    regulatedTotal += (val - 1);
+                }
+            });
+            
+            // Life areas regulated
+            Object.values(state.lifeAreas).forEach((area, index) => {
+                if (!area.interacted) return;
+                
+                const areaKey = Object.keys(state.lifeAreas)[index];
+                const isHousingComforts = areaKey === 'housingComforts';
+                const val = isHousingComforts ? -area.value : area.value; // Negate housing too
+                
+                if (isHousingComforts) {
+                    if (val === -1 || val === 1) {
+                        regulatedTotal += 1;
+                    } else if (val > 1) {
+                        regulatedTotal += (val - 1);
+                    }
+                } else {
+                    if (val === -1 || val === 1) {
+                        regulatedTotal += 1;
+                    }
+                }
+            });
+            
+            // Ambient regulated
+            state.ambient.forEach(amb => {
+                if (amb.value !== 0 && amb.type === 'regulated') {
+                    regulatedTotal += amb.value;
+                }
+            });
+            
+            return regulatedTotal;
+        }
+
+        // Save and entry management functions
+        function validateSave() {
+            const errors = [];
+            state.ambient.forEach((amb, i) => {
+                if (amb.value !== 0) {
+                    if (!amb.type) errors.push('Internal Activity ' + (i+1) + ': Type is required when slider is not at 0');
+                    if (!amb.note.trim()) errors.push('Internal Activity ' + (i+1) + ': Note is required when slider is not at 0');
+                }
+            });
+            return errors;
+        }
+
+        function saveEntry() {
+            const errors = validateSave();
+            if (errors.length > 0) {
+                state.saveError = errors.join('<br>');
+                render();
+                return;
+            }
+
+            state.saveError = '';
+            
+            const lifeAreasDisplay = {};
+            Object.keys(state.lifeAreas).forEach(key => {
+                lifeAreasDisplay[key] = getLifeAreaDisplayValue(state.lifeAreas[key].value);
+            });
+            
+            let lifeTotal = 0;
+            Object.values(state.lifeAreas).forEach(area => {
+                const val = area.value;
+                if (val < -1) {
+                    lifeTotal += Math.abs(val + 1);
+                } else if (val > 1) {
+                    lifeTotal -= (val - 1);
+                }
+            });
+            
+            const threatLoad = getThreatLoad();
+            const opportunityLoad = getOpportunityLoad();
+            const regulatedLoad = getRegulatedLoad();
+            
+            const entry = {
+                timestamp: new Date().toISOString(),
+                lifeAreas: {...lifeAreasDisplay},
+                ambient: state.ambient.map(a => ({
+                    value: a.value,
+                    type: a.type,
+                    note: a.note
+                })),
+                lifeTotal,
+                total: lifeTotal + (regulatedLoad - threatLoad - opportunityLoad),
+                pct: getPercentage(),
+                threatLoad,
+                opportunityLoad,
+                regulatedLoad
+            };
+            
+            state.entries.unshift(entry);
+            
+            // Send to Google Sheets
+            fetch('https://script.google.com/macros/s/AKfycbyre8dXSoVH3LDvBa-SsfPjX0gpKbNcjrF7p-YLQB6fhkQQNRcxmFyoqhp-Xp45VlLU0Q/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(entry)
+            }).then(() => {
+                console.log('Data sent to Google Sheets');
+            }).catch(error => {
+                console.error('Error sending to Google Sheets:', error);
+            });
+            
+            render();
+        }
+
+        function getPercentage() {
+            const total = getThreatLoad() - getOpportunityLoad() - getRegulatedLoad();
+            const normalized = (-total + 10) / 40;
+            return Math.round(Math.max(0, Math.min(100, normalized * 100)));
+        }
+
+        function copyEntries() {
+            const text = state.entries.map(e => {
+                const date = new Date(e.timestamp).toLocaleString();
+                const lifeAreasText = Object.entries(e.lifeAreas).map(([key, val]) => {
+                    const labels = {
+                        mental: 'Mental',
+                        somaticBody: 'Somatic/Body',
+                        emotional: 'Emotional',
+                        homeImprovement: 'Home Improvement',
+                        housingComforts: 'Housing/Comforts',
+                        workMoney: 'Work/Income',
+                        moneyHandling: 'Money/Resources',
+                        spiritual: 'Personal Relationships',
+                        freedomLevel: 'Spiritual Outlook'
+                    };
+                    return labels[key] + ': ' + val;
+                }).join(', ');
+                
+                const ambientText = e.ambient.filter(a => a.value !== 0).map(a => {
+                    const typeLabels = {
+                        'threat': 'Threat Response',
+                        'regulated': 'Regulated/Grounded',
+                        'opportunity': 'Opportunity Response'
+                    };
+                    return '  [' + a.value + '/10, ' + typeLabels[a.type] + ']: ' + a.note;
+                }).join('\n');
+                
+                return '=== ' + date + ' ===\nLife Areas (Net: ' + e.lifeTotal + '):\n' + lifeAreasText + '\n\nInternal Experiences:\n' + (ambientText || '  (none)') + '\n\nThreat Load: ' + (e.threatLoad || 0) + '\nRegulated Load: ' + (e.regulatedLoad || 0) + '\nOpportunity Load: ' + (e.opportunityLoad || 0) + '\nTotal Load: ' + e.total + ' (' + e.pct + '%)\n';
+            }).join('\n');
+            navigator.clipboard.writeText(text);
+            alert('Entries copied!');
+        }
+
+        function clearEntries() {
+            if (confirm('Clear all entries?')) {
+                state.entries = [];
+                render();
+            }
+        }
+
+        // Visualization update function
+        function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
+            const visualization = document.getElementById('visualization');
+            if (!visualization) return;
+            
+            const gateShapeTop = document.getElementById('gateShapeTop');
+            const gateShapeBottom = document.getElementById('gateShapeBottom');
+            const gateTextTop = document.getElementById('gateTextTop');
+            const gateTextBottom = document.getElementById('gateTextBottom');
+            const riverChannel = document.getElementById('riverChannel');
+            const riverWater = document.getElementById('riverWater');
+            const riverText = document.getElementById('riverText');
+            
+            const height = 300;
+            const maxLoad = 50;
+            
+            // Calculate gate heights
+            let topGateHeight = Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9);
+            let bottomGateHeight = Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9);
+            
+            // Ensure combined gates never exceed 90%
+            const combinedHeight = topGateHeight + bottomGateHeight;
+            const maxCombined = height * 0.9;
+            
+            if (combinedHeight > maxCombined) {
+                const scaleFactor = maxCombined / combinedHeight;
+                topGateHeight = topGateHeight * scaleFactor;
+                bottomGateHeight = bottomGateHeight * scaleFactor;
+            }
+            
+            gateShapeTop.style.height = topGateHeight + 'px';
+            gateShapeBottom.style.height = bottomGateHeight + 'px';
+            
+            gateTextTop.style.top = topGateHeight + 'px';
+            gateTextTop.textContent = 'THREAT\n' + threatLoad;
+            
+            gateTextBottom.style.bottom = bottomGateHeight + 'px';
+            gateTextBottom.textContent = 'OPPORTUNITY\n' + opportunityLoad;
+            
+            // Calculate background color
+            const availableSpace = height - topGateHeight - bottomGateHeight;
+            const regulatedFactor = regulatedLoad / 30;
+            
+            const maxThreatForColor = 40;
+            const maxOppForColor = 40;
+            const maxRegForColor = 30;
+            
+            const threatIntensity = Math.min(threatLoad / maxThreatForColor, 1);
+            const opportunityIntensity = Math.min(opportunityLoad / maxOppForColor, 1);
+            const regulatedIntensity = Math.min(regulatedLoad / maxRegForColor, 1);
+            
+            // THREAT ZONE (top) - Yellow → Orange → Red
+            let threatR, threatG, threatB;
+            if (threatIntensity === 0) {
+                threatR = 255; threatG = 250; threatB = 220;
+            } else if (threatIntensity < 0.5) {
+                const factor = threatIntensity * 2;
+                threatR = 255;
+                threatG = Math.round(235 - (83 * factor));
+                threatB = Math.round(59 - (59 * factor));
+            } else {
+                const factor = (threatIntensity - 0.5) * 2;
+                threatR = 255;
+                threatG = Math.round(152 - (84 * factor));
+                threatB = 0;
+            }
+            
+            // RIVER ZONE (middle) - Blue/Gray scale
+            let riverR, riverG, riverB;
+            if (regulatedIntensity === 0) {
+                riverR = 180; riverG = 180; riverB = 180;
+            } else {
+                riverR = Math.round(180 - (112 * regulatedIntensity));
+                riverG = Math.round(180 - (44 * regulatedIntensity));
+                riverB = Math.round(180 + (75 * regulatedIntensity));
+            }
+            
+            // OPPORTUNITY ZONE (bottom) - Light green → Green → Yellow
+            let oppR, oppG, oppB;
+            if (opportunityIntensity === 0) {
+                oppR = 230; oppG = 250; oppB = 230;
+            } else if (opportunityIntensity < 0.5) {
+                const factor = opportunityIntensity * 2;
+                oppR = Math.round(200 - (132 * factor));
+                oppG = Math.round(230 - (25 * factor));
+                oppB = Math.round(200 - (132 * factor));
+            } else {
+                const factor = (opportunityIntensity - 0.5) * 2;
+                oppR = Math.round(68 + (137 * factor));
+                oppG = Math.round(205 + (30 * factor));
+                oppB = Math.round(68 - (9 * factor));
+            }
+            
+            // Create gradient background
+            visualization.style.background = 'linear-gradient(to bottom, ' +
+                'rgb(' + threatR + ', ' + threatG + ', ' + threatB + ') 0%, ' +
+                'rgb(' + threatR + ', ' + threatG + ', ' + threatB + ') ' + ((topGateHeight / height) * 100) + '%, ' +
+                'rgb(' + riverR + ', ' + riverG + ', ' + riverB + ') ' + ((topGateHeight / height) * 100) + '%, ' +
+                'rgb(' + riverR + ', ' + riverG + ', ' + riverB + ') ' + (((height - bottomGateHeight) / height) * 100) + '%, ' +
+                'rgb(' + oppR + ', ' + oppG + ', ' + oppB + ') ' + (((height - bottomGateHeight) / height) * 100) + '%, ' +
+                'rgb(' + oppR + ', ' + oppG + ', ' + oppB + ') 100%)';
+            
+            // River channel - connect directly to gate tips
+            const width = 600;
+            const riverTop = topGateHeight;
+            const riverBottom = height - bottomGateHeight;
+            const riverHeight = riverBottom - riverTop;
+            
+            const spaceFactor = availableSpace / height;
+            const maxChannelWidth = height * 0.5;
+            const minChannelWidth = height * 0.08;
+            
+            let channelWidth = minChannelWidth + (spaceFactor * (maxChannelWidth - minChannelWidth));
+            const regulatedBonus = regulatedFactor * (height * 0.2);
+            channelWidth = Math.min(channelWidth + regulatedBonus, riverHeight * 0.95);
+            
+            const waterWidth = channelWidth * 0.85;
+            
+            // KEY FIX: Channel goes directly from gate tip to gate tip
+            const channelTopY = riverTop;
+            const channelBottomY = riverBottom;
+            
+            const channelPath = 'M 0,' + channelTopY + ' L ' + width + ',' + channelTopY + ' L ' + width + ',' + channelBottomY + ' L 0,' + channelBottomY + ' Z';
+            
+            // Water is centered within the available space
+            const waterTopY = riverTop + (riverHeight - waterWidth) / 2;
+            const waterBottomY = waterTopY + waterWidth;
+            const waterPath = 'M 0,' + waterTopY + ' L ' + width + ',' + waterTopY + ' L ' + width + ',' + waterBottomY + ' L 0,' + waterBottomY + ' Z';
+            
+            riverChannel.setAttribute('d', channelPath);
+            riverWater.setAttribute('d', waterPath);
+            
+            // Position river text
+            const centerY = topGateHeight + (availableSpace / 2);
+            riverText.style.top = centerY + 'px';
+            
+            if (regulatedLoad > 0) {
+                riverText.innerHTML = 'Window of Tolerance Width<br>or Internal Information<br>Processing Capacity<br><span style="font-size: 11px; color: #bbdefb;">(+' + regulatedLoad + ' regulated)</span>';
+            } else {
+                riverText.innerHTML = 'Window of Tolerance Width<br>or Internal Information<br>Processing Capacity';
+            }
+            
+            // Adjust font size based on available space
+            const availablePercent = availableSpace / height;
+            
+            if (availablePercent < 0.3) {
+                const fontSize = Math.max(8, availablePercent * 40);
+                const letterSpacing = Math.max(0, (0.3 - availablePercent) * 10);
+                riverText.style.fontSize = fontSize + 'px';
+                riverText.style.letterSpacing = letterSpacing + 'px';
+            } else {
+                riverText.style.fontSize = '14px';
+                riverText.style.letterSpacing = '0px';
+            }
+            
+            // Position neutral list
+            const neutralList = document.getElementById('neutralList');
+            if (neutralList) {
+                neutralList.style.top = centerY + 'px';
+            }
+            
+            // Update contributor lists
+            updateContributorLists();
+        }
+
+        function updateContributorLists() {
+            const contributorsThreat = document.getElementById('contributorsThreat');
+            const contributorsOpportunity = document.getElementById('contributorsOpportunity');
+            const neutralList = document.getElementById('neutralList');
+            
+            if (!contributorsThreat || !contributorsOpportunity || !neutralList) return;
+            
+            const selfCareLabels = {
+                regulation: 'Recent Regulation State',
+                flexibility: 'Flexibility to Disengage'
+            };
+            
+            const lifeAreasLabels = {
+                mental: 'Mental Activity',
+                somaticBody: 'Somatic &/or Body',
+                emotional: 'Emotional',
+                homeImprovement: 'Home Improvement Efforts',
+                housingComforts: 'Self Care Supports',
+                workMoney: 'Work Experiences & Income Generation',
+                moneyHandling: 'Money & Resource Handling',
+                spiritual: 'Personal Relationships or Interactions',
+                freedomLevel: 'Spiritual Level Outlook'
+            };
+            
+            const typeLabels = {
+                'threat': 'Threat Response',
+                'regulated': 'Regulated/Grounded',
+                'opportunity': 'Opportunity Response'
+            };
+            
+            let threatItems = [];
+            let opportunityItems = [];
+            let regulatedItems = [];
+            
+            // Collect self-care contributors
+            Object.entries(state.selfCare).forEach(([key, slider]) => {
+                if (!slider.interacted) return;
+                
+                const val = slider.value;
+                if (val < -1) {
+                    threatItems.push({ label: selfCareLabels[key], value: Math.abs(val) - 1 });
+                } else if (val === -1 || val === 1) {
+                    regulatedItems.push({ label: selfCareLabels[key], value: 1 });
+                } else if (val > 1) {
+                    regulatedItems.push({ label: selfCareLabels[key], value: val - 1 });
+                }
+            });
+            
+            // Collect life area contributors
+            Object.entries(state.lifeAreas).forEach(([key, area]) => {
+                if (!area.interacted) return;
+                
+                const isHousingComforts = key === 'housingComforts';
+                const val = area.value;
+                
+                if (isHousingComforts) {
+                    if (val < -1) {
+                        threatItems.push({ label: lifeAreasLabels[key], value: Math.abs(val) - 1 });
+                    } else if (val === -1 || val === 1) {
+                        regulatedItems.push({ label: lifeAreasLabels[key], value: 1 });
+                    } else if (val > 1) {
+                        regulatedItems.push({ label: lifeAreasLabels[key], value: val - 1 });
+                    }
+                } else {
+                    if (val > 1) {
+                        threatItems.push({ label: lifeAreasLabels[key], value: val - 1 });
+                    } else if (val < -1) {
+                        opportunityItems.push({ label: lifeAreasLabels[key], value: Math.abs(val + 1) });
+                    } else if (val === -1 || val === 1) {
+                        regulatedItems.push({ label: lifeAreasLabels[key], value: 1 });
+                    }
+                }
+            });
+            
+            // Collect internal experience contributors
+            state.ambient.forEach((amb, i) => {
+                if (amb.value !== 0) {
+                    const typeLabel = typeLabels[amb.type] || amb.type;
+                    const label = 'Internal Experience ' + (i+1) + ' (' + typeLabel + ')';
+                    
+                    if (amb.type === 'threat') {
+                        threatItems.push({ label: label, value: amb.value });
+                    } else if (amb.type === 'opportunity') {
+                        opportunityItems.push({ label: label, value: amb.value });
+                    } else if (amb.type === 'regulated') {
+                        regulatedItems.push({ label: label, value: amb.value });
+                    }
+                }
+            });
+            
+            // Sort by value descending
+            threatItems.sort((a, b) => b.value - a.value);
+            opportunityItems.sort((a, b) => b.value - a.value);
+            regulatedItems.sort((a, b) => b.value - a.value);
+            
+            // Render lists
+            contributorsThreat.innerHTML = threatItems.length > 0 
+                ? threatItems.map(item => '<div class="contributor-item">' + item.label + ': ' + item.value + '</div>').join('')
+                : '';
+            
+            contributorsOpportunity.innerHTML = opportunityItems.length > 0
+                ? opportunityItems.map(item => '<div class="contributor-item">' + item.label + ': ' + item.value + '</div>').join('')
+                : '';
+            
+            let regulatedContent = '';
+            if (regulatedItems.length > 0) {
+                regulatedContent = '<div style="font-weight: bold; margin-bottom: 3px; color: #bbdefb;">Regulated:</div>' +
+                  regulatedItems.map(item => '<div class="neutral-item" style="color: #bbdefb;">• ' + item.label + ': ' + item.value + '</div>').join('');
+            }
+            neutralList.innerHTML = regulatedContent;
+        }
+
+        function getAmbientSliderGradient(type) {
+            if (type === 'threat') {
+                return 'linear-gradient(to right, #ffeb3b 0%, #ff9800 50%, #f44336 100%)';
+            } else if (type === 'regulated') {
+                return 'linear-gradient(to right, #bbdefb 0%, #1976d2 100%)';
+            } else if (type === 'opportunity') {
+                return 'linear-gradient(to right, #c8e6c9 0%, #4caf50 50%, #cddc39 100%)';
+            }
+            return 'linear-gradient(to right, #d1d5db 0%, #d1d5db 100%)';
+        }
+
+        // Build sections using string concatenation
+        function getSectionsInOrder() {
+            // SECTION 1: Self-Care
+            const section1 = 
+                '<div class="card section-green">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">' +
+                        '<h2 style="margin: 0;">' + getSectionNumber('selfCare') + '. Self-Care Check-In</h2>' +
+                        '<button class="btn" onclick="toggleSection(1)" ' +
+                                'style="padding: 6px 12px; font-size: 12px; background: #16a34a; color: white;">' +
+                            (state.section1Expanded ? 'Hide ▲' : 'Show ▼') +
+                        '</button>' +
+                    '</div>' +
+                    (state.section1Expanded ? 
+                        '<div class="subtitle"><em>Foundation assessment</em></div>' +
+                        '<div class="slider-container">' +
+                            '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">' +
+                                '<div style="flex: 1; min-width: 200px;">' +
+                                    '<div class="slider-header" style="margin-bottom: 0;">' +
+                                        '<span class="slider-label" style="font-size: 13px;">Recent Regulation State</span>' +
+                                        '<span class="slider-value" style="color: ' + getSliderColor(-state.selfCare.regulation.value) + ';">' + getLifeAreaDisplayValue(state.selfCare.regulation.value) + '</span>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<button class="btn" onclick="toggleSelfCareLock(\'regulation\')" ' +
+                                        'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (state.selfCare.regulation.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;') + '">' +
+                                    (state.selfCare.regulation.locked ? 'Unlock' : 'Lock') +
+                                '</button>' +
+                            '</div>' +
+                            '<div class="slider-labels">' +
+                                '<span>+5 Consistently regulated</span>' +
+                                '<span>0 Mixed</span>' +
+                                '<span>-5 Dysregulated</span>' +
+                            '</div>' +
+                            '<input type="range" min="-7" max="7" value="' + state.selfCare.regulation.value + '" ' +
+                                   'onchange="updateSlider(\'selfCare\', \'regulation\', this.value)" ' +
+                                   (state.selfCare.regulation.locked ? 'disabled' : '') + ' ' +
+                                   'style="background: ' + getSelfCareSliderGradient() + '; ' + (state.selfCare.regulation.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                        '</div>' +
+                        '<div class="slider-container">' +
+                            '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">' +
+                                '<div style="flex: 1; min-width: 200px;">' +
+                                    '<div class="slider-header" style="margin-bottom: 0;">' +
+                                        '<span class="slider-label" style="font-size: 13px;">Flexibility to Disengage</span>' +
+                                        '<span class="slider-value" style="color: ' + getSliderColor(-state.selfCare.flexibility.value) + ';">' + getLifeAreaDisplayValue(state.selfCare.flexibility.value) + '</span>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<button class="btn" onclick="toggleSelfCareLock(\'flexibility\')" ' +
+                                        'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (state.selfCare.flexibility.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;') + '">' +
+                                    (state.selfCare.flexibility.locked ? 'Unlock' : 'Lock') +
+                                '</button>' +
+                            '</div>' +
+                            '<div class="slider-labels">' +
+                                '<span>+5 Complete freedom</span>' +
+                                '<span>0 Some flexibility</span>' +
+                                '<span>-5 Locked in</span>' +
+                            '</div>' +
+                            '<input type="range" min="-7" max="7" value="' + state.selfCare.flexibility.value + '" ' +
+                                   'onchange="updateSlider(\'selfCare\', \'flexibility\', this.value)" ' +
+                                   (state.selfCare.flexibility.locked ? 'disabled' : '') + ' ' +
+                                   'style="background: ' + getSelfCareSliderGradient() + '; ' + (state.selfCare.flexibility.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                        '</div>'
+                    : '<div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">Click Show to expand</div>') +
+                '</div>';
+
+            // SECTION 2: General Scan (ALL 9 life areas)
+            const lifeAreasData = [
+                { key: 'mental', label: 'Mental Activity', posLabel: '+5 Creative, Pleasant', negLabel: '-5 Racing/Ruminating' },
+                { key: 'somaticBody', label: 'Somatic &/or Body', posLabel: '+5 Calm, relaxed', negLabel: '-5 Aches/pains' },
+                { key: 'emotional', label: 'Emotional', posLabel: '+5 Joy/Enthusiasm', negLabel: '-5 Fear/Anger' },
+                { key: 'homeImprovement', label: 'Home Improvement', posLabel: '+5 Enjoying projects', negLabel: '-5 Pressured by repairs' },
+                { key: 'housingComforts', label: 'Self Care Supports', posLabel: '+5 Enjoying comforts', negLabel: '-5 Isolated/depleted', isHousing: true },
+                { key: 'workMoney', label: 'Work/Income', posLabel: '+5 Calm enthusiasm', negLabel: '-5 Pressure/Fear' },
+                { key: 'moneyHandling', label: 'Money/Resources', posLabel: '+5 Curious/planning', negLabel: '-5 Fear/obsession' },
+                { key: 'spiritual', label: 'Personal Relationships', posLabel: '+5 Able to practice tolerance', negLabel: '-5 Resentments/blaming' },
+                { key: 'freedomLevel', label: 'Spiritual Outlook', posLabel: '+5 Supportive synchronicities', negLabel: '-5 Unsupportive society' }
+            ];
+
+            let section2Content = '';
+            if (state.section2Expanded) {
+                section2Content = '<div class="subtitle"><em>Life area check-in</em></div>';
+                
+                // Sort so visible areas come first
+                const sortedLifeAreas = [...lifeAreasData].sort((a, b) => {
+                    const aVisible = state.lifeAreas[a.key].visible;
+                    const bVisible = state.lifeAreas[b.key].visible;
+                    if (aVisible === bVisible) return 0;
+                    return aVisible ? -1 : 1;
+                });
+                
+                sortedLifeAreas.forEach(area => {
+                    const areaState = state.lifeAreas[area.key];
+                    const gradient = area.isHousing ? getSelfCareSliderGradient() : 'linear-gradient(to right, #64ff64 0%, #4488ff 50%, #ffaa44 75%, #ff4444 100%)';
+                    
+                    if (!areaState.visible) {
+                        // Hidden slider - show compact view with Show button
+                        section2Content +=
+                            '<div class="slider-container" style="padding: 4px 10px; background: #f3f4f6; margin-bottom: 4px;">' +
+                                '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+                                    '<span style="font-size: 12px; color: #6b7280; font-weight: 500;">' + area.label + '</span>' +
+                                    '<button class="btn" onclick="toggleLifeAreaVisible(\'' + area.key + '\')" ' +
+                                            'style="padding: 3px 6px; font-size: 10px; background: #6b7280; color: white;">' +
+                                        'Show' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>';
+                    } else {
+                        // Visible slider - show full slider with Hide and Lock buttons
+                        section2Content +=
+                            '<div class="slider-container">' +
+                                '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px;">' +
+                                    '<div style="flex: 1;">' +
+                                        '<div class="slider-header" style="margin-bottom: 0;">' +
+                                            '<span class="slider-label">' + area.label + '</span>' +
+                                            '<span class="slider-value" style="color: ' + getSliderColor(-areaState.value) + ';">' + getLifeAreaDisplayValue(areaState.value) + '</span>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div style="display: flex; gap: 4px;">' +
+                                        '<button class="btn" onclick="toggleLifeAreaVisible(\'' + area.key + '\')" ' +
+                                                'style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">' +
+                                            'Hide' +
+                                        '</button>' +
+                                        '<button class="btn" onclick="toggleLifeAreaLock(\'' + area.key + '\')" ' +
+                                                'style="padding: 4px 8px; font-size: 11px; ' + (areaState.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;') + '">' +
+                                            (areaState.locked ? 'Unlock' : 'Lock') +
+                                        '</button>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="slider-labels">' +
+                                    '<span>' + area.posLabel + '</span>' +
+                                    '<span>0 Neutral</span>' +
+                                    '<span>' + area.negLabel + '</span>' +
+                                '</div>' +
+                                '<input type="range" min="-7" max="7" value="' + areaState.value + '" ' +
+                                       'onchange="updateSlider(\'life\', \'' + area.key + '\', this.value)" ' +
+                                       (areaState.locked ? 'disabled' : '') + ' ' +
+                                       'style="background: ' + gradient + '; ' + (areaState.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                            '</div>';
+                    }
+                });
+            } else {
+                section2Content = '<div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">Click Show to expand</div>';
+            }
+
+            const section2 = 
+                '<div class="card section-blue">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">' +
+                        '<h2 style="margin: 0;">' + getSectionNumber('generalScan') + '. General Scan</h2>' +
+                        '<button class="btn" onclick="toggleSection(2)" ' +
+                                'style="padding: 6px 12px; font-size: 12px; background: #3b82f6; color: white;">' +
+                            (state.section2Expanded ? 'Hide ▲' : 'Show ▼') +
+                        '</button>' +
+                    '</div>' +
+                    section2Content +
+                '</div>';
+
+            // SECTION 3: Specific Experience
+            let section3Content = '';
+            if (state.section3Expanded) {
+                section3Content = '<div class="subtitle"><em>Rate and describe what you\'re carrying internally (0-10 each)</em></div>' +
+                    '<div class="examples-box">' +
+                        (!state.section2DescExpanded ?
+                            '<div style="margin-bottom: 6px;">' +
+                                '<div style="font-size: 13px; color: #374151; line-height: 1.6;">' +
+                                    '<strong>Threat Response (Dysregulated)</strong> • <strong>Grounded, calm, and approachable (Regulated)</strong> • <strong>Opportunity Responses</strong>' +
+                                '</div>' +
+                            '</div>' +
+                            '<button class="btn" onclick="toggleSection2Desc()" ' +
+                                    'style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">' +
+                                'Show More ▼' +
+                            '</button>'
+                        :
+                            '<div style="margin-bottom: 9px;">' +
+                                '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">' +
+                                    '<div class="examples-title">Three types of internal responses:</div>' +
+                                    '<button class="btn" onclick="toggleSection2Desc()" ' +
+                                            'style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">' +
+                                        'Hide ▲' +
+                                    '</button>' +
+                                '</div>' +
+                                '<textarea id="section2DescTextarea" ' +
+                                          'onchange="updateSection2Desc(this.value)" ' +
+                                          'oninput="autoResizeTextarea(this)" ' +
+                                          'style="width: 100%; min-height: 120px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; font-family: inherit; line-height: 1.5; resize: none; overflow: hidden;">' + state.section2DescText + '</textarea>' +
+                                '<div style="font-size: 11px; color: #6b7280; margin-top: 3px; font-style: italic;">Changes are saved automatically</div>' +
+                            '</div>'
+                        ) +
+                    '</div>';
+                
+                // Loop through all ambient sliders
+                state.ambient.forEach((amb, i) => {
+                    section3Content +=
+                        '<div class="slider-container" style="position: relative;">' +
+                            '<div style="display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap;">' +
+                                '<div style="flex: 1; min-width: 250px;">' +
+                                    '<label class="input-label">Note/Description:</label>' +
+                                    '<textarea onchange="updateAmbient(' + amb.id + ', \'note\', this.value)" ' +
+                                              'placeholder="Brief description..." ' +
+                                              (amb.locked ? 'disabled' : '') + ' ' +
+                                              'style="' + (amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : '') + '">' + amb.note + '</textarea>' +
+                                    
+                                    '<label class="input-label">Type:</label>' +
+                                    '<div style="display: flex; gap: 4px; margin-bottom: 9px;">' +
+                                        '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'threat\')" ' +
+                                                (amb.locked ? 'disabled' : '') + ' ' +
+                                                'style="flex: 1; padding: 6px 4px; border: 2px solid #f44336; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
+                                                (amb.type === 'threat' ? 'background: #f44336; color: white;' : 'background: white; color: #f44336;') + ' ' +
+                                                (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                            'Threat' +
+                                        '</button>' +
+                                        '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'regulated\')" ' +
+                                                (amb.locked ? 'disabled' : '') + ' ' +
+                                                'style="flex: 1; padding: 6px 4px; border: 2px solid #1976d2; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
+                                                (amb.type === 'regulated' ? 'background: #1976d2; color: white;' : 'background: white; color: #1976d2;') + ' ' +
+                                                (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                            'Reg' +
+                                        '</button>' +
+                                        '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'opportunity\')" ' +
+                                                (amb.locked ? 'disabled' : '') + ' ' +
+                                                'style="flex: 1; padding: 6px 4px; border: 2px solid #4caf50; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
+                                                (amb.type === 'opportunity' ? 'background: #4caf50; color: white;' : 'background: white; color: #4caf50;') + ' ' +
+                                                (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                            'Opp' +
+                                        '</button>' +
+                                    '</div>' +
+                                    
+                                    '<div class="slider-header">' +
+                                        '<span class="slider-label" style="font-size: 12px;">Intensity/Loudness</span>' +
+                                        '<span class="slider-value" style="color: ' + (amb.type === 'threat' ? '#f44336' : amb.type === 'regulated' ? '#1976d2' : '#4caf50') + ';">' + amb.value + '</span>' +
+                                    '</div>' +
+                                    '<input type="range" min="0" max="10" value="' + amb.value + '" ' +
+                                           'onchange="updateAmbient(' + amb.id + ', \'value\', this.value)" ' +
+                                           (amb.locked ? 'disabled' : '') + ' ' +
+                                           'style="background: ' + getAmbientSliderGradient(amb.type) + '; ' + (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                    '<div class="slider-labels">' +
+                                        '<span>0 Not present</span>' +
+                                        '<span>10 Very present</span>' +
+                                    '</div>' +
+                                '</div>' +
+                                
+                                '<div style="display: flex; gap: 4px; align-self: flex-end; margin-bottom: 3px;">' +
+                                    '<button type="button" class="btn" onclick="toggleAmbientLock(' + amb.id + ')" ' +
+                                            'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;') + '">' +
+                                        (amb.locked ? 'Edit' : 'Save') +
+                                    '</button>' +
+                                    '<button type="button" class="btn" onclick="deleteAmbientSlider(' + amb.id + ')" ' +
+                                            'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; background: #dc2626; color: white;">' +
+                                        'Del' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+                });
+                
+                // Add "Add Topic" button if less than 6 sliders
+                // Disable if any slider is unlocked (unsaved)
+                const hasUnlockedSlider = state.ambient.some(a => !a.locked);
+                
+                if (state.ambient.length < 6) {
+                    section3Content += 
+                        '<button class="btn" onclick="addAmbientSlider()" ' +
+                                (hasUnlockedSlider ? 'disabled ' : '') +
+                                'style="background: ' + (hasUnlockedSlider ? '#d1d5db' : '#9333ea') + '; color: white; width: 100%; padding: 10px; margin-top: 9px; ' + (hasUnlockedSlider ? 'cursor: not-allowed;' : '') + '">' +
+                            '+ Add Topic' + (hasUnlockedSlider ? ' (Save current sliders first)' : '') +
+                        '</button>';
+                } else {
+                    section3Content +=
+                        '<div style="text-align: center; padding: 9px; color: #6b7280; font-style: italic; font-size: 13px;">' +
+                            'Maximum of 6 internal experiences reached' +
+                        '</div>';
+                }
+            } else {
+                section3Content = '<div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">Click Show to expand</div>';
+            }
+            
+            const section3 = 
+                '<div class="card section-purple">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">' +
+                        '<h2 style="margin: 0;">' + getSectionNumber('specificExp') + '. Specific Experience</h2>' +
+                        '<button class="btn" onclick="toggleSection(3)" ' +
+                                'style="padding: 6px 12px; font-size: 12px; background: #9333ea; color: white;">' +
+                            (state.section3Expanded ? 'Hide ▲' : 'Show ▼') +
+                        '</button>' +
+                    '</div>' +
+                    section3Content +
+                '</div>';
+
+            // Return sections in correct order based on mode
+            const orders = {
+                'A': [section1, section2, section3],
+                'B': [section3, section1, section2],
+                'C': [section2, section3, section1]
+            };
+
+            return orders[state.mode].join('');
+        }
+
+        // Main render function
+        function render() {
+            const html = 
+                '<div class="card header">' +
+                    '<h1>Offload</h1>' +
+                    '<div class="subtitle">' + state.titleDescText + '</div>' +
+                '</div>' +
+                '<div class="card">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+                        '<h2 style="margin: 0;">Introduction</h2>' +
+                        '<button class="btn" onclick="toggleInstructions()" ' +
+                                'style="padding: 4px 10px; font-size: 11px; background: #6b7280; color: white;">' +
+                            (state.instructionsExpanded ? 'Hide ▲' : 'Show ▼') +
+                        '</button>' +
+                    '</div>' +
+                    (state.instructionsExpanded ? 
+                        '<div style="margin-top: 12px; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-wrap;">' + state.introductionText + '</div>'
+                    : '') +
+                '</div>' +
+                '<div class="card">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+                        '<h2 style="margin: 0;">How It Works</h2>' +
+                        '<button class="btn" onclick="toggleHowItWorks()" ' +
+                                'style="padding: 4px 10px; font-size: 11px; background: #6b7280; color: white;">' +
+                            (state.howItWorksExpanded ? 'Hide ▲' : 'Show ▼') +
+                        '</button>' +
+                    '</div>' +
+                    (state.howItWorksExpanded ? 
+                        '<div style="margin-top: 12px; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-wrap;">' + state.howItWorksText + '</div>'
+                    : '') +
+                '</div>' +
+                '<div class="card mode-selector">' +
+                    '<h2>Select Workflow Mode</h2>' +
+                    '<div class="mode-buttons">' +
+                        '<button class="mode-btn mode-a ' + (state.mode === 'A' ? 'active' : '') + '" ' +
+                                'onclick="setMode(\'A\')">' +
+                            'Mode A<br><small>Default</small>' +
+                        '</button>' +
+                        '<button class="mode-btn mode-b ' + (state.mode === 'B' ? 'active' : '') + '" ' +
+                                'onclick="setMode(\'B\')">' +
+                            'Mode B<br><small>Hijacking Stopper</small>' +
+                        '</button>' +
+                        '<button class="mode-btn mode-c ' + (state.mode === 'C' ? 'active' : '') + '" ' +
+                                'onclick="setMode(\'C\')">' +
+                            'Mode C<br><small>Alternative</small>' +
+                        '</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="card">' +
+                    '<h2>Current Mode: ' + state.mode + '</h2>' +
+                    '<ul style="font-size: 13px; color: #374151; line-height: 1.8; margin-left: 20px;">' +
+                        '<li><strong>Mode A:</strong> Self-Care (1), General Scan (2), Specific Experience (3)</li>' +
+                        '<li><strong>Mode B:</strong> Specific Experience (3), Self-Care (1), General Scan (2)</li>' +
+                        '<li><strong>Mode C:</strong> General Scan (2), Specific Experience (3), Self-Care (1)</li>' +
+                    '</ul>' +
+                '</div>' +
+                getSectionsInOrder() +
+                '<div class="card">' +
+                    '<h2>Window of Tolerance Visualization</h2>' +
+                    '<div class="visualization" id="visualization">' +
+                        '<div class="color-legend">' +
+                            '<div class="legend-section legend-section-1">' +
+                                '<div class="legend-text">HYPER<br>AROUSAL</div>' +
+                            '</div>' +
+                            '<div class="legend-section legend-section-2">' +
+                                '<div class="legend-text">HYPO<br>AROUSAL</div>' +
+                            '</div>' +
+                            '<div class="legend-section legend-section-3">' +
+                                '<div class="legend-text">REGULATED</div>' +
+                            '</div>' +
+                            '<div class="legend-section legend-section-4">' +
+                                '<div class="legend-text">OPPORTUNITY</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="zone-labels">' +
+                            '<div class="zone-label">Threat Response (Dysregulated):<br>Fear, anxiety, activated feel, anger,<br>hopelessness, powerlessness,<br>and threat of pain responses</div>' +
+                            '<div class="zone-label">Grounded, calm,<br>and approachable (Regulated)</div>' +
+                            '<div class="zone-label">Opportunity Responses:<br>Enthusiasm, joy, sex, hunger,<br>expansiveness or freedom feelings</div>' +
+                        '</div>' +
+                        '<svg viewBox="0 0 600 300" preserveAspectRatio="none">' +
+                            '<defs>' +
+                                '<linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">' +
+                                    '<stop offset="0%" style="stop-color:#0088ff;stop-opacity:0.4" />' +
+                                    '<stop offset="100%" style="stop-color:#0088ff;stop-opacity:0.9" />' +
+                                '</linearGradient>' +
+                            '</defs>' +
+                            '<path id="riverChannel" class="river-channel" d=""/>' +
+                            '<path id="riverWater" class="river-water" d=""/>' +
+                        '</svg>' +
+                        '<div class="gate-top">' +
+                            '<div class="gate-shape-top" id="gateShapeTop">' +
+                                '<div class="gate-interior-top"></div>' +
+                                '<div class="gate-outline-top"></div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="gate-bottom">' +
+                            '<div class="gate-shape-bottom" id="gateShapeBottom">' +
+                                '<div class="gate-interior-bottom"></div>' +
+                                '<div class="gate-outline-bottom"></div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="gate-text-top" id="gateTextTop">THREAT<br>0</div>' +
+                        '<div class="gate-text-bottom" id="gateTextBottom">OPPORTUNITY<br>0</div>' +
+                        '<div class="river-text" id="riverText">Window of Tolerance Width<br>or Internal Information<br>Processing Capacity</div>' +
+                        '<div class="neutral-list" id="neutralList"></div>' +
+                        '<div class="contributors-list contributors-threat" id="contributorsThreat"></div>' +
+                        '<div class="contributors-list contributors-opportunity" id="contributorsOpportunity"></div>' +
+                        '<div class="ground-label">Window of Tolerance<br>Threat: ' + getThreatLoad() + ' | Regulated: ' + getRegulatedLoad() + ' | Opportunity: ' + getOpportunityLoad() + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="card" style="border: 2px solid #16a34a;">' +
+                    '<h2>💾 Save Current Entry</h2>' +
+                    '<div class="subtitle" style="margin-bottom: 12px;">Save a timestamped snapshot of all current ratings to Google Sheets</div>' +
+                    (state.saveError ? '<div class="error-message">' + state.saveError + '</div>' : '') +
+                    '<button class="btn btn-success" onclick="saveEntry()">Save Entry</button>' +
+                '</div>' +
+                '<div class="card">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">' +
+                        '<h2 style="margin: 0;">Saved Entries: ' + state.entries.length + '</h2>' +
+                        '<div style="display: flex; gap: 8px;">' +
+                            '<button class="btn" style="background: #3b82f6; color: white;" onclick="copyEntries()" ' + (state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : '') + '>📋 Copy All</button>' +
+                            '<button class="btn" style="background: #dc2626; color: white;" onclick="clearEntries()" ' + (state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : '') + '>🗑️ Clear All</button>' +
+                        '</div>' +
+                    '</div>' +
+                    (state.entries.length === 0 ? '<div style="text-align: center; padding: 36px 0; color: #6b7280;">No saved entries yet</div>' :
+                        '<div style="max-height: 450px; overflow-y: auto;">' +
+                            state.entries.map(e => 
+                                '<div class="entry-item">' +
+                                    '<div class="entry-timestamp">' +
+                                        new Date(e.timestamp).toLocaleString() +
+                                    '</div>' +
+                                    '<div class="entry-section">' +
+                                        '<div class="entry-section-title">System Loads</div>' +
+                                        '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px;">' +
+                                            '<div style="background: #fee2e2; padding: 6px; border-radius: 4px; text-align: center;">' +
+                                                '<div style="font-size: 10px; color: #6b7280;">Threat</div>' +
+                                                '<div style="font-size: 18px; font-weight: bold; color: #dc2626;">' + (e.threatLoad || 0) + '</div>' +
+                                            '</div>' +
+                                            '<div style="background: #e3f2fd; padding: 6px; border-radius: 4px; text-align: center;">' +
+                                                '<div style="font-size: 10px; color: #6b7280;">Regulated</div>' +
+                                                '<div style="font-size: 18px; font-weight: bold; color: #1976d2;">' + (e.regulatedLoad || 0) + '</div>' +
+                                            '</div>' +
+                                            '<div style="background: #d1fae5; padding: 6px; border-radius: 4px; text-align: center;">' +
+                                                '<div style="font-size: 10px; color: #6b7280;">Opportunity</div>' +
+                                                '<div style="font-size: 18px; font-weight: bold; color: #16a34a;">' + (e.opportunityLoad || 0) + '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div class="entry-section">' +
+                                        '<div class="entry-section-title">Life Areas (Total: ' + e.lifeTotal + ')</div>' +
+                                        '<div class="entry-life-areas">' +
+                                            '<div>Mental: <strong>' + e.lifeAreas.mental + '</strong></div>' +
+                                            '<div>Somatic/Body: <strong>' + e.lifeAreas.somaticBody + '</strong></div>' +
+                                            '<div>Emotional: <strong>' + e.lifeAreas.emotional + '</strong></div>' +
+                                            '<div>Home Improvement: <strong>' + e.lifeAreas.homeImprovement + '</strong></div>' +
+                                            '<div>Housing/Comforts: <strong>' + e.lifeAreas.housingComforts + '</strong></div>' +
+                                            '<div>Work/Income: <strong>' + e.lifeAreas.workMoney + '</strong></div>' +
+                                            '<div>Money/Resources: <strong>' + (e.lifeAreas.moneyHandling || '00') + '</strong></div>' +
+                                            '<div>Personal Relations: <strong>' + e.lifeAreas.spiritual + '</strong></div>' +
+                                            '<div>Spiritual Outlook: <strong>' + e.lifeAreas.freedomLevel + '</strong></div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div class="entry-section">' +
+                                        '<div class="entry-section-title">Internal Experiences</div>' +
+                                        (e.ambient.filter(a => a.value !== 0).length === 0 ? 
+                                            '<div style="font-style: italic; color: #6b7280; font-size: 12px;">No internal experiences recorded</div>' :
+                                            e.ambient.filter(a => a.value !== 0).map(a => {
+                                                const typeLabels = {
+                                                    'threat': 'Threat Response',
+                                                    'regulated': 'Regulated/Grounded',
+                                                    'opportunity': 'Opportunity Response'
+                                                };
+                                                return '<div class="entry-ambient">' +
+                                                    '<div class="entry-ambient-header">[' + a.value + '/10] - ' + (typeLabels[a.type] || a.type) + '</div>' +
+                                                    '<div class="entry-ambient-note">"' + a.note + '"</div>' +
+                                                '</div>';
+                                            }).join('')
+                                        ) +
+                                    '</div>' +
+                                    '<div class="entry-total">' +
+                                        'Total Load: ' + e.total + ' (' + e.pct + '%)' +
+                                    '</div>' +
+                                '</div>'
+                            ).join('') +
+                        '</div>'
+                    ) +
+                '</div>';
+
+            document.getElementById('app').innerHTML = html;
+            
+            // Update visualization after DOM is ready
+            const threatLoad = getThreatLoad();
+            const opportunityLoad = getOpportunityLoad();
+            const regulatedLoad = getRegulatedLoad();
+            setTimeout(() => updateVisualization(threatLoad, opportunityLoad, regulatedLoad), 0);
+        }
+
+        // Initial render
+        render();
+    </script>
 </body>
 </html>
