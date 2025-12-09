@@ -177,42 +177,15 @@
             top: 10px;
             bottom: 10px;
             width: 80px;
+            background: linear-gradient(to bottom, 
+                #ff4444 0%, 
+                #ffaa44 33%, 
+                #4488ff 66%, 
+                #44ff44 100%);
             border: 2px solid #333;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             z-index: 9;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .legend-section {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2px;
-            border-bottom: 2px solid #000;
-            position: relative;
-        }
-
-        .legend-section:last-child {
-            border-bottom: none;
-        }
-
-        .legend-section-1 { background: #ff4444; }
-        .legend-section-2 { background: #ffaa44; }
-        .legend-section-3 { background: #4488ff; }
-        .legend-section-4 { background: #44ff44; }
-
-        .legend-text {
-            color: white;
-            font-weight: bold;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
-            font-size: 9px;
-            line-height: 1.1;
-            text-align: center;
-            word-wrap: break-word;
-            z-index: 11;
         }
 
         .zone-labels {
@@ -260,7 +233,7 @@
 
         .gate-top {
             position: absolute;
-            left: 35%;
+            left: 50%;
             top: 0;
             width: 100px;
             height: 100%;
@@ -273,7 +246,7 @@
 
         .gate-bottom {
             position: absolute;
-            left: 35%;
+            left: 50%;
             bottom: 0;
             width: 100px;
             height: 100%;
@@ -1098,11 +1071,9 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
         }
 
         function updateContributorLists() {
-            const contributorsThreat = document.getElementById('contributorsThreat');
-            const contributorsOpportunity = document.getElementById('contributorsOpportunity');
             const neutralList = document.getElementById('neutralList');
             
-            if (!contributorsThreat || !contributorsOpportunity || !neutralList) return;
+            if (!neutralList) return;
             
             const selfCareLabels = {
                 regulation: 'Recent Regulation State',
@@ -1127,25 +1098,21 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                 'opportunity': 'Opportunity Response'
             };
             
-            let threatItems = [];
-            let opportunityItems = [];
             let regulatedItems = [];
             
-            // Collect self-care contributors
+            // Collect self-care contributors - positive = regulated, negative = threat
             Object.entries(state.selfCare).forEach(([key, slider]) => {
                 if (!slider.interacted) return;
                 
                 const val = slider.value;
-                if (val < -1) {
-                    threatItems.push({ label: selfCareLabels[key], value: Math.abs(val) - 1 });
-                } else if (val === -1 || val === 1) {
+                if (val === -1 || val === 1) {
                     regulatedItems.push({ label: selfCareLabels[key], value: 1 });
                 } else if (val > 1) {
                     regulatedItems.push({ label: selfCareLabels[key], value: val - 1 });
                 }
             });
             
-            // Collect life area contributors
+            // Collect life area contributors - only if interacted
             Object.entries(state.lifeAreas).forEach(([key, area]) => {
                 if (!area.interacted) return;
                 
@@ -1153,19 +1120,13 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                 const val = area.value;
                 
                 if (isHousingComforts) {
-                    if (val < -1) {
-                        threatItems.push({ label: lifeAreasLabels[key], value: Math.abs(val) - 1 });
-                    } else if (val === -1 || val === 1) {
+                    if (val === -1 || val === 1) {
                         regulatedItems.push({ label: lifeAreasLabels[key], value: 1 });
                     } else if (val > 1) {
                         regulatedItems.push({ label: lifeAreasLabels[key], value: val - 1 });
                     }
                 } else {
-                    if (val > 1) {
-                        threatItems.push({ label: lifeAreasLabels[key], value: val - 1 });
-                    } else if (val < -1) {
-                        opportunityItems.push({ label: lifeAreasLabels[key], value: Math.abs(val + 1) });
-                    } else if (val === -1 || val === 1) {
+                    if (val === -1 || val === 1) {
                         regulatedItems.push({ label: lifeAreasLabels[key], value: 1 });
                     }
                 }
@@ -1173,34 +1134,17 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             
             // Collect internal experience contributors
             state.ambient.forEach((amb, i) => {
-                if (amb.value !== 0) {
+                if (amb.value !== 0 && amb.type === 'regulated') {
                     const typeLabel = typeLabels[amb.type] || amb.type;
                     const label = 'Internal Experience ' + (i+1) + ' (' + typeLabel + ')';
-                    
-                    if (amb.type === 'threat') {
-                        threatItems.push({ label: label, value: amb.value });
-                    } else if (amb.type === 'opportunity') {
-                        opportunityItems.push({ label: label, value: amb.value });
-                    } else if (amb.type === 'regulated') {
-                        regulatedItems.push({ label: label, value: amb.value });
-                    }
+                    regulatedItems.push({ label: label, value: amb.value });
                 }
             });
             
             // Sort by value descending
-            threatItems.sort((a, b) => b.value - a.value);
-            opportunityItems.sort((a, b) => b.value - a.value);
             regulatedItems.sort((a, b) => b.value - a.value);
             
-            // Render lists
-            contributorsThreat.innerHTML = threatItems.length > 0 
-                ? threatItems.map(item => '<div class="contributor-item">' + item.label + ': ' + item.value + '</div>').join('')
-                : '';
-            
-            contributorsOpportunity.innerHTML = opportunityItems.length > 0
-                ? opportunityItems.map(item => '<div class="contributor-item">' + item.label + ': ' + item.value + '</div>').join('')
-                : '';
-            
+            // Render regulated list
             let regulatedContent = '';
             if (regulatedItems.length > 0) {
                 regulatedContent = '<div style="font-weight: bold; margin-bottom: 3px; color: #bbdefb;">Regulated:</div>' +
@@ -1576,23 +1520,18 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                     '<h2>Window of Tolerance Visualization</h2>' +
                     '<div class="visualization" id="visualization">' +
                         '<div class="color-legend">' +
-                            '<div class="legend-section legend-section-1">' +
-                                '<div class="legend-text">HYPER<br>AROUSAL</div>' +
+                            '<div style="position: absolute; top: 5%; left: 50%; transform: translateX(-50%); color: white; font-size: 10px; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.9); z-index: 12; width: 90%;">' +
+                                'Threat<br>Fear, Anger<br>Activated' +
                             '</div>' +
-                            '<div class="legend-section legend-section-2">' +
-                                '<div class="legend-text">HYPO<br>AROUSAL</div>' +
+                            '<div style="position: absolute; top: 32%; left: 50%; transform: translateX(-50%); color: white; font-size: 10px; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.9); z-index: 12; width: 90%;">' +
+                                'Worry<br>Anxious<br>Overwhelm' +
                             '</div>' +
-                            '<div class="legend-section legend-section-3">' +
-                                '<div class="legend-text">REGULATED</div>' +
+                            '<div style="position: absolute; top: 58%; left: 50%; transform: translateX(-50%); color: white; font-size: 10px; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.9); z-index: 12; width: 90%;">' +
+                                'Regulated<br>Calm<br>Grounded' +
                             '</div>' +
-                            '<div class="legend-section legend-section-4">' +
-                                '<div class="legend-text">OPPORTUNITY</div>' +
+                            '<div style="position: absolute; top: 85%; left: 50%; transform: translateX(-50%); color: white; font-size: 10px; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.9); z-index: 12; width: 90%;">' +
+                                'Opportunity<br>Joy, Enthusiasm<br>Expansive' +
                             '</div>' +
-                        '</div>' +
-                        '<div class="zone-labels">' +
-                            '<div class="zone-label">Threat Response (Dysregulated):<br>Fear, anxiety, activated feel, anger,<br>hopelessness, powerlessness,<br>and threat of pain responses</div>' +
-                            '<div class="zone-label">Grounded, calm,<br>and approachable (Regulated)</div>' +
-                            '<div class="zone-label">Opportunity Responses:<br>Enthusiasm, joy, sex, hunger,<br>expansiveness or freedom feelings</div>' +
                         '</div>' +
                         '<svg viewBox="0 0 600 300" preserveAspectRatio="none">' +
                             '<defs>' +
@@ -1620,8 +1559,6 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                         '<div class="gate-text-bottom" id="gateTextBottom">OPPORTUNITY<br>0</div>' +
                         '<div class="river-text" id="riverText">Window of Tolerance Width<br>or Internal Information<br>Processing Capacity</div>' +
                         '<div class="neutral-list" id="neutralList"></div>' +
-                        '<div class="contributors-list contributors-threat" id="contributorsThreat"></div>' +
-                        '<div class="contributors-list contributors-opportunity" id="contributorsOpportunity"></div>' +
                         '<div class="ground-label">Window of Tolerance<br>Threat: ' + getThreatLoad() + ' | Regulated: ' + getRegulatedLoad() + ' | Opportunity: ' + getOpportunityLoad() + '</div>' +
                     '</div>' +
                 '</div>' +
