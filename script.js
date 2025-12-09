@@ -19,6 +19,7 @@ const state = {
     ],
     entries: [],
     saveError: '',
+    mode: 'A',
     section1Expanded: false,
     section2DescExpanded: false,
     instructionsExpanded: false,
@@ -48,6 +49,11 @@ function toggleSection2Desc() {
     render();
 }
 
+
+function setMode(mode) {
+    state.mode = mode;
+    render();
+}
 function toggleInstructions() {
     state.instructionsExpanded = !state.instructionsExpanded;
     render();
@@ -904,6 +910,326 @@ function updateContributorLists() {
     neutralList.innerHTML = regulatedContent;
 }
 
+
+function getSectionNumber(sectionId) {
+    // Fixed numbers - don't change based on position
+    const numbers = {
+        selfCare: 1,
+        generalScan: 2,
+        specificExp: 3
+    };
+    return numbers[sectionId];
+}
+
+function getSectionsInOrder() {
+    const section1 = selfCareSection;
+    const section2 = generalScanSection;
+    const section3 = specificExpSection;
+    
+    const orders = {
+        'A': [section1, section2, section3],
+        'B': [section3, section1, section2],
+        'C': [section2, section3, section1]
+    };
+    
+    return orders[state.mode].join('\n');
+}
+
+
+const selfCareSection = `        <div class="card" style="border-left: 4px solid #16a34a;">
+            <h2>${getSectionNumber("selfCare")}. Self-Care Check-In</h2>
+            <div class="subtitle" style="margin-bottom: 12px;"><em>Foundation assessment - always visible</em></div>
+            
+            <div class="slider-container">
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <div class="slider-header" style="margin-bottom: 0;">
+                            <span class="slider-label" style="font-size: 13px;">How regulated or dysregulated have things been for you in the past few days?</span>
+                            <span class="slider-value" style="color: \${getSliderColor(-state.selfCare.regulation.value)};">\${getLifeAreaDisplayValue(state.selfCare.regulation.value)}</span>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="toggleSelfCareLock('regulation')" 
+                            style="padding: 4px 8px; font-size: 11px; white-space: nowrap; \${state.selfCare.regulation.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;'}">
+                        \${state.selfCare.regulation.locked ? 'Unlock' : 'Lock'}
+                    </button>
+                </div>
+                <div class="slider-labels">
+                    <span>+5 Consistently regulated</span>
+                    <span>0 Mixed</span>
+                    <span>-5 Dysregulated</span>
+                </div>
+                <input type="range" min="-7" max="7" value="\${state.selfCare.regulation.value}" 
+                       onchange="updateSlider('selfCare', 'regulation', this.value)"
+                       \${state.selfCare.regulation.locked ? 'disabled' : ''}
+                       style="background: \${getSelfCareSliderGradient()}; \${state.selfCare.regulation.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+            </div>
+            
+            <div class="slider-container">
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <div class="slider-header" style="margin-bottom: 0;">
+                            <span class="slider-label" style="font-size: 13px;">How much flexibility do you have to stay disengaged from "productive efforts"?</span>
+                            <span class="slider-value" style="color: \${getSliderColor(-state.selfCare.flexibility.value)};">\${getLifeAreaDisplayValue(state.selfCare.flexibility.value)}</span>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="toggleSelfCareLock('flexibility')" 
+                            style="padding: 4px 8px; font-size: 11px; white-space: nowrap; \${state.selfCare.flexibility.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;'}">
+                        \${state.selfCare.flexibility.locked ? 'Unlock' : 'Lock'}
+                    </button>
+                </div>
+                <div class="slider-labels">
+                    <span>+5 Complete freedom</span>
+                    <span>0 Some flexibility</span>
+                    <span>-5 Locked in</span>
+                </div>
+                <input type="range" min="-7" max="7" value="\${state.selfCare.flexibility.value}" 
+                       onchange="updateSlider('selfCare', 'flexibility', this.value)"
+                       \${state.selfCare.flexibility.locked ? 'disabled' : ''}
+                       style="background: \${getSelfCareSliderGradient()}; \${state.selfCare.flexibility.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+            </div>
+        </div>
+`;
+
+const generalScanSection = `
+        <div class="card section-blue">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
+                <h2 style="margin: 0;">${getSectionNumber("generalScan")}. General Scan</h2>
+                <button class="btn" onclick="toggleSection1()" 
+                        style="padding: 6px 12px; font-size: 12px; background: #3b82f6; color: white;">
+                    \${state.section1Expanded ? 'Hide ▲' : 'Expand ▼'}
+                </button>
+            </div>
+            
+            \${state.section1Expanded ? \`
+            <div class="meta-layer">
+                <div class="meta-labels">
+                    <div class="meta-label">Regulated Opportunity Responses</div>
+                    <div class="meta-label">Neutral or Mixed</div>
+                    <div class="meta-label">Dysregulated Threat Responses</div>
+                </div>
+                <div class="meta-lines">
+                    <div class="meta-line meta-line-left"></div>
+                    <div class="meta-line meta-line-right"></div>
+                </div>
+            </div>
+            
+            <div class="life-areas-container">
+                <div class="life-areas-dividers">
+                    <div class="divider-line divider-left"></div>
+                    <div class="divider-line divider-right"></div>
+                </div>
+            
+            \${sortedLifeAreas.map(({ key, label }) => {
+                const area = state.lifeAreas[key];
+                const isMental = key === 'mental';
+                const isSomatic = key === 'somaticBody';
+                const isHomeImprovement = key === 'homeImprovement';
+                const isHousing = key === 'housingComforts';
+                const isWorkMoney = key === 'workMoney';
+                const isMoneyHandling = key === 'moneyHandling';
+                const isSpiritual = key === 'spiritual';
+                const isFreedomLevel = key === 'freedomLevel';
+                
+                let positiveLabel, neutralLabel, negativeLabel;
+                
+                if (isMental) {
+                    positiveLabel = '+5 Creative, Pleasant, Enjoyable (beware overly fantasizing)';
+                    neutralLabel = '0 Think about self compassion/forgiveness and body awareness';
+                    negativeLabel = '-5 Avoidant/Racing Thoughts, Ruminating, Catastrophizing';
+                } else if (isSomatic) {
+                    positiveLabel = '+5 Calm, relaxed, can easily tolerate discomforts';
+                    neutralLabel = '0 Able to force tolerating discomforts while resting/relaxing';
+                    negativeLabel = '-5 Body aches/pains or other physical symptoms';
+                } else if (isHomeImprovement) {
+                    positiveLabel = '+5 Enjoying creative home projects, satisfying progress';
+                    neutralLabel = '0 Neutral about home maintenance';
+                    negativeLabel = '-5 Pressured by overdue repairs, overwhelming obligations';
+                } else if (isHousing) {
+                    positiveLabel = '+5 Enjoying restorative activities, gentle connection';
+                    neutralLabel = '0 Neutral or mixed feelings about self-care';
+                    negativeLabel = '-5 Avoiding rest, isolated, depleted';
+                } else if (isWorkMoney) {
+                    positiveLabel = '+5 A calmable enthusiasm for work/money related tasks';
+                    neutralLabel = '0 Have some willingness to pursue/engage in income generating efforts';
+                    negativeLabel = '-5 Intense or persistent anticipation, rumination, or pressure to perform';
+                } else if (isMoneyHandling) {
+                    positiveLabel = '+5 Curiosity or thinking about paying down debt or investing into business related things';
+                    neutralLabel = '0 Not really thinking or worrying about money or resources at all';
+                    negativeLabel = '-5 Fear about financial failure or obsessions about money monitoring';
+                } else if (isSpiritual) {
+                    positiveLabel = '+5 Able and willing to practice tolerance of information while interacting';
+                    neutralLabel = '0 Can neutralize overly negative thoughts/narratives';
+                    negativeLabel = '-5 Resentments, blaming, catastrophizing, external critic, and prolonged avoidance';
+                } else if (isFreedomLevel) {
+                    positiveLabel = '+5 Supportive random synchronicities, consilience leading to approachability';
+                    neutralLabel = '0 Neutral or between the extremes';
+                    negativeLabel = '-5 Parts of society/other people are unsupportive of my needs and wants';
+                } else {
+                    positiveLabel = '+5 Enthusiasm/Fun';
+                    neutralLabel = '0 Deeply Calm (Regulated)';
+                    negativeLabel = '-5 Fear, Anger, or Activated (Dysregulated)';
+                }
+                
+                return \`
+                <div class="slider-container" style="\${!area.visible ? 'padding: 4px 10px; background: #f3f4f6; margin-bottom: 4px;' : ''}">
+                    \${!area.visible ? \`
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 12px; color: #6b7280; font-weight: 500;">\${label}</span>
+                            <button class="btn" onclick="toggleLifeAreaVisible('\${key}')" 
+                                    style="padding: 3px 6px; font-size: 10px; background: #6b7280; color: white;">
+                                Show
+                            </button>
+                        </div>
+                    \` : \`
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px;">
+                        <div style="flex: 1;">
+                            <div class="slider-header" style="margin-bottom: 0;">
+                                <span class="slider-label">\${label}</span>
+                                <span class="slider-value" style="color: \${getSliderColor(-area.value)};">\${getLifeAreaDisplayValue(area.value)}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn" onclick="toggleLifeAreaVisible('\${key}')" 
+                                    style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">
+                                Hide
+                            </button>
+                            <button class="btn" onclick="toggleLifeAreaLock('\${key}')" 
+                                    style="padding: 4px 8px; font-size: 11px; \${area.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;'}">
+                                \${area.locked ? 'Unlock' : 'Lock'}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="slider-labels"><span>\${positiveLabel}</span><span>\${neutralLabel}</span><span>\${negativeLabel}</span></div>
+                    <input type="range" min="-7" max="7" value="\${area.value}" 
+                           onchange="updateSlider('life', '\${key}', this.value)"
+                           \${area.locked ? 'disabled' : ''}
+                           style="background: \${key === 'housingComforts' ? getSelfCareSliderGradient() : 'linear-gradient(to right, #64ff64 0%, #4488ff 50%, #ffaa44 75%, #ff4444 100%)'}; \${area.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                    \`}
+                </div>
+            \`;
+            }).join('')}
+            
+            </div>
+            
+            <div class="subtotal">
+                <div class="subtotal-text">Life Areas Net: \${lifeTotal} (negative = draining, positive = energizing)</div>
+            </div>
+            \` : \`
+            <div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">
+                Click "Expand" to check in on life areas
+            </div>
+            \`}
+        </div>
+`;
+
+const specificExpSection = `
+        <div class="card section-purple">
+            <h2>${getSectionNumber("specificExp")}. Specific Experience or Topic Offloading</h2>
+            <div class="subtitle"><em>Rate and describe what you're carrying internally (0-10 each)</em></div>
+            
+            <div class="examples-box">
+                \${!state.section2DescExpanded ? \`
+                    <div style="margin-bottom: 6px;">
+                        <div style="font-size: 13px; color: #374151; line-height: 1.6;">
+                            <strong>Threat Response (Dysregulated)</strong> • <strong>Grounded, calm, and approachable (Regulated)</strong> • <strong>Opportunity Responses</strong>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="toggleSection2Desc()" 
+                            style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">
+                        Show More ▼
+                    </button>
+                \` : \`
+                    <div style="margin-bottom: 9px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div class="examples-title">Three types of internal responses:</div>
+                            <button class="btn" onclick="toggleSection2Desc()" 
+                                    style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">
+                                Hide ▲
+                            </button>
+                        </div>
+                        <textarea id="section2DescTextarea" 
+                                  onchange="updateSection2Desc(this.value)" 
+                                  oninput="autoResizeTextarea(this)"
+                                  style="width: 100%; min-height: 120px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; font-family: inherit; line-height: 1.5; resize: none; overflow: hidden;">\${state.section2DescText}</textarea>
+                        <div style="font-size: 11px; color: #6b7280; margin-top: 3px; font-style: italic;">
+                            Changes are saved automatically
+                        </div>
+                    </div>
+                \`}
+            </div>
+
+            \${state.ambient.map((amb, i) => \`
+                <div class="slider-container" style="position: relative;">
+                    <div style="display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <div style="display: flex; gap: 8px; margin-bottom: 9px; flex-wrap: wrap;">
+                                <div style="flex: 1 1 60%; min-width: 200px;">
+                                    <label class="input-label">Note/Description:</label>
+                                    <textarea onchange="updateAmbient(\${amb.id}, 'note', this.value)"
+                                              placeholder="Brief description or context..."
+                                              \${amb.locked ? 'disabled' : ''}
+                                              style="width: 100%; min-height: 60px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; font-family: inherit; resize: none; \${amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : ''}">\${amb.note}</textarea>
+                                </div>
+                                <div style="flex: 1 1 35%; min-width: 150px;">
+                                    <label class="input-label">Type:</label>
+                                    <div style="display: flex; gap: 4px;">
+                                        <button onclick="updateAmbient(\${amb.id}, 'type', 'threat')" 
+                                                \${amb.locked ? 'disabled' : ''}
+                                                style="flex: 1; padding: 6px 4px; border: 2px solid #f44336; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; \${amb.type === 'threat' ? 'background: #f44336; color: white;' : 'background: white; color: #f44336;'} \${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                                            Threat
+                                        </button>
+                                        <button onclick="updateAmbient(\${amb.id}, 'type', 'regulated')" 
+                                                \${amb.locked ? 'disabled' : ''}
+                                                style="flex: 1; padding: 6px 4px; border: 2px solid #1976d2; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; \${amb.type === 'regulated' ? 'background: #1976d2; color: white;' : 'background: white; color: #1976d2;'} \${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                                            Reg
+                                        </button>
+                                        <button onclick="updateAmbient(\${amb.id}, 'type', 'opportunity')" 
+                                                \${amb.locked ? 'disabled' : ''}
+                                                style="flex: 1; padding: 6px 4px; border: 2px solid #4caf50; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; \${amb.type === 'opportunity' ? 'background: #4caf50; color: white;' : 'background: white; color: #4caf50;'} \${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                                            Opp
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slider-header">
+                                <span class="slider-label" style="font-size: 12px; line-height: 1.3;">\${getAmbientSliderLabel(amb.type)}</span>
+                                <span class="slider-value" style="color: \${amb.type === 'threat' ? '#f44336' : amb.type === 'regulated' ? '#1976d2' : '#4caf50'};">\${amb.value}</span>
+                            </div>
+                            <input type="range" min="0" max="10" value="\${amb.value}" 
+                                   onchange="updateAmbient(\${amb.id}, 'value', this.value)"
+                                   \${amb.locked ? 'disabled' : ''}
+                                   style="background: \${getAmbientSliderGradient(amb.type, amb.value)}; \${amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
+                            <div class="slider-labels"><span>0 Not present</span><span>10 Very present</span></div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 4px; align-self: flex-end; margin-bottom: 3px;">
+                            <button class="btn" onclick="toggleAmbientLock(\${amb.id})" 
+                                    style="padding: 4px 8px; font-size: 11px; white-space: nowrap; \${amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;'}">
+                                \${amb.locked ? 'Edit' : 'Save'}
+                            </button>
+                            <button class="btn" onclick="deleteAmbientSlider(\${amb.id})" 
+                                    style="padding: 4px 8px; font-size: 11px; white-space: nowrap; background: #dc2626; color: white;">
+                                Del
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            \`).join('')}
+            
+            \${state.ambient.length < 6 ? \`
+                <button class="btn" onclick="addAmbientSlider()" 
+                        style="background: #9333ea; color: white; width: 100%; padding: 10px; margin-top: 9px;">
+                    + Add Topic
+                </button>
+            \` : \`
+                <div style="text-align: center; padding: 9px; color: #6b7280; font-style: italic; font-size: 13px;">
+                    Maximum of 6 internal experiences reached
+                </div>
+            \`}
+        </div>
+`;
+
 function render() {
     const total = getTotal();
     const pct = getPercentage();
@@ -1015,6 +1341,29 @@ function render() {
                 </div>
             ` : ''}
         </div>
+
+        <div class="card" style="background: #f9fafb; border: 2px solid #9333ea;">
+            <div style="text-align: center;">
+                <h3 style="margin: 0 0 10px 0; color: #4b5563;">Select Workflow Mode</h3>
+                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="setMode('A')" 
+                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #6b7280; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'A' ? 'background: #6b7280; color: white;' : 'background: white; color: #6b7280;'}">
+                        Mode A
+                    </button>
+                    <button onclick="setMode('B')" 
+                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #dc2626; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'B' ? 'background: #dc2626; color: white;' : 'background: white; color: #dc2626;'}">
+                        Mode B<br><span style="font-size: 10px;">Hijacking Stopper</span>
+                    </button>
+                    <button onclick="setMode('C')" 
+                            style="flex: 1; min-width: 120px; max-width: 160px; padding: 10px; border: 2px solid #2563eb; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; ${state.mode === 'C' ? 'background: #2563eb; color: white;' : 'background: white; color: #2563eb;'}">
+                        Mode C
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        ${getSectionsInOrder()}
+
 
         <div class="card" style="border-left: 4px solid #16a34a;">
             <h2>Self-Care Check-In</h2>
@@ -1334,162 +1683,3 @@ function render() {
                     <path id="riverWater" class="river-water" d=""/>
                 </svg>
 
-                <div class="gate-top">
-                    <div class="gate-shape-top" id="gateShapeTop">
-                        <div class="gate-interior-top"></div>
-                        <div class="gate-outline-top"></div>
-                    </div>
-                </div>
-
-                <div class="gate-bottom">
-                    <div class="gate-shape-bottom" id="gateShapeBottom">
-                        <div class="gate-interior-bottom"></div>
-                        <div class="gate-outline-bottom"></div>
-                    </div>
-                </div>
-
-                <div class="gate-text-top" id="gateTextTop">THREAT<br>0</div>
-                <div class="gate-text-bottom" id="gateTextBottom">OPPORTUNITY<br>0</div>
-                <div class="river-text" id="riverText">Window of Tolerance Width<br>or Internal Information<br>Processing Capacity</div>
-                <div class="neutral-list" id="neutralList"></div>
-                
-                <div class="contributors-list contributors-threat" id="contributorsThreat"></div>
-                <div class="contributors-list contributors-opportunity" id="contributorsOpportunity"></div>
-            </div>
-        </div>
-
-        <div class="card" style="border: 2px solid #9333ea;">
-            <h2>System Load Summary</h2>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 12px 0;">
-                <div style="background: #fee2e2; padding: 9px; border-radius: 5px; text-align: center;">
-                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Threat Load</div>
-                    <div style="font-size: 28px; font-weight: bold; color: #dc2626;">${threatLoad}</div>
-                    <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Dysregulated</div>
-                </div>
-                <div style="background: #e3f2fd; padding: 9px; border-radius: 5px; text-align: center;">
-                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Regulated Load</div>
-                    <div style="font-size: 28px; font-weight: bold; color: #1976d2;">${regulatedLoad}</div>
-                    <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Grounded</div>
-                </div>
-                <div style="background: #d1fae5; padding: 9px; border-radius: 5px; text-align: center;">
-                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 3px;">Opportunity Load</div>
-                    <div style="font-size: 28px; font-weight: bold; color: #16a34a;">${opportunityLoad}</div>
-                    <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">Enthusiasm/Fun</div>
-                </div>
-            </div>
-            <div class="status-box" style="background: ${status.color}; border-color: ${status.border}; color: ${status.textColor};">
-                <span class="status-icon">${status.icon}</span>
-                <span style="font-weight: 600;">${status.text}</span>
-            </div>
-        </div>
-
-        <div class="card" style="border: 2px solid #16a34a;">
-            <h2>💾 Save Current Entry</h2>
-            <div class="subtitle" style="margin-bottom: 12px;">Save a timestamped snapshot of all current ratings to Google Sheets</div>
-            
-            ${state.saveError ? `<div class="error-message">${state.saveError}</div>` : ''}
-            
-            <button class="btn btn-success" onclick="saveEntry()">Save Entry</button>
-        </div>
-
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h2 style="margin: 0;">Saved Entries: ${state.entries.length}</h2>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn" style="background: #3b82f6; color: white;" onclick="copyEntries()" ${state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : ''}>📋 Copy All</button>
-                    <button class="btn" style="background: #dc2626; color: white;" onclick="clearEntries()" ${state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : ''}>🗑️ Clear All</button>
-                </div>
-            </div>
-            
-            ${state.entries.length === 0 ? '<div style="text-align: center; padding: 36px 0; color: #6b7280;">No saved entries yet</div>' : `
-                <div style="max-height: 450px; overflow-y: auto;">
-                    ${state.entries.map(e => `
-                        <div class="entry-item">
-                            <div class="entry-timestamp">
-                                ${new Date(e.timestamp).toLocaleString()}
-                            </div>
-                            
-                            <div class="entry-section">
-                                <div class="entry-section-title">System Loads</div>
-                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px;">
-                                    <div style="background: #fee2e2; padding: 6px; border-radius: 4px; text-align: center;">
-                                        <div style="font-size: 10px; color: #6b7280;">Threat</div>
-                                        <div style="font-size: 18px; font-weight: bold; color: #dc2626;">${e.threatLoad || 0}</div>
-                                    </div>
-                                    <div style="background: #e3f2fd; padding: 6px; border-radius: 4px; text-align: center;">
-                                        <div style="font-size: 10px; color: #6b7280;">Regulated</div>
-                                        <div style="font-size: 18px; font-weight: bold; color: #1976d2;">${e.regulatedLoad || 0}</div>
-                                    </div>
-                                    <div style="background: #d1fae5; padding: 6px; border-radius: 4px; text-align: center;">
-                                        <div style="font-size: 10px; color: #6b7280;">Opportunity</div>
-                                        <div style="font-size: 18px; font-weight: bold; color: #16a34a;">${e.opportunityLoad || 0}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="entry-section">
-                                <div class="entry-section-title">Life Areas (Total: ${e.lifeTotal})</div>
-                                <div class="entry-life-areas">
-                                    <div>Mental: <strong>${e.lifeAreas.mental}</strong></div>
-                                    <div>Somatic/Body: <strong>${e.lifeAreas.somaticBody}</strong></div>
-                                    <div>Emotional: <strong>${e.lifeAreas.emotional}</strong></div>
-                                    <div>Housing/Comforts: <strong>${e.lifeAreas.housingComforts}</strong></div>
-                                    <div>Work/Income: <strong>${e.lifeAreas.workMoney}</strong></div>
-                                    <div>Money/Resources: <strong>${e.lifeAreas.moneyHandling || '00'}</strong></div>
-                                    <div>Personal Relations: <strong>${e.lifeAreas.spiritual}</strong></div>
-                                    <div>Spiritual Outlook: <strong>${e.lifeAreas.freedomLevel}</strong></div>
-                                </div>
-                            </div>
-
-                            <div class="entry-section">
-                                <div class="entry-section-title">Internal Experiences</div>
-                                ${e.ambient.filter(a => a.value !== 0).length === 0 ? 
-                                    '<div style="font-style: italic; color: #6b7280; font-size: 12px;">No internal experiences recorded</div>' :
-                                    e.ambient.filter(a => a.value !== 0).map((a, i) => {
-                                        const typeLabels = {
-                                            'threat': 'Threat Response',
-                                            'regulated': 'Regulated/Grounded',
-                                            'opportunity': 'Opportunity Response'
-                                        };
-                                        return `
-                                        <div class="entry-ambient">
-                                            <div class="entry-ambient-header">[${a.value}/10] - ${typeLabels[a.type] || a.type}</div>
-                                            <div class="entry-ambient-note">"${a.note}"</div>
-                                        </div>
-                                    `;
-                                    }).join('')
-                                }
-                            </div>
-
-                            <div class="entry-total">
-                                Total Load: ${e.total} (${e.pct}%)
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `}
-        </div>
-    `;
-
-    document.getElementById('app').innerHTML = html;
-    
-    // Auto-resize all textareas
-    const titleDescTextarea = document.getElementById('titleDescTextarea');
-    if (titleDescTextarea) {
-        autoResizeTextarea(titleDescTextarea);
-    }
-    
-    const instructionsTextarea = document.getElementById('instructionsTextarea');
-    if (instructionsTextarea) {
-        autoResizeTextarea(instructionsTextarea);
-    }
-    
-    const section2Textarea = document.getElementById('section2DescTextarea');
-    if (section2Textarea) {
-        autoResizeTextarea(section2Textarea);
-    }
-    
-    setTimeout(() => updateVisualization(threatLoad, opportunityLoad, regulatedLoad), 0);
-}
-
-render();
