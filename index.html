@@ -30,24 +30,24 @@
         .mode-selector {
             background: #f9fafb;
             border: 2px solid #9333ea;
-            padding: 15px;
+            padding: 10px;
             margin-bottom: 15px;
         }
         
         .mode-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
         }
         
         .mode-btn {
             flex: 1;
-            min-width: 120px;
-            max-width: 160px;
-            padding: 12px;
+            min-width: 100px;
+            max-width: 140px;
+            padding: 8px 10px;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -415,26 +415,26 @@
         const state = {
             mode: 'A',
             selfCare: {
-                regulation: { value: 0, interacted: false, locked: true },
-                flexibility: { value: 0, interacted: false, locked: true }
+                regulation: { value: 0, interacted: false, locked: false },
+                flexibility: { value: 0, interacted: false, locked: false }
             },
             lifeAreas: {
-                mental: { value: 0, locked: true, interacted: false, visible: false },
-                spiritual: { value: 0, locked: true, interacted: false, visible: false },
-                somaticBody: { value: 0, locked: true, interacted: false, visible: false },
-                emotional: { value: 0, locked: true, interacted: false, visible: false },
-                homeImprovement: { value: 0, locked: true, interacted: false, visible: false },
-                workMoney: { value: 0, locked: true, interacted: false, visible: false },
-                moneyHandling: { value: 0, locked: true, interacted: false, visible: false },
-                housingComforts: { value: 0, locked: true, interacted: false, visible: false },
-                freedomLevel: { value: 0, locked: true, interacted: false, visible: false }
+                mental: { value: 0, locked: false, interacted: false, visible: false },
+                spiritual: { value: 0, locked: false, interacted: false, visible: false },
+                somaticBody: { value: 0, locked: false, interacted: false, visible: false },
+                emotional: { value: 0, locked: false, interacted: false, visible: false },
+                homeImprovement: { value: 0, locked: false, interacted: false, visible: false },
+                workMoney: { value: 0, locked: false, interacted: false, visible: false },
+                moneyHandling: { value: 0, locked: false, interacted: false, visible: false },
+                housingComforts: { value: 0, locked: false, interacted: false, visible: false },
+                freedomLevel: { value: 0, locked: false, interacted: false, visible: false }
             },
             ambient: [
                 { id: Date.now(), value: 0, type: 'regulated', note: '', locked: false }
             ],
             entries: [],
             saveError: '',
-            section1Expanded: true,  // Mode A default - Self-Care is first
+            section1Expanded: false,
             section2Expanded: false,
             section3Expanded: false,
             section2DescExpanded: false,
@@ -482,20 +482,6 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
         // Mode switching
         function setMode(mode) {
             state.mode = mode;
-            // Expand only the first section based on mode
-            if (mode === 'A') {
-                state.section1Expanded = true;
-                state.section2Expanded = false;
-                state.section3Expanded = false;
-            } else if (mode === 'B') {
-                state.section1Expanded = false;
-                state.section2Expanded = false;
-                state.section3Expanded = true;
-            } else if (mode === 'C') {
-                state.section1Expanded = false;
-                state.section2Expanded = true;
-                state.section3Expanded = false;
-            }
             render();
         }
 
@@ -1169,7 +1155,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             // SECTION 1: Self-Care
             const section1 = 
                 '<div class="card section-green">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ' + (state.section1Expanded ? '9px' : '0') + ';">' +
                         '<h2 style="margin: 0;">' + getSectionNumber('selfCare') + '. Self-Care Check-In</h2>' +
                         '<button class="btn" onclick="toggleSection(1)" ' +
                                 'style="padding: 6px 12px; font-size: 12px; background: #16a34a; color: white;">' +
@@ -1224,7 +1210,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                                    (state.selfCare.flexibility.locked ? 'disabled' : '') + ' ' +
                                    'style="background: ' + getSelfCareSliderGradient() + '; ' + (state.selfCare.flexibility.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
                         '</div>'
-                    : '<div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">Click Show to expand</div>') +
+                    : '') +
                 '</div>';
 
             // SECTION 2: General Scan (ALL 9 life areas)
@@ -1303,12 +1289,12 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                     }
                 });
             } else {
-                section2Content = '<div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">Click Show to expand</div>';
+                section2Content = '';
             }
 
             const section2 = 
                 '<div class="card section-blue">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ' + (state.section2Expanded ? '9px' : '0') + ';">' +
                         '<h2 style="margin: 0;">' + getSectionNumber('generalScan') + '. General Scan</h2>' +
                         '<button class="btn" onclick="toggleSection(2)" ' +
                                 'style="padding: 6px 12px; font-size: 12px; background: #3b82f6; color: white;">' +
@@ -1434,12 +1420,12 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                         '</div>';
                 }
             } else {
-                section3Content = '<div style="padding: 12px; text-align: center; color: #6b7280; font-size: 13px; font-style: italic;">Click Show to expand</div>';
+                section3Content = '';
             }
             
             const section3 = 
                 '<div class="card section-purple">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ' + (state.section3Expanded ? '9px' : '0') + ';">' +
                         '<h2 style="margin: 0;">' + getSectionNumber('specificExp') + '. Specific Experience</h2>' +
                         '<button class="btn" onclick="toggleSection(3)" ' +
                                 'style="padding: 6px 12px; font-size: 12px; background: #9333ea; color: white;">' +
@@ -1491,29 +1477,21 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                     : '') +
                 '</div>' +
                 '<div class="card mode-selector">' +
-                    '<h2>Select Workflow Mode</h2>' +
+                    '<h3 style="margin: 0 0 8px 0; text-align: center; font-size: 15px;">Select Workflow Mode</h3>' +
                     '<div class="mode-buttons">' +
                         '<button class="mode-btn mode-a ' + (state.mode === 'A' ? 'active' : '') + '" ' +
                                 'onclick="setMode(\'A\')">' +
-                            'Mode A<br><small>Default</small>' +
+                            'Support<br>Finder' +
                         '</button>' +
                         '<button class="mode-btn mode-b ' + (state.mode === 'B' ? 'active' : '') + '" ' +
                                 'onclick="setMode(\'B\')">' +
-                            'Mode B<br><small>Hijacking Stopper</small>' +
+                            'Hijacking<br>Stopper' +
                         '</button>' +
                         '<button class="mode-btn mode-c ' + (state.mode === 'C' ? 'active' : '') + '" ' +
                                 'onclick="setMode(\'C\')">' +
-                            'Mode C<br><small>Alternative</small>' +
+                            'Option<br>Weighing' +
                         '</button>' +
                     '</div>' +
-                '</div>' +
-                '<div class="card">' +
-                    '<h2>Current Mode: ' + state.mode + '</h2>' +
-                    '<ul style="font-size: 13px; color: #374151; line-height: 1.8; margin-left: 20px;">' +
-                        '<li><strong>Mode A:</strong> Self-Care (1), General Scan (2), Specific Experience (3)</li>' +
-                        '<li><strong>Mode B:</strong> Specific Experience (3), Self-Care (1), General Scan (2)</li>' +
-                        '<li><strong>Mode C:</strong> General Scan (2), Specific Experience (3), Self-Care (1)</li>' +
-                    '</ul>' +
                 '</div>' +
                 getSectionsInOrder() +
                 '<div class="card">' +
