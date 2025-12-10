@@ -43,9 +43,9 @@
         
         .mode-btn {
             flex: 1;
-            min-width: 100px;
-            max-width: 140px;
-            padding: 8px 10px;
+            min-width: 140px;
+            max-width: 200px;
+            padding: 10px 12px;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
@@ -319,32 +319,28 @@
 
         .gate-text-top {
             position: absolute;
-            left: 35%;
-            transform: translateX(-50%);
-            top: 0;
-            color: white;
+            left: 65%;
+            top: 10px;
+            color: black;
             font-weight: bold;
-            font-size: 13px;
-            text-align: center;
+            font-size: 11px;
+            text-align: left;
             z-index: 6;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-            transition: top 0.3s ease-out;
             pointer-events: none;
+            line-height: 1.2;
         }
 
         .gate-text-bottom {
             position: absolute;
-            left: 35%;
-            transform: translateX(-50%);
-            bottom: 0;
-            color: white;
+            left: 65%;
+            bottom: 10px;
+            color: black;
             font-weight: bold;
-            font-size: 13px;
-            text-align: center;
+            font-size: 11px;
+            text-align: left;
             z-index: 6;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-            transition: bottom 0.3s ease-out;
             pointer-events: none;
+            line-height: 1.2;
         }
 
         .river-text {
@@ -549,12 +545,10 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
 
         // EXACT functions from full version
         function getLifeAreaDisplayValue(internalValue) {
-            if (internalValue === 0) return '00';
-            if (internalValue === -1) return '+0';
-            if (internalValue === 1) return '-0';
-            if (internalValue < -1) return '+' + Math.abs(internalValue + 1);
-            if (internalValue > 1) return '-' + (internalValue - 1);
-            return '00';
+            if (internalValue === 0) return '0';
+            if (internalValue < 0) return '+' + Math.abs(internalValue);
+            if (internalValue > 0) return '-' + internalValue;
+            return '0';
         }
 
         function getSliderColor(value) {
@@ -581,6 +575,30 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                 }
             } else {
                 return 'rgb(68, 136, 255)';
+            }
+        }
+
+        function getLifeAreaBackgroundColor(value) {
+            // Returns a light background color based on slider value
+            // NOTE: Sliders are inverted - negative values = positive/support, positive values = stress
+            if (value <= -3) {
+                // High positive = opportunity (green)
+                return 'rgba(100, 255, 100, 0.3)';
+            } else if (value <= -1) {
+                // Moderate positive = support/regulated (blue)
+                return 'rgba(68, 136, 255, 0.25)';
+            } else if (value === 0) {
+                // Neutral (light gray)
+                return '#f9fafb';
+            } else if (value <= 2) {
+                // Mild stress (yellow) -1 and -2
+                return 'rgba(255, 235, 59, 0.4)';
+            } else if (value <= 4) {
+                // Moderate stress (orange) -3 and -4
+                return 'rgba(255, 152, 0, 0.35)';
+            } else {
+                // High stress (red) -5
+                return 'rgba(244, 67, 54, 0.3)';
             }
         }
 
@@ -791,9 +809,12 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
 
             state.saveError = '';
             
-            const lifeAreasDisplay = {};
+            // Save semantic values (inverted from internal values)
+            const lifeAreasData = {};
             Object.keys(state.lifeAreas).forEach(key => {
-                lifeAreasDisplay[key] = getLifeAreaDisplayValue(state.lifeAreas[key].value);
+                const internalValue = state.lifeAreas[key].value;
+                // Invert: negative internal = positive semantic, positive internal = negative semantic
+                lifeAreasData[key] = -internalValue;
             });
             
             let lifeTotal = 0;
@@ -812,7 +833,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             
             const entry = {
                 timestamp: new Date().toISOString(),
-                lifeAreas: {...lifeAreasDisplay},
+                lifeAreas: {...lifeAreasData},
                 ambient: state.ambient.map(a => ({
                     value: a.value,
                     type: a.type,
@@ -906,10 +927,11 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             
             const height = 300;
             const maxLoad = 50;
+            const minGateHeight = 20; // Minimum 20px so zones always show
             
-            // Calculate gate heights
-            let topGateHeight = Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9);
-            let bottomGateHeight = Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9);
+            // Calculate gate heights with minimums
+            let topGateHeight = Math.max(minGateHeight, Math.min((threatLoad / maxLoad) * height * 1.8, height * 0.9));
+            let bottomGateHeight = Math.max(minGateHeight, Math.min((opportunityLoad / maxLoad) * height * 1.8, height * 0.9));
             
             // Ensure combined gates never exceed 90%
             const combinedHeight = topGateHeight + bottomGateHeight;
@@ -917,17 +939,15 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             
             if (combinedHeight > maxCombined) {
                 const scaleFactor = maxCombined / combinedHeight;
-                topGateHeight = topGateHeight * scaleFactor;
-                bottomGateHeight = bottomGateHeight * scaleFactor;
+                topGateHeight = Math.max(minGateHeight, topGateHeight * scaleFactor);
+                bottomGateHeight = Math.max(minGateHeight, bottomGateHeight * scaleFactor);
             }
             
             gateShapeTop.style.height = topGateHeight + 'px';
             gateShapeBottom.style.height = bottomGateHeight + 'px';
             
-            gateTextTop.style.top = topGateHeight + 'px';
-            gateTextTop.textContent = 'THREAT\n' + threatLoad;
+            gateTextTop.textContent = 'Stress Response\nLevel: ' + threatLoad;
             
-            gateTextBottom.style.bottom = bottomGateHeight + 'px';
             gateTextBottom.textContent = 'OPPORTUNITY\n' + opportunityLoad;
             
             // Calculate background color
@@ -1156,14 +1176,14 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             const section1 = 
                 '<div class="card section-green">' +
                     '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ' + (state.section1Expanded ? '9px' : '0') + ';">' +
-                        '<h2 style="margin: 0;">' + getSectionNumber('selfCare') + '. Self-Care Check-In</h2>' +
+                        '<h2 style="margin: 0;">' + getSectionNumber('selfCare') + '. Capture Your Baseline State</h2>' +
                         '<button class="btn" onclick="toggleSection(1)" ' +
                                 'style="padding: 6px 12px; font-size: 12px; background: #16a34a; color: white;">' +
                             (state.section1Expanded ? 'Hide ▲' : 'Show ▼') +
                         '</button>' +
                     '</div>' +
                     (state.section1Expanded ? 
-                        '<div class="subtitle"><em>Foundation assessment</em></div>' +
+                        '<div class="subtitle"><em>How regulated/depleted am I right now?</em></div>' +
                         '<div class="slider-container">' +
                             '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">' +
                                 '<div style="flex: 1; min-width: 200px;">' +
@@ -1182,7 +1202,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                                 '<span>0 Mixed</span>' +
                                 '<span>-5 Dysregulated</span>' +
                             '</div>' +
-                            '<input type="range" min="-7" max="7" value="' + state.selfCare.regulation.value + '" ' +
+                            '<input type="range" min="-5" max="5" value="' + state.selfCare.regulation.value + '" ' +
                                    'onchange="updateSlider(\'selfCare\', \'regulation\', this.value)" ' +
                                    (state.selfCare.regulation.locked ? 'disabled' : '') + ' ' +
                                    'style="background: ' + getSelfCareSliderGradient() + '; ' + (state.selfCare.regulation.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
@@ -1205,7 +1225,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                                 '<span>0 Some flexibility</span>' +
                                 '<span>-5 Locked in</span>' +
                             '</div>' +
-                            '<input type="range" min="-7" max="7" value="' + state.selfCare.flexibility.value + '" ' +
+                            '<input type="range" min="-5" max="5" value="' + state.selfCare.flexibility.value + '" ' +
                                    'onchange="updateSlider(\'selfCare\', \'flexibility\', this.value)" ' +
                                    (state.selfCare.flexibility.locked ? 'disabled' : '') + ' ' +
                                    'style="background: ' + getSelfCareSliderGradient() + '; ' + (state.selfCare.flexibility.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
@@ -1228,7 +1248,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
 
             let section2Content = '';
             if (state.section2Expanded) {
-                section2Content = '<div class="subtitle"><em>Life area check-in</em></div>';
+                section2Content = '<div class="subtitle"><em>What\'s using up my bandwidth across different areas?</em></div>';
                 
                 // Sort so visible areas come first
                 const sortedLifeAreas = [...lifeAreasData].sort((a, b) => {
@@ -1256,8 +1276,9 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                             '</div>';
                     } else {
                         // Visible slider - show full slider with Hide and Lock buttons
+                        const bgColor = getLifeAreaBackgroundColor(areaState.value);
                         section2Content +=
-                            '<div class="slider-container">' +
+                            '<div class="slider-container" style="background: ' + bgColor + ';">' +
                                 '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px;">' +
                                     '<div style="flex: 1;">' +
                                         '<div class="slider-header" style="margin-bottom: 0;">' +
@@ -1281,7 +1302,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                                     '<span>0 Neutral</span>' +
                                     '<span>' + area.negLabel + '</span>' +
                                 '</div>' +
-                                '<input type="range" min="-7" max="7" value="' + areaState.value + '" ' +
+                                '<input type="range" min="-5" max="5" value="' + areaState.value + '" ' +
                                        'onchange="updateSlider(\'life\', \'' + area.key + '\', this.value)" ' +
                                        (areaState.locked ? 'disabled' : '') + ' ' +
                                        'style="background: ' + gradient + '; ' + (areaState.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
@@ -1295,7 +1316,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             const section2 = 
                 '<div class="card section-blue">' +
                     '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ' + (state.section2Expanded ? '9px' : '0') + ';">' +
-                        '<h2 style="margin: 0;">' + getSectionNumber('generalScan') + '. General Scan</h2>' +
+                        '<h2 style="margin: 0;">' + getSectionNumber('generalScan') + '. Identify life area stress, supports, or opportunities</h2>' +
                         '<button class="btn" onclick="toggleSection(2)" ' +
                                 'style="padding: 6px 12px; font-size: 12px; background: #3b82f6; color: white;">' +
                             (state.section2Expanded ? 'Hide ▲' : 'Show ▼') +
@@ -1307,7 +1328,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             // SECTION 3: Specific Experience
             let section3Content = '';
             if (state.section3Expanded) {
-                section3Content = '<div class="subtitle"><em>Rate and describe what you\'re carrying internally (0-10 each)</em></div>' +
+                section3Content = '<div class="subtitle"><em>What am I carrying right now that needs offloading?</em></div>' +
                     '<div class="examples-box">' +
                         (!state.section2DescExpanded ?
                             '<div style="margin-bottom: 6px;">' +
@@ -1426,7 +1447,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
             const section3 = 
                 '<div class="card section-purple">' +
                     '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: ' + (state.section3Expanded ? '9px' : '0') + ';">' +
-                        '<h2 style="margin: 0;">' + getSectionNumber('specificExp') + '. Specific Experience</h2>' +
+                        '<h2 style="margin: 0;">' + getSectionNumber('specificExp') + '. Capture a Specific Experience</h2>' +
                         '<button class="btn" onclick="toggleSection(3)" ' +
                                 'style="padding: 6px 12px; font-size: 12px; background: #9333ea; color: white;">' +
                             (state.section3Expanded ? 'Hide ▲' : 'Show ▼') +
@@ -1452,44 +1473,20 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                     '<h1>Offload</h1>' +
                     '<div class="subtitle">' + state.titleDescText + '</div>' +
                 '</div>' +
-                '<div class="card">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: center;">' +
-                        '<h2 style="margin: 0;">Introduction</h2>' +
-                        '<button class="btn" onclick="toggleInstructions()" ' +
-                                'style="padding: 4px 10px; font-size: 11px; background: #6b7280; color: white;">' +
-                            (state.instructionsExpanded ? 'Hide ▲' : 'Show ▼') +
-                        '</button>' +
-                    '</div>' +
-                    (state.instructionsExpanded ? 
-                        '<div style="margin-top: 12px; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-wrap;">' + state.introductionText + '</div>'
-                    : '') +
-                '</div>' +
-                '<div class="card">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: center;">' +
-                        '<h2 style="margin: 0;">How It Works</h2>' +
-                        '<button class="btn" onclick="toggleHowItWorks()" ' +
-                                'style="padding: 4px 10px; font-size: 11px; background: #6b7280; color: white;">' +
-                            (state.howItWorksExpanded ? 'Hide ▲' : 'Show ▼') +
-                        '</button>' +
-                    '</div>' +
-                    (state.howItWorksExpanded ? 
-                        '<div style="margin-top: 12px; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-wrap;">' + state.howItWorksText + '</div>'
-                    : '') +
-                '</div>' +
                 '<div class="card mode-selector">' +
-                    '<h3 style="margin: 0 0 8px 0; text-align: center; font-size: 15px;">Select Workflow Mode</h3>' +
+                    '<h2 style="margin: 0 0 10px 0; text-align: left; font-size: 18px;">Where do you want to start?</h2>' +
                     '<div class="mode-buttons">' +
                         '<button class="mode-btn mode-a ' + (state.mode === 'A' ? 'active' : '') + '" ' +
                                 'onclick="setMode(\'A\')">' +
-                            'Support<br>Finder' +
+                            'Self Care and<br>Flexibility Check In' +
                         '</button>' +
                         '<button class="mode-btn mode-b ' + (state.mode === 'B' ? 'active' : '') + '" ' +
                                 'onclick="setMode(\'B\')">' +
-                            'Hijacking<br>Stopper' +
+                            'Start with<br>something specific' +
                         '</button>' +
                         '<button class="mode-btn mode-c ' + (state.mode === 'C' ? 'active' : '') + '" ' +
                                 'onclick="setMode(\'C\')">' +
-                            'Option<br>Weighing' +
+                            'Check in with life<br>areas and options' +
                         '</button>' +
                     '</div>' +
                 '</div>' +
@@ -1533,7 +1530,7 @@ OPPORTUNITY RESPONSES: Enthusiasm, joy, sex, hunger, expansiveness or freedom fe
                                 '<div class="gate-outline-bottom"></div>' +
                             '</div>' +
                         '</div>' +
-                        '<div class="gate-text-top" id="gateTextTop">THREAT<br>0</div>' +
+                        '<div class="gate-text-top" id="gateTextTop">Stress Response<br>Level: 0</div>' +
                         '<div class="gate-text-bottom" id="gateTextBottom">OPPORTUNITY<br>0</div>' +
                         '<div class="river-text" id="riverText">Window of Tolerance Width<br>or Internal Information<br>Processing Capacity</div>' +
                         '<div class="neutral-list" id="neutralList"></div>' +
