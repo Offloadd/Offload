@@ -969,7 +969,7 @@
                  (state.section1Expanded ? '' : 'onclick="event.stopPropagation(); toggleSection(1)"') + '>' +
                 '<div class="section-header">' +
                     '<div>' +
-                        '<div class="section-title">1. Baseline + Internal Self</div>' +
+                        '<div class="section-title">1. Residual Stress, Option Flexibility, & Self Check-Ins</div>' +
                         (state.section1Expanded ? '' : '<div class="section-subtitle">How am I doing right now?</div>') +
                     '</div>' +
                     '<button class="expand-btn" onclick="event.stopPropagation(); toggleSection(1)" style="background: #16a34a;">' +
@@ -983,7 +983,7 @@
                             '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">' +
                                 '<div style="flex: 1; min-width: 200px;">' +
                                     '<div class="slider-header" style="margin-bottom: 0;">' +
-                                        '<span class="slider-label" style="font-size: 13px;">Recent Regulation State</span>' +
+                                        '<span class="slider-label" style="font-size: 13px;">Residual stress from recent days</span>' +
                                         '<span class="slider-value" style="color: #111827;">' + getDisplayValue(state.baseline.regulation.value) + '</span>' +
                                     '</div>' +
                                 '</div>' +
@@ -1006,7 +1006,7 @@
                             '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">' +
                                 '<div style="flex: 1; min-width: 200px;">' +
                                     '<div class="slider-header" style="margin-bottom: 0;">' +
-                                        '<span class="slider-label" style="font-size: 13px;">Logical Flexibility of Choices</span>' +
+                                        '<span class="slider-label" style="font-size: 13px;">Flexibility of choices or options</span>' +
                                         '<span class="slider-value" style="color: #111827;">' + getDisplayValue(state.baseline.flexibility.value) + '</span>' +
                                     '</div>' +
                                 '</div>' +
@@ -1078,7 +1078,7 @@
                             '<div class="slider-container" style="position: relative;">' +
                                 '<div style="display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap;">' +
                                     '<div style="flex: 1; min-width: 250px;">' +
-                                        '<label class="input-label">Note/Description:</label>' +
+                                        '<label class="input-label" style="font-size: 14px;">What is on your mind or affecting your nerves?</label>' +
                                         '<textarea onchange="updateAmbient(' + amb.id + ', \'note\', this.value)" ' +
                                                   'placeholder="Brief description..." ' +
                                                   (amb.locked ? 'disabled' : '') + ' ' +
@@ -1091,21 +1091,21 @@
                                                     'style="flex: 1; padding: 6px 4px; border: 2px solid #f44336; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
                                                     (amb.type === 'threat' ? 'background: #f44336; color: white;' : 'background: white; color: #f44336;') + ' ' +
                                                     (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                                                'Threat' +
+                                                'Stressor' +
                                             '</button>' +
                                             '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'regulated\')" ' +
                                                     (amb.locked ? 'disabled' : '') + ' ' +
                                                     'style="flex: 1; padding: 6px 4px; border: 2px solid #1976d2; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
                                                     (amb.type === 'regulated' ? 'background: #1976d2; color: white;' : 'background: white; color: #1976d2;') + ' ' +
                                                     (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                                                'Reg' +
+                                                'Stabilizer' +
                                             '</button>' +
                                             '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'opportunity\')" ' +
                                                     (amb.locked ? 'disabled' : '') + ' ' +
                                                     'style="flex: 1; padding: 6px 4px; border: 2px solid #4caf50; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
                                                     (amb.type === 'opportunity' ? 'background: #4caf50; color: white;' : 'background: white; color: #4caf50;') + ' ' +
                                                     (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                                                'Opp' +
+                                                'Opportunity' +
                                             '</button>' +
                                         '</div>' +
 
