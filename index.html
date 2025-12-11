@@ -8,14 +8,65 @@
     <title>Offload - Modular V2</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f9fafb;
-            padding: 15px;
-        }
-        .container { max-width: 900px; margin: 0 auto; }
 
 ```
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #f3f4f6;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+    }
+
+    .modal-close:hover {
+        background: #e5e7eb;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f9fafb;
+        padding: 15px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+
     .sections-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -408,7 +459,7 @@
 
         // Section 4: Specific Experiences
         ambient: [
-            { id: Date.now(), value: 0, type: 'regulated', note: '', locked: false }
+            { id: Date.now(), value: 0, type: 'opportunity', note: '', locked: false }
         ],
 
         entries: [],
@@ -506,7 +557,7 @@
         state.ambient.push({
             id: Date.now(),
             value: 0,
-            type: 'regulated',
+            type: 'opportunity',
             note: '',
             locked: false
         });
@@ -955,12 +1006,19 @@
 
     function render() {
         const html =
-            '<div class="card header">' +
-                '<h1>Offload</h1>' +
-                '<div class="subtitle">A nervous system validation companion for tracking your internal state.</div>' +
+            '<div class="card header" style="padding: 12px;">' +
+                '<div style="display: flex; align-items: center; gap: 12px;">' +
+                    '<h1 style="margin: 0;">Offload</h1>' +
+                    '<div class="subtitle" style="margin: 0;">An emotional tolerance companion.</div>' +
+                '</div>' +
             '</div>' +
 
-            '<div class="card" style="text-align: center; font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 12px; padding: 12px;">Where would you like to start?</div>' +
+            '<div class="card" style="text-align: center; padding: 12px; margin-bottom: 12px;">' +
+                '<div style="display: flex; justify-content: center; align-items: center; gap: 12px;">' +
+                    '<div style="font-size: 16px; font-weight: 600; color: #111827;">Where would you like to start?</div>' +
+                    '<button class="btn" onclick="openIntroModal()" style="padding: 6px 12px; font-size: 13px; background: #6366f1; color: white;">ℹ️ Intro</button>' +
+                '</div>' +
+            '</div>' +
 
             '<div class="sections-grid">' +
 
@@ -1078,60 +1136,64 @@
                             '<div class="slider-container" style="position: relative;">' +
                                 '<div style="display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap;">' +
                                     '<div style="flex: 1; min-width: 250px;">' +
-                                        '<label class="input-label" style="font-size: 14px;">What is on your mind or affecting your nerves?</label>' +
+                                        '<div style="margin-bottom: 6px;">' +
+                                            '<label class="input-label" style="font-size: 14px; margin: 0 0 6px 0; display: block;">What is on your mind or affecting your nerves? <span style="font-weight: normal; font-style: italic;">(Could be something supportive or soothing.)</span></label>' +
+                                            '<div style="display: flex; gap: 4px;">' +
+                                                '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'threat\')" ' +
+                                                        (amb.locked ? 'disabled' : '') + ' ' +
+                                                        'style="flex: 1; padding: 6px 10px; border: 2px solid #f44336; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
+                                                        (amb.type === 'threat' ? 'background: #f44336; color: white;' : 'background: white; color: #f44336;') + ' ' +
+                                                        (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                                    'Stressor' +
+                                                '</button>' +
+                                                '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'opportunity\')" ' +
+                                                        (amb.locked ? 'disabled' : '') + ' ' +
+                                                        'style="flex: 1; padding: 6px 10px; border: 2px solid #4caf50; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
+                                                        (amb.type === 'opportunity' ? 'background: #4caf50; color: white;' : 'background: white; color: #4caf50;') + ' ' +
+                                                        (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                                    'Opportunity' +
+                                                '</button>' +
+                                                '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'regulated\')" ' +
+                                                        (amb.locked ? 'disabled' : '') + ' ' +
+                                                        'style="flex: 1; padding: 6px 10px; border: 2px solid #1976d2; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
+                                                        (amb.type === 'regulated' ? 'background: #1976d2; color: white;' : 'background: white; color: #1976d2;') + ' ' +
+                                                        (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                                    'Stabilizer' +
+                                                '</button>' +
+                                            '</div>' +
+                                        '</div>' +
                                         '<textarea onchange="updateAmbient(' + amb.id + ', \'note\', this.value)" ' +
                                                   'placeholder="Brief description..." ' +
                                                   (amb.locked ? 'disabled' : '') + ' ' +
                                                   'style="' + (amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : '') + '">' + amb.note + '</textarea>' +
-
-                                        '<label class="input-label">Type:</label>' +
-                                        '<div style="display: flex; gap: 4px; margin-bottom: 9px;">' +
-                                            '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'threat\')" ' +
-                                                    (amb.locked ? 'disabled' : '') + ' ' +
-                                                    'style="flex: 1; padding: 6px 4px; border: 2px solid #f44336; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
-                                                    (amb.type === 'threat' ? 'background: #f44336; color: white;' : 'background: white; color: #f44336;') + ' ' +
-                                                    (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                                                'Stressor' +
-                                            '</button>' +
-                                            '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'regulated\')" ' +
-                                                    (amb.locked ? 'disabled' : '') + ' ' +
-                                                    'style="flex: 1; padding: 6px 4px; border: 2px solid #1976d2; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
-                                                    (amb.type === 'regulated' ? 'background: #1976d2; color: white;' : 'background: white; color: #1976d2;') + ' ' +
-                                                    (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                                                'Stabilizer' +
-                                            '</button>' +
-                                            '<button onclick="updateAmbient(' + amb.id + ', \'type\', \'opportunity\')" ' +
-                                                    (amb.locked ? 'disabled' : '') + ' ' +
-                                                    'style="flex: 1; padding: 6px 4px; border: 2px solid #4caf50; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; ' +
-                                                    (amb.type === 'opportunity' ? 'background: #4caf50; color: white;' : 'background: white; color: #4caf50;') + ' ' +
-                                                    (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                                                'Opportunity' +
-                                            '</button>' +
-                                        '</div>' +
-
-                                        '<div class="slider-header">' +
-                                            '<span class="slider-label" style="font-size: 12px;">Intensity/Loudness</span>' +
-                                            '<span class="slider-value" style="color: ' + (amb.type === 'threat' ? '#f44336' : amb.type === 'regulated' ? '#1976d2' : '#4caf50') + ';">' + amb.value + '</span>' +
-                                        '</div>' +
-                                        '<input type="range" min="0" max="10" value="' + amb.value + '" ' +
-                                               'onchange="updateAmbient(' + amb.id + ', \'value\', this.value)" ' +
-                                               (amb.locked ? 'disabled' : '') + ' ' +
-                                               'style="background: ' + getAmbientSliderGradient(amb.type) + '; ' + (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                                        '<div class="slider-labels">' +
-                                            '<span>0 Not present</span>' +
-                                            '<span>10 Very present</span>' +
-                                        '</div>' +
                                     '</div>' +
 
-                                    '<div style="display: flex; gap: 4px; align-self: flex-end; margin-bottom: 3px;">' +
-                                        '<button type="button" class="btn" onclick="toggleAmbientLock(' + amb.id + ')" ' +
-                                                'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;') + '">' +
-                                            (amb.locked ? 'Edit' : 'Save') +
-                                        '</button>' +
-                                        '<button type="button" class="btn" onclick="deleteAmbientSlider(' + amb.id + ')" ' +
-                                                'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; background: #dc2626; color: white;">' +
-                                            'Del' +
-                                        '</button>' +
+                                    '<div style="display: flex; gap: 8px; width: 100%;">' +
+                                        '<div style="flex: 0 0 75%;">' +
+                                            '<div class="slider-header">' +
+                                                '<span class="slider-label" style="font-size: 12px;">Intensity/Loudness</span>' +
+                                                '<span class="slider-value" style="color: ' + (amb.type === 'threat' ? '#f44336' : amb.type === 'regulated' ? '#1976d2' : '#4caf50') + ';">' + amb.value + '</span>' +
+                                            '</div>' +
+                                            '<input type="range" min="0" max="10" value="' + amb.value + '" ' +
+                                                   'onchange="updateAmbient(' + amb.id + ', \'value\', this.value)" ' +
+                                                   (amb.locked ? 'disabled' : '') + ' ' +
+                                                   'style="width: 100%; background: ' + getAmbientSliderGradient(amb.type) + '; ' + (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                            '<div class="slider-labels">' +
+                                                '<span>0 Not present</span>' +
+                                                '<span>10 Very present</span>' +
+                                            '</div>' +
+                                        '</div>' +
+
+                                        '<div style="display: flex; flex-direction: column; gap: 4px; align-self: center; margin-left: 10px;">' +
+                                            '<button type="button" class="btn" onclick="toggleAmbientLock(' + amb.id + ')" ' +
+                                                    'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;') + '">' +
+                                                (amb.locked ? 'Edit' : 'Save') +
+                                            '</button>' +
+                                            '<button type="button" class="btn" onclick="deleteAmbientSlider(' + amb.id + ')" ' +
+                                                    'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; background: #dc2626; color: white;">' +
+                                                'Del' +
+                                            '</button>' +
+                                        '</div>' +
                                     '</div>' +
                                 '</div>' +
                             '</div>'
@@ -1245,8 +1307,40 @@
         setTimeout(() => updateVisualization(threatLoad, opportunityLoad, regulatedLoad), 0);
     }
 
+    function openIntroModal() {
+        document.getElementById('introModal').classList.add('active');
+    }
+
+    function closeIntroModal() {
+        document.getElementById('introModal').classList.remove('active');
+    }
+
     render();
 </script>
+
+<div id="introModal" class="modal-overlay" onclick="if(event.target === this) closeIntroModal()">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeIntroModal()">×</button>
+        <h2 style="margin-bottom: 16px; color: #111827;">Welcome to Offload</h2>
+        <div style="text-align: center; margin-bottom: 16px;">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
+                📊
+            </div>
+        </div>
+        <div style="color: #374151; line-height: 1.6;">
+            <p style="margin-bottom: 12px;"><strong>Offload</strong> helps you track your emotional tolerance and nervous system state in real-time.</p>
+            <p style="margin-bottom: 12px;">Use the sliders to indicate your current internal state across different life areas. The visualization shows your window of tolerance - when you're regulated, stressed, or experiencing opportunities for growth.</p>
+            <p style="margin-bottom: 12px;"><strong>How to use:</strong></p>
+            <ul style="margin-left: 20px; margin-bottom: 12px;">
+                <li>Adjust sliders from left (+5, positive) to right (-5, negative)</li>
+                <li>Add specific experiences in Section 3</li>
+                <li>Watch the visualization update in real-time</li>
+                <li>Save entries to track patterns over time</li>
+            </ul>
+            <p>Start wherever feels right - there's no wrong way to begin.</p>
+        </div>
+    </div>
+</div>
 ```
 
 </body>
