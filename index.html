@@ -418,9 +418,33 @@
 
 </head>
 <body>
-    <div class="container" id="app"></div>
+    <div id="introModal" class="modal-overlay" onclick="if(event.target === this) closeIntroModal()">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeIntroModal()">×</button>
+            <h2 style="margin-bottom: 16px; color: #111827;">Welcome to Offload</h2>
+            <div style="text-align: center; margin-bottom: 16px;">
+                <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
+                    📊
+                </div>
+            </div>
+            <div style="color: #374151; line-height: 1.6;">
+                <p style="margin-bottom: 12px;"><strong>Offload</strong> helps you track your emotional tolerance and nervous system state in real-time.</p>
+                <p style="margin-bottom: 12px;">Use the sliders to indicate your current internal state across different life areas. The visualization shows your window of tolerance - when you're regulated, stressed, or experiencing opportunities for growth.</p>
+                <p style="margin-bottom: 12px;"><strong>How to use:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 12px;">
+                    <li>Adjust sliders from left (+5, positive) to right (-5, negative)</li>
+                    <li>Add specific experiences in Section 3</li>
+                    <li>Watch the visualization update in real-time</li>
+                    <li>Save entries to track patterns over time</li>
+                </ul>
+                <p>Start wherever feels right - there's no wrong way to begin.</p>
+            </div>
+        </div>
+    </div>
 
 ```
+<div class="container" id="app"></div>
+
 <script>
     // State with new section organization
     const state = {
@@ -1009,7 +1033,7 @@
             '<div class="card header" style="padding: 12px;">' +
                 '<div style="display: flex; align-items: center; gap: 12px;">' +
                     '<h1 style="margin: 0;">Offload</h1>' +
-                    '<div class="subtitle" style="margin: 0;">An emotional tolerance companion.</div>' +
+                    '<div class="subtitle" style="margin: 0;">An emotion tolerance and shadow work companion.</div>' +
                 '</div>' +
             '</div>' +
 
@@ -1317,30 +1341,6 @@
 
     render();
 </script>
-
-<div id="introModal" class="modal-overlay" onclick="if(event.target === this) closeIntroModal()">
-    <div class="modal-content">
-        <button class="modal-close" onclick="closeIntroModal()">×</button>
-        <h2 style="margin-bottom: 16px; color: #111827;">Welcome to Offload</h2>
-        <div style="text-align: center; margin-bottom: 16px;">
-            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
-                📊
-            </div>
-        </div>
-        <div style="color: #374151; line-height: 1.6;">
-            <p style="margin-bottom: 12px;"><strong>Offload</strong> helps you track your emotional tolerance and nervous system state in real-time.</p>
-            <p style="margin-bottom: 12px;">Use the sliders to indicate your current internal state across different life areas. The visualization shows your window of tolerance - when you're regulated, stressed, or experiencing opportunities for growth.</p>
-            <p style="margin-bottom: 12px;"><strong>How to use:</strong></p>
-            <ul style="margin-left: 20px; margin-bottom: 12px;">
-                <li>Adjust sliders from left (+5, positive) to right (-5, negative)</li>
-                <li>Add specific experiences in Section 3</li>
-                <li>Watch the visualization update in real-time</li>
-                <li>Save entries to track patterns over time</li>
-            </ul>
-            <p>Start wherever feels right - there's no wrong way to begin.</p>
-        </div>
-    </div>
-</div>
 ```
 
 </body>
