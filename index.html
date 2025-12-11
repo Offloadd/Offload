@@ -432,8 +432,8 @@
 
     function getDisplayValue(internalValue) {
         if (internalValue === 0) return '0';
-        if (internalValue < 0) return '+' + Math.abs(internalValue);
-        if (internalValue > 0) return '-' + internalValue;
+        if (internalValue > 0) return '+' + internalValue;
+        if (internalValue < 0) return internalValue.toString();
         return '0';
     }
 
