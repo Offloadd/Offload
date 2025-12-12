@@ -834,65 +834,65 @@
         return errors;
     }
 
-    function saveEntry() {
-        const errors = validateSave();
-        if (errors.length > 0) {
-            state.saveError = errors.join('<br>');
-            render();
-            return;
-        }
-
-        state.saveError = '';
-
-        const threatLoad = getThreatLoad();
-        const opportunityLoad = getOpportunityLoad();
-        const regulatedLoad = getRegulatedLoad();
-
-        const entry = {
-            timestamp: new Date().toISOString(),
-            baseline: Object.keys(state.baseline).reduce((acc, key) => {
-                acc[key] = state.baseline[key].value;
-                return acc;
-            }, {}),
-            internalSelf: Object.keys(state.internalSelf).reduce((acc, key) => {
-                acc[key] = state.internalSelf[key].value;
-                return acc;
-            }, {}),
-            externalAreas: Object.keys(state.externalAreas).reduce((acc, key) => {
-                acc[key] = state.externalAreas[key].value;
-                return acc;
-            }, {}),
-            supports: Object.keys(state.supports).reduce((acc, key) => {
-                acc[key] = state.supports[key].value;
-                return acc;
-            }, {}),
-            ambient: state.ambient.map(a => ({
-                value: a.value,
-                type: a.type,
-                note: a.note
-            })),
-            threatLoad,
-            opportunityLoad,
-            regulatedLoad
-        };
-
-        state.entries.unshift(entry);
-
-        fetch('https://script.google.com/macros/s/AKfycbwMvvXjUusgFRR-02_RBxqqFrTpgi9UgANvkb9mdoiuDcjdhYGemqlK01WYKf4gztE/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(entry)
-        }).then(() => {
-            console.log('Data sent to Google Sheets');
-        }).catch(error => {
-            console.error('Error sending to Google Sheets:', error);
-        });
-
+function saveEntry() {
+    const errors = validateSave();
+    if (errors.length > 0) {
+        state.saveError = errors.join('<br>');
         render();
+        return;
     }
+
+    state.saveError = '';
+
+    const threatLoad = getThreatLoad();
+    const opportunityLoad = getOpportunityLoad();
+    const regulatedLoad = getRegulatedLoad();
+
+    const entry = {
+        timestamp: new Date().toISOString(),
+        baseline: Object.keys(state.baseline).reduce((acc, key) => {
+            acc[key] = state.baseline[key].value;
+            return acc;
+        }, {}),
+        internalSelf: Object.keys(state.internalSelf).reduce((acc, key) => {
+            acc[key] = state.internalSelf[key].value;
+            return acc;
+        }, {}),
+        externalAreas: Object.keys(state.externalAreas).reduce((acc, key) => {
+            acc[key] = state.externalAreas[key].value;
+            return acc;
+        }, {}),
+        supports: Object.keys(state.supports).reduce((acc, key) => {
+            acc[key] = state.supports[key].value;
+            return acc;
+        }, {}),
+        ambient: state.ambient.map(a => ({
+            value: a.value,
+            type: a.type,
+            note: a.note
+        })),
+        threatLoad,
+        opportunityLoad,
+        regulatedLoad
+    };
+
+    state.entries.unshift(entry);
+
+    // Fixed fetch request - remove mode: 'no-cors' and Content-Type header
+    fetch('https://script.google.com/macros/s/AKfycbwMvvXjUusgFRR-02_RBxqqFrTpgi9UgANvkb9mdoiuDcjdhYGemqlK01WYKf4gztE/exec', {
+        method: 'POST',
+        body: JSON.stringify(entry)
+    }).then(response => response.text())
+      .then(data => {
+        console.log('Success:', data);
+        alert('Entry saved to Google Sheets!');
+    }).catch(error => {
+        console.error('Error sending to Google Sheets:', error);
+        alert('Error saving to Google Sheets. Check console for details.');
+    });
+
+    render();
+}
 
     function copyEntries() {
         const text = state.entries.map(e => {
