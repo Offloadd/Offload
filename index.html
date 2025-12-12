@@ -1204,7 +1204,7 @@ function buildSlider(category, key, label, posLabel, negLabel, gradient) {
     if (area.editing === undefined) area.editing = false;
 
     if (!area.visible) {
-        return '<div class="slider-container" style="padding: 4px 8px; background: #f3f4f6; margin-bottom: 4px; display: inline-block; min-width: 120px; max-width: 200px;">' +
+        return '<div class="slider-container" style="padding: 4px 8px; background: #f3f4f6; margin-bottom: 4px; display: inline-block; width: calc(50% - 2px); vertical-align: top;">' +
             '<div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">' +
                 '<span style="font-size: 11px; color: #374151; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">' + label + '</span>' +
                 '<button class="btn" onclick="toggleAreaVisible(\'' + category + '\', \'' + key + '\')" ' +
@@ -1303,7 +1303,7 @@ function buildCustomSlider(section, slider) {
 
     // If hidden, show the collapsed "Show" button version
     if (!slider.visible) {
-        return '<div class="slider-container" style="padding: 4px 8px; background: #f3f4f6; margin-bottom: 4px; display: inline-block; min-width: 120px; max-width: 200px;">' +
+        return '<div class="slider-container" style="padding: 4px 8px; background: #f3f4f6; margin-bottom: 4px; display: inline-block; width: calc(50% - 2px); vertical-align: top;">' +
             '<div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">' +
                 '<span style="font-size: 11px; color: #374151; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">' + slider.label + '</span>' +
                 '<button class="btn" onclick="toggleCustomVisible(\'' + section + '\', ' + slider.id + ')" ' +
