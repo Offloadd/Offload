@@ -481,8 +481,8 @@ const state = {
 
     // Section 1: Baseline + Internal Self
     baseline: {
-        regulation: { value: 0, interacted: false, locked: false },
-        flexibility: { value: 0, interacted: false, locked: false }
+        regulation: { value: 0, interacted: false, locked: false, visible: true },
+        flexibility: { value: 0, interacted: false, locked: false, visible: true }
     },
     internalSelf: {
         mental: { value: 0, locked: false, interacted: false, visible: false },
@@ -528,6 +528,7 @@ function toggleSection(section) {
 // Toggle life area visibility
 function toggleAreaVisible(category, key) {
     state[category][key].visible = !state[category][key].visible;
+    saveState();
     render();
 }
 
@@ -664,8 +665,10 @@ function addCustomSlider(section) {
         value: 0,
         locked: false,
         editing: false,
-        interacted: false
+        interacted: false,
+        visible: true
     });
+    saveState();
     render();
 }
 
@@ -674,6 +677,7 @@ function toggleCustomEdit(section, id) {
     const slider = customArray.find(s => s.id === id);
     if (slider) {
         slider.editing = !slider.editing;
+        saveState();
         render();
     }
 }
@@ -690,6 +694,7 @@ function saveCustomSlider(section, id, label, posLabel, negLabel) {
         } else {
             slider.locked = !slider.locked;
         }
+        saveState();
         render();
     }
 }
@@ -700,7 +705,18 @@ function deleteCustomSlider(section, id) {
     } else {
         state.customSupports = state.customSupports.filter(s => s.id !== id);
     }
+    saveState();
     render();
+}
+
+function toggleCustomVisible(section, id) {
+    const customArray = section === 'external' ? state.customExternal : state.customSupports;
+    const slider = customArray.find(s => s.id === id);
+    if (slider) {
+        slider.visible = !slider.visible;
+        saveState();
+        render();
+    }
 }
 
 function updateCustomSlider(section, id, value) {
@@ -709,7 +725,87 @@ function updateCustomSlider(section, id, value) {
     if (slider && !slider.locked) {
         slider.value = parseInt(value);
         slider.interacted = true;
+        saveState();
         render();
+    }
+}
+
+// LocalStorage functions
+function saveState() {
+    try {
+        const stateToSave = {
+            customExternal: state.customExternal,
+            customSupports: state.customSupports,
+            // Save visibility states for built-in sliders
+            baselineVisible: Object.keys(state.baseline).reduce((acc, key) => {
+                acc[key] = state.baseline[key].visible;
+                return acc;
+            }, {}),
+            internalSelfVisible: Object.keys(state.internalSelf).reduce((acc, key) => {
+                acc[key] = state.internalSelf[key].visible;
+                return acc;
+            }, {}),
+            externalAreasVisible: Object.keys(state.externalAreas).reduce((acc, key) => {
+                acc[key] = state.externalAreas[key].visible;
+                return acc;
+            }, {}),
+            supportsVisible: Object.keys(state.supports).reduce((acc, key) => {
+                acc[key] = state.supports[key].visible;
+                return acc;
+            }, {})
+        };
+        localStorage.setItem('offloadState', JSON.stringify(stateToSave));
+    } catch (e) {
+        console.error('Error saving state:', e);
+    }
+}
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem('offloadState');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            
+            // Load custom sliders
+            if (parsed.customExternal) {
+                state.customExternal = parsed.customExternal;
+            }
+            if (parsed.customSupports) {
+                state.customSupports = parsed.customSupports;
+            }
+            
+            // Load visibility states for built-in sliders
+            if (parsed.baselineVisible) {
+                Object.keys(parsed.baselineVisible).forEach(key => {
+                    if (state.baseline[key]) {
+                        state.baseline[key].visible = parsed.baselineVisible[key];
+                    }
+                });
+            }
+            if (parsed.internalSelfVisible) {
+                Object.keys(parsed.internalSelfVisible).forEach(key => {
+                    if (state.internalSelf[key]) {
+                        state.internalSelf[key].visible = parsed.internalSelfVisible[key];
+                    }
+                });
+            }
+            if (parsed.externalAreasVisible) {
+                Object.keys(parsed.externalAreasVisible).forEach(key => {
+                    if (state.externalAreas[key]) {
+                        state.externalAreas[key].visible = parsed.externalAreasVisible[key];
+                    }
+                });
+            }
+            if (parsed.supportsVisible) {
+                Object.keys(parsed.supportsVisible).forEach(key => {
+                    if (state.supports[key]) {
+                        state.supports[key].visible = parsed.supportsVisible[key];
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.error('Error loading state:', e);
     }
 }
 
@@ -1108,11 +1204,11 @@ function buildSlider(category, key, label, posLabel, negLabel, gradient) {
     if (area.editing === undefined) area.editing = false;
 
     if (!area.visible) {
-        return '<div class="slider-container" style="padding: 5px 10px; background: #f3f4f6; margin-bottom: 4px;">' +
+        return '<div class="slider-container" style="padding: 4px 8px; background: #f3f4f6; margin-bottom: 4px; display: inline-block; min-width: 120px; max-width: 200px;">' +
             '<div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">' +
-                '<span style="font-size: 13px; color: #374151; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + label + '</span>' +
+                '<span style="font-size: 11px; color: #374151; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">' + label + '</span>' +
                 '<button class="btn" onclick="toggleAreaVisible(\'' + category + '\', \'' + key + '\')" ' +
-                        'style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white; flex-shrink: 0;">' +
+                        'style="padding: 3px 6px; font-size: 10px; background: #6b7280; color: white; flex-shrink: 0;">' +
                     'Show' +
                 '</button>' +
             '</div>' +
@@ -1202,6 +1298,22 @@ function buildCustomSlider(section, slider) {
     const bgColor = getAreaBackgroundColor(slider.value);
     const gradient = getStandardSliderGradient();
 
+    // Initialize visible property if not set
+    if (slider.visible === undefined) slider.visible = true;
+
+    // If hidden, show the collapsed "Show" button version
+    if (!slider.visible) {
+        return '<div class="slider-container" style="padding: 4px 8px; background: #f3f4f6; margin-bottom: 4px; display: inline-block; min-width: 120px; max-width: 200px;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">' +
+                '<span style="font-size: 11px; color: #374151; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">' + slider.label + '</span>' +
+                '<button class="btn" onclick="toggleCustomVisible(\'' + section + '\', ' + slider.id + ')" ' +
+                        'style="padding: 3px 6px; font-size: 10px; background: #6b7280; color: white; flex-shrink: 0;">' +
+                    'Show' +
+                '</button>' +
+            '</div>' +
+        '</div>';
+    }
+
     if (slider.editing) {
         return '<div class="slider-container" style="background: ' + bgColor + '; width: 100%;">' +
             '<div style="display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; flex-wrap: wrap;">' +
@@ -1252,6 +1364,10 @@ function buildCustomSlider(section, slider) {
                     '</div>' +
                 '</div>' +
                 '<div style="display: flex; gap: 4px;">' +
+                    '<button class="btn" onclick="toggleCustomVisible(\'' + section + '\', ' + slider.id + ')" ' +
+                            'style="padding: 4px 8px; font-size: 11px; background: #6b7280; color: white;">' +
+                        'Hide' +
+                    '</button>' +
                     '<button class="btn" onclick="toggleCustomEdit(\'' + section + '\', ' + slider.id + ')" ' +
                             'style="padding: 4px 8px; font-size: 11px; background: #3b82f6; color: white;">' +
                         'Edit' +
@@ -1308,52 +1424,8 @@ function render() {
             (state.section1Expanded ?
                 '<div style="margin-top: 12px;">' +
                     '<div style="font-weight: 600; font-size: 13px; color: #374151; margin-bottom: 6px; padding-left: 4px;">Baseline:</div>' +
-                    '<div class="slider-container">' +
-                        '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">' +
-                            '<div style="flex: 1; min-width: 200px;">' +
-                                '<div class="slider-header" style="margin-bottom: 0;">' +
-                                    '<span class="slider-label" style="font-size: 13px;">Residual stress from recent days</span>' +
-                                    '<span class="slider-value" style="color: #111827;">' + getDisplayValue(state.baseline.regulation.value) + '</span>' +
-                                '</div>' +
-                            '</div>' +
-                            '<button class="btn" onclick="toggleLock(\'baseline\', \'regulation\')" ' +
-                                    'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (state.baseline.regulation.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;') + '">' +
-                                (state.baseline.regulation.locked ? 'Unlock' : 'Lock') +
-                            '</button>' +
-                        '</div>' +
-                        '<div class="slider-labels">' +
-                            '<span>+5 Consistently regulated</span>' +
-                            '<span>0 Mixed</span>' +
-                            '<span>-5 Dysregulated</span>' +
-                        '</div>' +
-                        '<input type="range" min="-5" max="5" value="' + (-state.baseline.regulation.value) + '" ' +
-                               'onchange="updateSlider(\'baseline\', \'regulation\', -this.value)" ' +
-                               (state.baseline.regulation.locked ? 'disabled' : '') + ' ' +
-                               'style="background: ' + getBaselineSliderGradient() + '; ' + (state.baseline.regulation.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                    '</div>' +
-                    '<div class="slider-container">' +
-                        '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px; flex-wrap: wrap;">' +
-                            '<div style="flex: 1; min-width: 200px;">' +
-                                '<div class="slider-header" style="margin-bottom: 0;">' +
-                                    '<span class="slider-label" style="font-size: 13px;">Flexibility of choices or options</span>' +
-                                    '<span class="slider-value" style="color: #111827;">' + getDisplayValue(state.baseline.flexibility.value) + '</span>' +
-                                '</div>' +
-                            '</div>' +
-                            '<button class="btn" onclick="toggleLock(\'baseline\', \'flexibility\')" ' +
-                                    'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (state.baseline.flexibility.locked ? 'background: #f59e0b; color: white;' : 'background: #16a34a; color: white;') + '">' +
-                                (state.baseline.flexibility.locked ? 'Unlock' : 'Lock') +
-                            '</button>' +
-                        '</div>' +
-                        '<div class="slider-labels">' +
-                            '<span>+5 Complete freedom</span>' +
-                            '<span>0 Some flexibility</span>' +
-                            '<span>-5 Locked in</span>' +
-                        '</div>' +
-                        '<input type="range" min="-5" max="5" value="' + (-state.baseline.flexibility.value) + '" ' +
-                               'onchange="updateSlider(\'baseline\', \'flexibility\', -this.value)" ' +
-                               (state.baseline.flexibility.locked ? 'disabled' : '') + ' ' +
-                               'style="background: ' + getBaselineSliderGradient() + '; ' + (state.baseline.flexibility.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                    '</div>' +
+                    buildSlider('baseline', 'regulation', 'Residual stress from recent days', '+5 Consistently regulated', '-5 Dysregulated', getBaselineSliderGradient()) +
+                    buildSlider('baseline', 'flexibility', 'Flexibility of choices or options', '+5 Complete freedom', '-5 Locked in', getBaselineSliderGradient()) +
                     '<div style="font-weight: 600; font-size: 13px; color: #374151; margin: 12px 0 6px 0; padding-left: 4px;">Internal Self:</div>' +
                     '<div>' +
                         buildSlider('internalSelf', 'mental', 'Mental Activity', '+5 Creative, Pleasant', '-5 Racing/Ruminating', getStandardSliderGradient()) +
@@ -1602,6 +1674,9 @@ function render() {
     const regulatedLoad = getRegulatedLoad();
     setTimeout(() => updateVisualization(threatLoad, opportunityLoad, regulatedLoad), 0);
 }
+
+// Load saved state from localStorage
+loadState();
 
 // Initial render
 render();
