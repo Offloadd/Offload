@@ -1,113 +1,111 @@
-
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Offload - Modular V2</title>
    <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
 }
 
 .modal-overlay {
-display: none;
-position: fixed !important;
-top: 0 !important;
-left: 0 !important;
-width: 100% !important;
-height: 100% !important;
-background: rgba(0, 0, 0, 0.5);
-z-index: 9999 !important;
-justify-content: center;
-align-items: center;
-padding: 20px;
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999 !important;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
 
 .modal-overlay.active {
-display: flex !important;
+    display: flex !important;
 }
 
 .modal-content {
-background: white;
-border-radius: 12px;
-padding: 24px;
-max-width: 600px;
-max-height: 80vh;
-overflow-y: auto;
-position: relative !important;
-box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 .modal-close {
-position: absolute !important;
-top: 12px;
-right: 12px;
-background: #f3f4f6;
-border: none;
-border-radius: 50%;
-width: 32px;
-height: 32px;
-font-size: 20px;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-color: #6b7280;
+    position: absolute !important;
+    top: 12px;
+    right: 12px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
 }
 
 .modal-close:hover {
-background: #e5e7eb;
+    background: #e5e7eb;
 }
 
 body {
-font-family: -apple-system, BlinkMacSystemFont, “Segoe UI”, Roboto, sans-serif;
-background: #f9fafb;
-padding: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f9fafb;
+    padding: 15px;
 }
 
 .container {
-max-width: 900px;
-margin: 0 auto;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 .sections-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-gap: 8px;
-margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
 .card {
-background: white;
-border-radius: 6px;
-padding: 18px;
-margin-bottom: 12px;
-box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .section-card {
-background: white;
-border-radius: 6px;
-padding: 10px;
-margin-bottom: 0;
-box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-cursor: pointer;
-transition: all 0.2s;
+    background: white;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .section-card:hover {
-box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
 .section-card.expanded {
-grid-column: 1 / -1;
-padding: 18px;
-cursor: default;
-margin-bottom: 12px;
+    grid-column: 1 / -1;
+    padding: 18px;
+    cursor: default;
+    margin-bottom: 12px;
 }
 
 .section-green { border-left: 4px solid #16a34a; }
@@ -116,334 +114,333 @@ margin-bottom: 12px;
 .section-orange { border-left: 4px solid #f97316; }
 
 h1 {
-font-size: 22px;
-margin-bottom: 6px;
-color: #111827;
+    font-size: 22px;
+    margin-bottom: 6px;
+    color: #111827;
 }
 
 h2 {
-font-size: 18px;
-margin-bottom: 9px;
-color: #111827;
+    font-size: 18px;
+    margin-bottom: 9px;
+    color: #111827;
 }
 
 .subtitle {
-color: #6b7280;
-font-size: 13px;
-margin-bottom: 12px;
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 12px;
 }
 
 .section-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .section-title {
-font-size: 14px;
-font-weight: 600;
-color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
 }
 
 .section-card.expanded .section-title {
-font-size: 16px;
+    font-size: 16px;
 }
 
 .section-subtitle {
-font-size: 11px;
-color: #6b7280;
-font-style: italic;
-margin-top: 2px;
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 2px;
 }
 
 .expand-btn {
-padding: 6px 12px;
-border-radius: 6px;
-border: none;
-cursor: pointer;
-font-weight: 600;
-font-size: 12px;
-color: white;
-transition: all 0.2s;
-white-space: nowrap;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    color: white;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .slider-container {
-background: #f9fafb;
-padding: 6px;
-border-radius: 4px;
-margin-bottom: 5px;
+    background: #f9fafb;
+    padding: 6px;
+    border-radius: 4px;
+    margin-bottom: 5px;
 }
 
 .slider-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3px;
 }
 
 .slider-label {
-font-weight: 600;
-color: #111827;
-font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    font-size: 14px;
 }
 
 .slider-value {
-font-size: 18px;
-font-weight: bold;
+    font-size: 18px;
+    font-weight: bold;
 }
 
-input[type=“range”] {
-width: 100%;
-height: 6px;
-border-radius: 3px;
-outline: none;
--webkit-appearance: none;
-cursor: pointer;
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
 }
 
-input[type=“range”]::-webkit-slider-thumb {
--webkit-appearance: none;
-appearance: none;
-width: 16px;
-height: 16px;
-border-radius: 50%;
-background: #333;
-cursor: pointer;
-border: 2px solid white;
-box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #333;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-input[type=“range”]::-moz-range-thumb {
-width: 16px;
-height: 16px;
-border-radius: 50%;
-background: #333;
-cursor: pointer;
-border: 2px solid white;
-box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #333;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .slider-labels {
-display: flex;
-justify-content: space-between;
-font-size: 10px;
-color: #6b7280;
-margin-bottom: 2px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #6b7280;
+    margin-bottom: 2px;
 }
 
 .btn {
-padding: 8px 14px;
-border-radius: 6px;
-border: none;
-cursor: pointer;
-font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 textarea {
-width: 100%;
-padding: 8px;
-border: 1px solid #d1d5db;
-border-radius: 4px;
-font-size: 14px;
-font-family: inherit;
-min-height: 50px;
-resize: vertical;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    min-height: 50px;
+    resize: vertical;
 }
 
 .input-label {
-font-size: 13px;
-font-weight: 600;
-color: #374151;
-margin-top: 6px;
-margin-bottom: 3px;
-display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 6px;
+    margin-bottom: 3px;
+    display: block;
 }
 
 /* Visualization styles */
 .visualization {
-position: relative;
-width: 100%;
-height: 300px;
-border: 2px solid #333;
-border-radius: 5px;
-overflow: hidden;
-background: #44ff44;
-transition: background-color 0.3s ease-out;
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    overflow: hidden;
+    background: #44ff44;
+    transition: background-color 0.3s ease-out;
 }
 
 .color-legend {
-position: absolute;
-left: 10px;
-top: 10px;
-bottom: 10px;
-width: 80px;
-background: linear-gradient(to bottom,
-#ff4444 0%,
-#ffaa44 33%,
-#4488ff 66%,
-#44ff44 100%);
-border: 2px solid #333;
-border-radius: 5px;
-box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-z-index: 9;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    bottom: 10px;
+    width: 80px;
+    background: linear-gradient(to bottom,
+        #ff4444 0%,
+        #ffaa44 33%,
+        #4488ff 66%,
+        #44ff44 100%);
+    border: 2px solid #333;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 9;
 }
 
 .visualization svg {
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .river-channel {
-fill: rgba(135, 206, 250, 0.6);
-stroke: #4682b4;
-stroke-width: 2;
-transition: d 0.3s ease-out;
+    fill: rgba(135, 206, 250, 0.6);
+    stroke: #4682b4;
+    stroke-width: 2;
+    transition: d 0.3s ease-out;
 }
 
 .river-water {
-fill: url(#waterGradient);
-opacity: 0.8;
-transition: d 0.3s ease-out;
+    fill: url(#waterGradient);
+    opacity: 0.8;
+    transition: d 0.3s ease-out;
 }
 
 .gate-top {
-position: absolute;
-left: 50%;
-top: 0;
-width: 100px;
-height: 100%;
-display: flex;
-flex-direction: column;
-justify-content: flex-start;
-z-index: 5;
-transform: translateX(-60px);
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    z-index: 5;
+    transform: translateX(-60px);
 }
 
 .gate-bottom {
-position: absolute;
-left: 50%;
-bottom: 0;
-width: 100px;
-height: 100%;
-display: flex;
-flex-direction: column;
-justify-content: flex-end;
-z-index: 5;
-transform: translateX(-60px);
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    z-index: 5;
+    transform: translateX(-60px);
 }
 
 .gate-shape-top, .gate-shape-bottom {
-width: 100%;
-position: relative;
-transition: height 0.3s ease-out;
+    width: 100%;
+    position: relative;
+    transition: height 0.3s ease-out;
 }
 
 .gate-interior-top {
-position: absolute;
-top: 0;
-left: 50%;
-transform: translateX(-50%);
-width: 60%;
-height: 100%;
-background: rgba(255, 100, 100, 0.3);
-border-radius: 0 0 50% 50%;
-z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 100%;
+    background: rgba(255, 100, 100, 0.3);
+    border-radius: 0 0 50% 50%;
+    z-index: 1;
 }
 
 .gate-interior-bottom {
-position: absolute;
-bottom: 0;
-left: 50%;
-transform: translateX(-50%);
-width: 60%;
-height: 100%;
-background: rgba(100, 255, 100, 0.3);
-border-radius: 50% 50% 0 0;
-z-index: 1;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 100%;
+    background: rgba(100, 255, 100, 0.3);
+    border-radius: 50% 50% 0 0;
+    z-index: 1;
 }
 
 .gate-outline-top {
-position: absolute;
-top: 0;
-left: 50%;
-transform: translateX(-50%);
-width: 100%;
-height: 100%;
-border: 4px solid #222;
-border-top: none;
-border-radius: 0 0 50% 50%;
-background: transparent;
-box-shadow: 0 0 15px rgba(0,0,0,0.4);
-z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    border: 4px solid #222;
+    border-top: none;
+    border-radius: 0 0 50% 50%;
+    background: transparent;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    z-index: 2;
 }
 
 .gate-outline-bottom {
-position: absolute;
-bottom: 0;
-left: 50%;
-transform: translateX(-50%);
-width: 100%;
-height: 100%;
-border: 4px solid #222;
-border-bottom: none;
-border-radius: 50% 50% 0 0;
-background: transparent;
-box-shadow: 0 0 15px rgba(0,0,0,0.4);
-z-index: 2;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    border: 4px solid #222;
+    border-bottom: none;
+    border-radius: 50% 50% 0 0;
+    background: transparent;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    z-index: 2;
 }
 
 .gate-text-top {
-position: absolute;
-right: 15px;
-top: 10px;
-color: black;
-font-weight: bold;
-font-size: 10px;
-text-align: right;
-z-index: 6;
-pointer-events: none;
-line-height: 1.2;
-max-width: 140px;
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    color: black;
+    font-weight: bold;
+    font-size: 10px;
+    text-align: right;
+    z-index: 6;
+    pointer-events: none;
+    line-height: 1.2;
+    max-width: 140px;
 }
 
 .gate-text-bottom {
-position: absolute;
-right: 15px;
-bottom: 10px;
-color: black;
-font-weight: bold;
-font-size: 10px;
-text-align: right;
-z-index: 6;
-pointer-events: none;
-line-height: 1.2;
-max-width: 140px;
+    position: absolute;
+    right: 15px;
+    bottom: 10px;
+    color: black;
+    font-weight: bold;
+    font-size: 10px;
+    text-align: right;
+    z-index: 6;
+    pointer-events: none;
+    line-height: 1.2;
+    max-width: 140px;
 }
 
 .river-text {
-position: absolute;
-left: 50%;
-right: auto;
-width: 90%;
-max-width: 250px;
-color: white;
-font-weight: bold;
-font-size: 13px;
-text-align: center;
-z-index: 6;
-text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-pointer-events: none;
-transition: top 0.3s ease-out, font-size 0.3s ease-out, letter-spacing 0.3s ease-out;
-transform: translate(-50%, -50%);
-white-space: normal;
-line-height: 1.2;
+    position: absolute;
+    left: 50%;
+    right: auto;
+    width: 90%;
+    max-width: 250px;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    text-align: center;
+    z-index: 6;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+    pointer-events: none;
+    transition: top 0.3s ease-out, font-size 0.3s ease-out, letter-spacing 0.3s ease-out;
+    transform: translate(-50%, -50%);
+    white-space: normal;
+    line-height: 1.2;
 }
-</style>
-
+   </style>
 </head>
 <body>
    <div id="introModal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeIntroModal()">
@@ -474,8 +471,6 @@ line-height: 1.2;
    </div>
 
    <div class="container" id="app"></div>
-
-   <script src="offload.js"></script>
 
    <script>
 // State with new section organization
@@ -775,7 +770,7 @@ function loadState() {
         const saved = localStorage.getItem('offloadState');
         if (saved) {
             const parsed = JSON.parse(saved);
-
+            
             // Load custom sliders
             if (parsed.customExternal) {
                 state.customExternal = parsed.customExternal;
@@ -783,7 +778,7 @@ function loadState() {
             if (parsed.customSupports) {
                 state.customSupports = parsed.customSupports;
             }
-
+            
             // Load visibility states for built-in sliders
             if (parsed.baselineVisible) {
                 Object.keys(parsed.baselineVisible).forEach(key => {
@@ -1556,137 +1551,133 @@ function render() {
                                               'placeholder="Brief description..." ' +
                                               (amb.locked ? 'disabled' : '') + ' ' +
                                               'style="' + (amb.locked ? 'opacity: 0.6; cursor: not-allowed; background: #f3f4f6;' : '') + '">' + amb.note + '</textarea>' +
-
-```
-                            '</div>' +
-
-                            '<div style="display: flex; gap: 8px; width: 100%;">' +
-                                '<div style="flex: 0 0 75%;">' +
-                                    '<div class="slider-header">' +
-                                        '<span class="slider-label" style="font-size: 12px;">Intensity/Loudness</span>' +
-                                        '<span class="slider-value" style="color: ' + (amb.type === 'threat' ? '#f44336' : amb.type === 'regulated' ? '#1976d2' : '#4caf50') + ';">' + amb.value + '</span>' +
-                                    '</div>' +
-                                    '<input type="range" min="0" max="10" value="' + amb.value + '" ' +
-                                           'onchange="updateAmbient(' + amb.id + ', \'value\', this.value)" ' +
-                                           (amb.locked ? 'disabled' : '') + ' ' +
-                                           'style="width: 100%; background: ' + getAmbientSliderGradient(amb.type) + '; ' + (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
-                                    '<div class="slider-labels">' +
-                                        '<span>0 Not present</span>' +
-                                        '<span>10 Very present</span>' +
-                                    '</div>' +
                                 '</div>' +
 
-                                '<div style="display: flex; flex-direction: column; gap: 4px; align-self: center; margin-left: 10px;">' +
-                                    '<button type="button" class="btn" onclick="toggleAmbientLock(' + amb.id + ')" ' +
-                                            'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;') + '">' +
-                                        (amb.locked ? 'Edit' : 'Save') +
-                                    '</button>' +
-                                    '<button type="button" class="btn" onclick="deleteAmbientSlider(' + amb.id + ')" ' +
-                                            'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; background: #dc2626; color: white;">' +
-                                        'Del' +
-                                    '</button>' +
+                                '<div style="display: flex; gap: 8px; width: 100%;">' +
+                                    '<div style="flex: 0 0 75%;">' +
+                                        '<div class="slider-header">' +
+                                            '<span class="slider-label" style="font-size: 12px;">Intensity/Loudness</span>' +
+                                            '<span class="slider-value" style="color: ' + (amb.type === 'threat' ? '#f44336' : amb.type === 'regulated' ? '#1976d2' : '#4caf50') + ';">' + amb.value + '</span>' +
+                                        '</div>' +
+                                        '<input type="range" min="0" max="10" value="' + amb.value + '" ' +
+                                               'onchange="updateAmbient(' + amb.id + ', \'value\', this.value)" ' +
+                                               (amb.locked ? 'disabled' : '') + ' ' +
+                                               'style="width: 100%; background: ' + getAmbientSliderGradient(amb.type) + '; ' + (amb.locked ? 'opacity: 0.6; cursor: not-allowed;' : '') + '">' +
+                                        '<div class="slider-labels">' +
+                                            '<span>0 Not present</span>' +
+                                            '<span>10 Very present</span>' +
+                                        '</div>' +
+                                    '</div>' +
+
+                                    '<div style="display: flex; flex-direction: column; gap: 4px; align-self: center; margin-left: 10px;">' +
+                                        '<button type="button" class="btn" onclick="toggleAmbientLock(' + amb.id + ')" ' +
+                                                'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; ' + (amb.locked ? 'background: #f59e0b; color: white;' : 'background: #3b82f6; color: white;') + '">' +
+                                            (amb.locked ? 'Edit' : 'Save') +
+                                        '</button>' +
+                                        '<button type="button" class="btn" onclick="deleteAmbientSlider(' + amb.id + ')" ' +
+                                                'style="padding: 4px 8px; font-size: 11px; white-space: nowrap; background: #dc2626; color: white;">' +
+                                            'Del' +
+                                        '</button>' +
+                                    '</div>' +
                                 '</div>' +
                             '</div>' +
-                        '</div>' +
-                    '</div>'
-                ).join('') +
-                (state.ambient.length < 6 ?
-                    '<button class="btn" onclick="addAmbientSlider()" ' +
-                            (state.ambient.some(a => !a.locked) ? 'disabled ' : '') +
-                            'style="background: ' + (state.ambient.some(a => !a.locked) ? '#d1d5db' : '#f97316') + '; color: white; width: 100%; padding: 10px; margin-top: 9px; ' + (state.ambient.some(a => !a.locked) ? 'cursor: not-allowed;' : '') + '">' +
-                        '+ Add Topic' + (state.ambient.some(a => !a.locked) ? ' (Save current sliders first)' : '') +
-                    '</button>'
-                : '<div style="text-align: center; padding: 9px; color: #6b7280; font-style: italic; font-size: 13px;">Maximum of 6 internal experiences reached</div>') +
-            '</div>'
-        : '') +
-    '</div>' +
-
-
-    '</div>' + // Close sections-grid
-
-    // Visualization
-    '<div class="card">' +
-        '<h2>Window of Tolerance Visualization</h2>' +
-        '<div class="visualization" id="visualization">' +
-            '<div class="color-legend">' +
-                '<div style="position: absolute; top: 0; left: 0; right: 0; height: 100%; background: rgba(255, 255, 255, 0.4); border-radius: 5px; z-index: 10;"></div>' +
-                '<div style="position: absolute; top: 1.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
-                    'Threat<br>Fear, Anger<br>Activated' +
-                '</div>' +
-                '<div style="position: absolute; top: 26.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
-                    'Worry<br>Anxious<br>Overwhelm' +
-                '</div>' +
-                '<div style="position: absolute; top: 51.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
-                    'Regulated<br>Calm<br>Grounded' +
-                '</div>' +
-                '<div style="position: absolute; top: 76.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
-                    'Opportunity<br>Joy, Enthusiasm<br>Expansive' +
-                '</div>' +
-            '</div>' +
-            '<svg viewBox="0 0 600 300" preserveAspectRatio="none">' +
-                '<defs>' +
-                    '<linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">' +
-                        '<stop offset="0%" style="stop-color:#0088ff;stop-opacity:0.4" />' +
-                        '<stop offset="100%" style="stop-color:#0088ff;stop-opacity:0.9" />' +
-                    '</linearGradient>' +
-                '</defs>' +
-                '<path id="riverChannel" class="river-channel" d=""/>' +
-                '<path id="riverWater" class="river-water" d=""/>' +
-            '</svg>' +
-            '<div class="gate-top">' +
-                '<div class="gate-shape-top" id="gateShapeTop">' +
-                    '<div class="gate-interior-top"></div>' +
-                    '<div class="gate-outline-top"></div>' +
-                '</div>' +
-            '</div>' +
-            '<div class="gate-bottom">' +
-                '<div class="gate-shape-bottom" id="gateShapeBottom">' +
-                    '<div class="gate-interior-bottom"></div>' +
-                    '<div class="gate-outline-bottom"></div>' +
-                '</div>' +
-            '</div>' +
-            '<div class="gate-text-top" id="gateTextTop">Stress Response<br>Level: 0</div>' +
-            '<div class="gate-text-bottom" id="gateTextBottom">OPPORTUNITY<br>0</div>' +
-            '<div class="river-text" id="riverText">Window of Tolerance Width<br>or Internal Information<br>Processing Capacity</div>' +
+                        '</div>'
+                    ).join('') +
+                    (state.ambient.length < 6 ?
+                        '<button class="btn" onclick="addAmbientSlider()" ' +
+                                (state.ambient.some(a => !a.locked) ? 'disabled ' : '') +
+                                'style="background: ' + (state.ambient.some(a => !a.locked) ? '#d1d5db' : '#f97316') + '; color: white; width: 100%; padding: 10px; margin-top: 9px; ' + (state.ambient.some(a => !a.locked) ? 'cursor: not-allowed;' : '') + '">' +
+                            '+ Add Topic' + (state.ambient.some(a => !a.locked) ? ' (Save current sliders first)' : '') +
+                        '</button>'
+                    : '<div style="text-align: center; padding: 9px; color: #6b7280; font-style: italic; font-size: 13px;">Maximum of 6 internal experiences reached</div>') +
+                '</div>'
+            : '') +
         '</div>' +
-    '</div>' +
 
-    // Save button
-    '<div class="card" style="border: 1px solid #16a34a;">' +
-        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">' +
-            '<h2 style="margin: 0;">💾 Current Entry</h2>' +
-            '<button class="btn" onclick="saveEntry()" style="background: #16a34a; color: white; white-space: nowrap; padding: 10px 20px;">Save Entry</button>' +
-        '</div>' +
-        (state.saveError ? '<div style="color: #dc2626; margin-bottom: 12px;">' + state.saveError + '</div>' : '') +
-        '<div style="display: flex; gap: 20px;">' +
-            '<div style="flex: 1;">' +
-                '<div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">' +
-                    'Threat: ' + getThreatLoad() + ' | Opportunity: ' + getOpportunityLoad() + ' | Regulated: ' + getRegulatedLoad() +
+
+        '</div>' + // Close sections-grid
+
+        // Visualization
+        '<div class="card">' +
+            '<h2>Window of Tolerance Visualization</h2>' +
+            '<div class="visualization" id="visualization">' +
+                '<div class="color-legend">' +
+                    '<div style="position: absolute; top: 0; left: 0; right: 0; height: 100%; background: rgba(255, 255, 255, 0.4); border-radius: 5px; z-index: 10;"></div>' +
+                    '<div style="position: absolute; top: 1.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
+                        'Threat<br>Fear, Anger<br>Activated' +
+                    '</div>' +
+                    '<div style="position: absolute; top: 26.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
+                        'Worry<br>Anxious<br>Overwhelm' +
+                    '</div>' +
+                    '<div style="position: absolute; top: 51.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
+                        'Regulated<br>Calm<br>Grounded' +
+                    '</div>' +
+                    '<div style="position: absolute; top: 76.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
+                        'Opportunity<br>Joy, Enthusiasm<br>Expansive' +
+                    '</div>' +
                 '</div>' +
-                '<div style="font-size: 14px; color: #6b7280;" id="currentPercentages">' +
-                    'Calculating percentages...' +
+                '<svg viewBox="0 0 600 300" preserveAspectRatio="none">' +
+                    '<defs>' +
+                        '<linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">' +
+                            '<stop offset="0%" style="stop-color:#0088ff;stop-opacity:0.4" />' +
+                            '<stop offset="100%" style="stop-color:#0088ff;stop-opacity:0.9" />' +
+                        '</linearGradient>' +
+                    '</defs>' +
+                    '<path id="riverChannel" class="river-channel" d=""/>' +
+                    '<path id="riverWater" class="river-water" d=""/>' +
+                '</svg>' +
+                '<div class="gate-top">' +
+                    '<div class="gate-shape-top" id="gateShapeTop">' +
+                        '<div class="gate-interior-top"></div>' +
+                        '<div class="gate-outline-top"></div>' +
+                    '</div>' +
                 '</div>' +
+                '<div class="gate-bottom">' +
+                    '<div class="gate-shape-bottom" id="gateShapeBottom">' +
+                        '<div class="gate-interior-bottom"></div>' +
+                        '<div class="gate-outline-bottom"></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="gate-text-top" id="gateTextTop">Stress Response<br>Level: 0</div>' +
+                '<div class="gate-text-bottom" id="gateTextBottom">OPPORTUNITY<br>0</div>' +
+                '<div class="river-text" id="riverText">Window of Tolerance Width<br>or Internal Information<br>Processing Capacity</div>' +
             '</div>' +
         '</div>' +
-    '</div>' +
 
-    // Entries
-    '<div class="card">' +
-        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">' +
-            '<h2 style="margin: 0;">Saved Entries: ' + state.entries.length + '</h2>' +
-            '<button class="btn" style="background: #3b82f6; color: white;" onclick="copyEntries()" ' + (state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : '') + '>📋 Copy All</button>' +
+        // Save button
+        '<div class="card" style="border: 1px solid #16a34a;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">' +
+                '<h2 style="margin: 0;">💾 Current Entry</h2>' +
+                '<button class="btn" onclick="saveEntry()" style="background: #16a34a; color: white; white-space: nowrap; padding: 10px 20px;">Save Entry</button>' +
+            '</div>' +
+            (state.saveError ? '<div style="color: #dc2626; margin-bottom: 12px;">' + state.saveError + '</div>' : '') +
+            '<div style="display: flex; gap: 20px;">' +
+                '<div style="flex: 1;">' +
+                    '<div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">' +
+                        'Threat: ' + getThreatLoad() + ' | Opportunity: ' + getOpportunityLoad() + ' | Regulated: ' + getRegulatedLoad() +
+                    '</div>' +
+                    '<div style="font-size: 14px; color: #6b7280;" id="currentPercentages">' +
+                        'Calculating percentages...' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
         '</div>' +
-        (state.entries.length === 0 ? '<div style="text-align: center; padding: 36px 0; color: #6b7280;">No saved entries yet</div>' : '') +
-    '</div>';
 
-document.getElementById('app').innerHTML = html;
+        // Entries
+        '<div class="card">' +
+            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">' +
+                '<h2 style="margin: 0;">Saved Entries: ' + state.entries.length + '</h2>' +
+                '<button class="btn" style="background: #3b82f6; color: white;" onclick="copyEntries()" ' + (state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : '') + '>📋 Copy All</button>' +
+            '</div>' +
+            (state.entries.length === 0 ? '<div style="text-align: center; padding: 36px 0; color: #6b7280;">No saved entries yet</div>' : '') +
+        '</div>';
 
-const threatLoad = getThreatLoad();
-const opportunityLoad = getOpportunityLoad();
-const regulatedLoad = getRegulatedLoad();
-setTimeout(() => updateVisualization(threatLoad, opportunityLoad, regulatedLoad), 0);
-```
+    document.getElementById('app').innerHTML = html;
 
+    const threatLoad = getThreatLoad();
+    const opportunityLoad = getOpportunityLoad();
+    const regulatedLoad = getRegulatedLoad();
+    setTimeout(() => updateVisualization(threatLoad, opportunityLoad, regulatedLoad), 0);
 }
 
 // Load saved state from localStorage
@@ -1694,7 +1685,6 @@ loadState();
 
 // Initial render
 render();
-</script>
-
+   </script>
 </body>
 </html>
