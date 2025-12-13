@@ -448,7 +448,7 @@ textarea {
        <div class="modal-content">
            <button class="modal-close" onclick="closeIntroModal()">×</button>
            <h2 style="margin-bottom: 16px; color: #111827;">Welcome to Offload</h2>
-           <div style="color: #374151; line-height: 1.6; margin-bottom: 16px;">
+           <div id="introModal_content" contenteditable="true" style="color: #374151; line-height: 1.6; margin-bottom: 16px; padding: 12px; border: 2px dashed #d1d5db; border-radius: 8px; outline: none;">
                <p style="margin-bottom: 12px;">This self help tool is heavily based on a concept called the Window of Tolerance. Which says that our nervous systems basically have limits as to how much internal information can be safely processed in a given amount of time. There's all kinds of information out there about chronic stress and trauma and how to take care of yourself and all that. But no one ever encouraged me to be kinder towards myself, to slow down and pace myself. It was quite the opposite in fact. I remember and there still is a lot of peer pressure to work harder and longer and never give up. Like we are all encouraging ourselves to break ourselves down over and over and become self sabotaging by pushing ourselves too hard for too long in life.</p>
                <p style="margin-bottom: 12px;">Anyways, to make a long story short, this self help tool was built to help me overcome those patterns of overworking myself and the beliefs that high performance was the only way to become a successful adult. This tool helps me tune into the quieter parts of my intuition that know how to keep me from overworking myself and to stop believing in self sabotaging inner narratives. It helps me recognize what it feels like when I am tempted to let my decisions get hijacked by old emotional logic and be able to disobey those old corrosive masters. This tool helps me to understand how much internal and external things are affecting my nervous system at any given time.</p>
                <p style="margin-bottom: 12px;"><strong>Below is a picture of how a nervous system works.</strong></p>
@@ -456,7 +456,7 @@ textarea {
            <div style="text-align: center; margin-bottom: 16px;">
                <img src="window-of-tolerance.webp" style="width: 100%; max-width: 500px; border-radius: 8px;" alt="Window of Tolerance diagram" onerror="this.style.display='none'">
            </div>
-           <div style="color: #374151; line-height: 1.6;">
+           <div id="introModal_content2" contenteditable="true" style="color: #374151; line-height: 1.6; padding: 12px; border: 2px dashed #d1d5db; border-radius: 8px; outline: none;">
                <p style="margin-bottom: 12px;"><strong>Offload</strong> helps you track your emotional tolerance and nervous system state in real-time.</p>
                <p style="margin-bottom: 12px;">There are interactive sliding scales with color schemes and numbers to help a person rate their own experiences so that they can see how much their nervous system is being affected by internal or external circumstances. It can also show them the options they have to change their immediate responses and response habits long term.</p>
                <p style="margin-bottom: 12px;">Use the sliders to indicate your current internal state across different life areas. The visualization shows your window of tolerance - when you're regulated, stressed, or experiencing opportunities for growth.</p>
@@ -470,6 +470,48 @@ textarea {
                <p style="margin-bottom: 12px;">Using this Offload self help tool can take a little bit of getting used. There is a learning curve to it but if a user can be a bit open minded and think about if their ratings are agreeing with them or not, that is the key to unlocking new perspectives and self realizations. Trying to perfect ratings is not recommended because that can be a distraction from getting good enough information out from the shadow and into the light. Yes, this can be used as a shadow work tool if that is helpful for you to think of it that way.</p>
                <p style="margin-bottom: 12px;">Start wherever feels right - there's no wrong way to begin.</p>
                <p style="font-style: italic; color: #6b7280;">P.S. It is also recommended to try only do 5 or so slider ratings or less per data set save to avoid over complicating it. Sometimes less is more.</p>
+           </div>
+           <div style="text-align: center; margin-top: 16px;">
+               <button onclick="saveModalContent('introModal'); saveModalContent('introModal_content2');" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
+           </div>
+       </div>
+   </div>
+
+   <div id="infoModal1" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeInfoModal('infoModal1')">
+       <div class="modal-content">
+           <button class="modal-close" onclick="closeInfoModal('infoModal1')">×</button>
+           <h2 style="margin-bottom: 16px; color: #111827;">Where to Start - Info</h2>
+           <div id="infoModal1_content" contenteditable="true" style="color: #374151; line-height: 1.6; padding: 12px; border: 2px dashed #d1d5db; border-radius: 8px; min-height: 100px; outline: none;">
+               <p style="margin-bottom: 12px;">Information about where to start will go here. Click to edit this text.</p>
+           </div>
+           <div style="text-align: center; margin-top: 16px;">
+               <button onclick="saveModalContent('infoModal1');" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
+           </div>
+       </div>
+   </div>
+
+   <div id="infoModal2" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeInfoModal('infoModal2')">
+       <div class="modal-content">
+           <button class="modal-close" onclick="closeInfoModal('infoModal2')">×</button>
+           <h2 style="margin-bottom: 16px; color: #111827;">Window of Tolerance - Info</h2>
+           <div id="infoModal2_content" contenteditable="true" style="color: #374151; line-height: 1.6; padding: 12px; border: 2px dashed #d1d5db; border-radius: 8px; min-height: 100px; outline: none;">
+               <p style="margin-bottom: 12px;">Information about the Window of Tolerance visualization will go here. Click to edit this text.</p>
+           </div>
+           <div style="text-align: center; margin-top: 16px;">
+               <button onclick="saveModalContent('infoModal2');" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
+           </div>
+       </div>
+   </div>
+
+   <div id="infoModal3" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeInfoModal('infoModal3')">
+       <div class="modal-content">
+           <button class="modal-close" onclick="closeInfoModal('infoModal3')">×</button>
+           <h2 style="margin-bottom: 16px; color: #111827;">Current Entry - Info</h2>
+           <div id="infoModal3_content" contenteditable="true" style="color: #374151; line-height: 1.6; padding: 12px; border: 2px dashed #d1d5db; border-radius: 8px; min-height: 100px; outline: none;">
+               <p style="margin-bottom: 12px;">Information about saving current entries will go here. Click to edit this text.</p>
+           </div>
+           <div style="text-align: center; margin-top: 16px;">
+               <button onclick="saveModalContent('infoModal3');" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
            </div>
        </div>
    </div>
@@ -869,6 +911,20 @@ function getThreatLoad() {
         }
     });
 
+    state.customExternal.forEach(slider => {
+        if (!slider.interacted) return;
+        if (slider.value < -1) {
+            threatTotal += Math.abs(slider.value) - 1;
+        }
+    });
+
+    state.customSupports.forEach(slider => {
+        if (!slider.interacted) return;
+        if (slider.value < -1) {
+            threatTotal += Math.abs(slider.value) - 1;
+        }
+    });
+
     state.ambient.forEach(amb => {
         if (amb.value !== 0 && amb.type === 'threat') {
             threatTotal += amb.value;
@@ -892,6 +948,13 @@ function getOpportunityLoad() {
         if (!area.interacted) return;
         if (area.value > 1) {
             opportunityTotal += (area.value - 1);
+        }
+    });
+
+    state.customExternal.forEach(slider => {
+        if (!slider.interacted) return;
+        if (slider.value > 1) {
+            opportunityTotal += (slider.value - 1);
         }
     });
 
@@ -936,6 +999,22 @@ function getRegulatedLoad() {
             regulatedTotal += 1;
         } else if (support.value > 1) {
             regulatedTotal += (support.value - 1);
+        }
+    });
+
+    state.customExternal.forEach(slider => {
+        if (!slider.interacted) return;
+        if (slider.value === -1 || slider.value === 1) {
+            regulatedTotal += 1;
+        }
+    });
+
+    state.customSupports.forEach(slider => {
+        if (!slider.interacted) return;
+        if (slider.value === -1 || slider.value === 1) {
+            regulatedTotal += 1;
+        } else if (slider.value > 1) {
+            regulatedTotal += (slider.value - 1);
         }
     });
 
@@ -1041,6 +1120,54 @@ function openIntroModal() {
 
 function closeIntroModal() {
     document.getElementById('introModal').classList.remove('active');
+}
+
+function openInfoModal(modalId) {
+    document.getElementById(modalId).classList.add('active');
+}
+
+function closeInfoModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+function saveModalContent(modalId) {
+    const contentDiv = document.getElementById(modalId + '_content');
+    if (contentDiv) {
+        const content = contentDiv.innerHTML;
+        localStorage.setItem('modal_' + modalId, content);
+        alert('Content saved!');
+    }
+}
+
+function loadModalContent() {
+    // Load intro modal content (has two sections)
+    const introContent = localStorage.getItem('modal_introModal');
+    if (introContent) {
+        const introDiv = document.getElementById('introModal_content');
+        if (introDiv) {
+            introDiv.innerHTML = introContent;
+        }
+    }
+    
+    const introContent2 = localStorage.getItem('modal_introModal_content2');
+    if (introContent2) {
+        const introDiv2 = document.getElementById('introModal_content2');
+        if (introDiv2) {
+            introDiv2.innerHTML = introContent2;
+        }
+    }
+    
+    // Load info modal contents
+    for (let i = 1; i <= 3; i++) {
+        const modalId = 'infoModal' + i;
+        const content = localStorage.getItem('modal_' + modalId);
+        if (content) {
+            const div = document.getElementById(modalId + '_content');
+            if (div) {
+                div.innerHTML = content;
+            }
+        }
+    }
 }
 
 function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
@@ -1403,16 +1530,19 @@ function buildCustomSlider(section, slider) {
 function render() {
     const html =
         '<div class="card header" style="padding: 12px;">' +
-            '<div style="display: flex; align-items: center; gap: 12px;">' +
-                '<h1 style="margin: 0;">Offload</h1>' +
-                '<div class="subtitle" style="margin: 0;">An emotion tolerance and shadow work companion.</div>' +
+            '<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">' +
+                '<div style="display: flex; align-items: center; gap: 12px;">' +
+                    '<h1 style="margin: 0;">Offload</h1>' +
+                    '<div class="subtitle" style="margin: 0;">An emotion tolerance and shadow work companion.</div>' +
+                '</div>' +
+                '<button class="btn" onclick="openIntroModal()" style="padding: 6px 12px; font-size: 13px; background: #6366f1; color: white; white-space: nowrap;">ℹ️ Intro</button>' +
             '</div>' +
         '</div>' +
 
         '<div class="card" style="text-align: center; padding: 12px; margin-bottom: 12px;">' +
-            '<div style="display: flex; justify-content: center; align-items: center; gap: 12px;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">' +
                 '<div style="font-size: 16px; font-weight: 600; color: #111827;">Where would you like to start?</div>' +
-                '<button class="btn" onclick="openIntroModal()" style="padding: 6px 12px; font-size: 13px; background: #6366f1; color: white;">ℹ️ Intro</button>' +
+                '<button class="btn" onclick="openInfoModal(\'infoModal1\')" style="padding: 6px 12px; font-size: 13px; background: #6366f1; color: white; white-space: nowrap;">ℹ️ Info</button>' +
             '</div>' +
         '</div>' +
 
@@ -1603,7 +1733,10 @@ function render() {
 
         // Visualization
         '<div class="card">' +
-            '<h2>Window of Tolerance Visualization</h2>' +
+            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">' +
+                '<h2 style="margin: 0;">Window of Tolerance Visualization</h2>' +
+                '<button class="btn" onclick="openInfoModal(\'infoModal2\')" style="padding: 6px 12px; font-size: 13px; background: #6366f1; color: white; white-space: nowrap;">ℹ️ Info</button>' +
+            '</div>' +
             '<div class="visualization" id="visualization">' +
                 '<div class="color-legend">' +
                     '<div style="position: absolute; top: 0; left: 0; right: 0; height: 100%; background: rgba(255, 255, 255, 0.4); border-radius: 5px; z-index: 10;"></div>' +
@@ -1651,7 +1784,10 @@ function render() {
         // Save button
         '<div class="card" style="border: 1px solid #16a34a;">' +
             '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">' +
-                '<h2 style="margin: 0;">💾 Current Entry</h2>' +
+                '<div style="display: flex; align-items: center; gap: 12px;">' +
+                    '<h2 style="margin: 0;">💾 Current Entry</h2>' +
+                    '<button class="btn" onclick="openInfoModal(\'infoModal3\')" style="padding: 6px 12px; font-size: 13px; background: #6366f1; color: white; white-space: nowrap;">ℹ️ Info</button>' +
+                '</div>' +
                 '<button class="btn" onclick="saveEntry()" style="background: #16a34a; color: white; white-space: nowrap; padding: 10px 20px;">Save Entry</button>' +
             '</div>' +
             (state.saveError ? '<div style="color: #dc2626; margin-bottom: 12px;">' + state.saveError + '</div>' : '') +
@@ -1689,6 +1825,9 @@ loadState();
 
 // Initial render
 render();
+
+// Load modal content after page loads
+setTimeout(loadModalContent, 100);
    </script>
 </body>
 </html>
