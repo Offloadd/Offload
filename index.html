@@ -1052,33 +1052,65 @@ function saveEntry() {
     const opportunityLoad = getOpportunityLoad();
     const regulatedLoad = getRegulatedLoad();
 
+    // Helper function to filter out zero values
+    const filterNonZero = (obj) => {
+        const filtered = {};
+        Object.keys(obj).forEach(key => {
+            if (obj[key] !== 0) {
+                filtered[key] = obj[key];
+            }
+        });
+        return Object.keys(filtered).length > 0 ? filtered : undefined;
+    };
+
     const entry = {
         timestamp: new Date().toISOString(),
-        baseline: Object.keys(state.baseline).reduce((acc, key) => {
+        baseline: filterNonZero(Object.keys(state.baseline).reduce((acc, key) => {
             acc[key] = state.baseline[key].value;
             return acc;
-        }, {}),
-        internalSelf: Object.keys(state.internalSelf).reduce((acc, key) => {
+        }, {})),
+        internalSelf: filterNonZero(Object.keys(state.internalSelf).reduce((acc, key) => {
             acc[key] = state.internalSelf[key].value;
             return acc;
-        }, {}),
-        externalAreas: Object.keys(state.externalAreas).reduce((acc, key) => {
+        }, {})),
+        externalAreas: filterNonZero(Object.keys(state.externalAreas).reduce((acc, key) => {
             acc[key] = state.externalAreas[key].value;
             return acc;
-        }, {}),
-        supports: Object.keys(state.supports).reduce((acc, key) => {
+        }, {})),
+        supports: filterNonZero(Object.keys(state.supports).reduce((acc, key) => {
             acc[key] = state.supports[key].value;
             return acc;
-        }, {}),
-        ambient: state.ambient.map(a => ({
-            value: a.value,
-            type: a.type,
-            note: a.note
-        })),
+        }, {})),
+        customExternal: state.customExternal
+            .filter(slider => slider.value !== 0)
+            .map(slider => ({
+                label: slider.label,
+                value: slider.value
+            })),
+        customSupports: state.customSupports
+            .filter(slider => slider.value !== 0)
+            .map(slider => ({
+                label: slider.label,
+                value: slider.value
+            })),
+        ambient: state.ambient
+            .filter(a => a.value !== 0)
+            .map(a => ({
+                value: a.value,
+                type: a.type,
+                note: a.note
+            })),
         threatLoad,
         opportunityLoad,
         regulatedLoad
     };
+
+    // Remove undefined fields
+    Object.keys(entry).forEach(key => {
+        if (entry[key] === undefined || (Array.isArray(entry[key]) && entry[key].length === 0)) {
+            delete entry[key];
+        }
+    });
 
     state.entries.unshift(entry);
 
