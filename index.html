@@ -518,6 +518,8 @@ textarea {
 
    <div class="container" id="app"></div>
 
+   <script src="script.js"></script>
+
    <script>
 // State with new section organization
 const state = {
@@ -525,6 +527,9 @@ const state = {
     section2Expanded: false,
     section3Expanded: false,
     section4Expanded: false,
+
+    // Visualization opacity control
+    visualOpacity: 0.4, // Default 40% white overlay
 
     // Custom sliders for sections
     customExternal: [], // Section 2
@@ -1114,7 +1119,7 @@ function saveEntry() {
 
     state.entries.unshift(entry);
 
-    fetch('https://script.google.com/macros/s/AKfycbwMvvXjUusgFRR-02_RBxqqFrTpgi9UgANvkb9mdoiuDcjdhYGemqlK01WYKf4gztE/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbyre8dXSoVH3LDvBa-SsfPjX0gpKbNcjrF7p-YLQB6fhkQQNRcxmFyoqhp-Xp45VlLU0Q/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
@@ -1160,6 +1165,11 @@ function openInfoModal(modalId) {
 
 function closeInfoModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
+}
+
+function updateVisualOpacity(value) {
+    state.visualOpacity = parseFloat(value);
+    render();
 }
 
 function saveModalContent(modalId) {
@@ -1263,17 +1273,20 @@ function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
 
     let threatR, threatG, threatB;
     if (threatIntensity === 0) {
-        threatR = 255; threatG = 240; threatB = 150;
+        // Start at yellow/orange like the legend middle
+        threatR = 255; threatG = 170; threatB = 68;
     } else if (threatIntensity < 0.5) {
+        // Transition from orange to bright red
         const factor = threatIntensity * 2;
         threatR = 255;
-        threatG = Math.round(240 - (80 * factor));
-        threatB = Math.round(150 - (90 * factor));
+        threatG = Math.round(170 - (102 * factor));
+        threatB = Math.round(68 - (68 * factor));
     } else {
+        // Transition from bright red to dark red
         const factor = (threatIntensity - 0.5) * 2;
         threatR = 255;
-        threatG = Math.round(160 - (92 * factor));
-        threatB = Math.round(60 - (60 * factor));
+        threatG = Math.round(68 - (68 * factor));
+        threatB = 0;
     }
 
     let riverR, riverG, riverB;
@@ -1287,18 +1300,29 @@ function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
 
     let oppR, oppG, oppB;
     if (opportunityIntensity === 0) {
-        oppR = 180; oppG = 230; oppB = 180;
-    } else if (opportunityIntensity < 0.5) {
-        const factor = opportunityIntensity * 2;
-        oppR = Math.round(200 - (132 * factor));
-        oppG = Math.round(230 - (25 * factor));
-        oppB = Math.round(200 - (132 * factor));
+        // Start at light green like the legend
+        oppR = 68; oppG = 255; oppB = 68;
     } else {
-        const factor = (opportunityIntensity - 0.5) * 2;
-        oppR = Math.round(68 + (137 * factor));
-        oppG = Math.round(205 + (30 * factor));
-        oppB = Math.round(68 - (9 * factor));
+        // Gradually intensify the green
+        const factor = opportunityIntensity;
+        oppR = Math.round(68 - (0 * factor));
+        oppG = 255;
+        oppB = Math.round(68 - (0 * factor));
     }
+
+    // Apply white overlay based on visualOpacity (blend colors with white)
+    const opacity = state.visualOpacity;
+    threatR = Math.round(threatR + (255 - threatR) * opacity);
+    threatG = Math.round(threatG + (255 - threatG) * opacity);
+    threatB = Math.round(threatB + (255 - threatB) * opacity);
+    
+    riverR = Math.round(riverR + (255 - riverR) * opacity);
+    riverG = Math.round(riverG + (255 - riverG) * opacity);
+    riverB = Math.round(riverB + (255 - riverB) * opacity);
+    
+    oppR = Math.round(oppR + (255 - oppR) * opacity);
+    oppG = Math.round(oppG + (255 - oppG) * opacity);
+    oppB = Math.round(oppB + (255 - oppB) * opacity);
 
     visualization.style.background = 'linear-gradient(to bottom, ' +
         'rgb(' + threatR + ', ' + threatG + ', ' + threatB + ') 0%, ' +
@@ -1771,7 +1795,7 @@ function render() {
             '</div>' +
             '<div class="visualization" id="visualization">' +
                 '<div class="color-legend">' +
-                    '<div style="position: absolute; top: 0; left: 0; right: 0; height: 100%; background: rgba(255, 255, 255, 0.4); border-radius: 5px; z-index: 10;"></div>' +
+                    '<div style="position: absolute; top: 0; left: 0; right: 0; height: 100%; background: rgba(255, 255, 255, ' + state.visualOpacity + '); border-radius: 5px; z-index: 10;"></div>' +
                     '<div style="position: absolute; top: 1.3%; left: 50%; transform: translateX(-50%); color: black; font-size: 10px; font-weight: bold; text-align: center; z-index: 12; width: 90%; padding: 4px;">' +
                         'Threat<br>Fear, Anger<br>Activated' +
                     '</div>' +
@@ -1810,6 +1834,19 @@ function render() {
                 '<div class="gate-text-top" id="gateTextTop">Stress Response<br>Level: 0</div>' +
                 '<div class="gate-text-bottom" id="gateTextBottom">OPPORTUNITY<br>0</div>' +
                 '<div class="river-text" id="riverText">Window of Tolerance Width<br>or Internal Information<br>Processing Capacity</div>' +
+            '</div>' +
+            '<div style="margin-top: 12px; padding: 10px; background: #f9fafb; border-radius: 6px;">' +
+                '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">' +
+                    '<span style="font-weight: 600; font-size: 13px; color: #374151;">Color Brightness</span>' +
+                    '<span style="font-weight: 600; font-size: 14px; color: #111827;">' + Math.round((1 - state.visualOpacity) * 100) + '%</span>' +
+                '</div>' +
+                '<input type="range" min="0" max="1" step="0.05" value="' + state.visualOpacity + '" ' +
+                       'onchange="updateVisualOpacity(this.value)" ' +
+                       'style="width: 100%; background: linear-gradient(to right, #fbbf24 0%, #a855f7 50%, #3b82f6 100%);">' +
+                '<div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7280; margin-top: 2px;">' +
+                    '<span>Dim (more white)</span>' +
+                    '<span>Bright (less white)</span>' +
+                '</div>' +
             '</div>' +
         '</div>' +
 
