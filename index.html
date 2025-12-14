@@ -472,7 +472,7 @@ textarea {
                <p style="font-style: italic; color: #6b7280;">P.S. It is also recommended to try only do 5 or so slider ratings or less per data set save to avoid over complicating it. Sometimes less is more.</p>
            </div>
            <div style="text-align: center; margin-top: 16px;">
-               <button onclick="saveModalContent('introModal'); saveModalContent('introModal_content2');" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
+               <button onclick="saveAllModalContent(['introModal', 'introModal_content2']);" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
            </div>
        </div>
    </div>
@@ -485,7 +485,7 @@ textarea {
                <p style="margin-bottom: 12px;">Information about where to start will go here. Click to edit this text.</p>
            </div>
            <div style="text-align: center; margin-top: 16px;">
-               <button onclick="saveModalContent('infoModal1');" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
+               <button onclick="saveAllModalContent(['infoModal1']);" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
            </div>
        </div>
    </div>
@@ -498,7 +498,7 @@ textarea {
                <p style="margin-bottom: 12px;">Information about the Window of Tolerance visualization will go here. Click to edit this text.</p>
            </div>
            <div style="text-align: center; margin-top: 16px;">
-               <button onclick="saveModalContent('infoModal2');" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
+               <button onclick="saveAllModalContent(['infoModal2']);" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
            </div>
        </div>
    </div>
@@ -511,7 +511,7 @@ textarea {
                <p style="margin-bottom: 12px;">Information about saving current entries will go here. Click to edit this text.</p>
            </div>
            <div style="text-align: center; margin-top: 16px;">
-               <button onclick="saveModalContent('infoModal3');" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
+               <button onclick="saveAllModalContent(['infoModal3']);" style="padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save Changes</button>
            </div>
        </div>
    </div>
@@ -1056,6 +1056,30 @@ function saveEntry() {
     const threatLoad = getThreatLoad();
     const opportunityLoad = getOpportunityLoad();
     const regulatedLoad = getRegulatedLoad();
+    
+    // Calculate percentages (same as visualization)
+    const totalHeight = 300; // Same as visualization height
+    const minGateHeight = 30;
+    const maxLoad = 50;
+    const regulatedReduction = regulatedLoad * 2;
+    
+    let topGateHeight = minGateHeight + Math.max(0, Math.min((threatLoad / maxLoad) * totalHeight * 1.8, totalHeight * 0.9) - regulatedReduction);
+    let bottomGateHeight = minGateHeight + Math.max(0, Math.min((opportunityLoad / maxLoad) * totalHeight * 1.8, totalHeight * 0.9) - regulatedReduction);
+    
+    const combinedHeight = topGateHeight + bottomGateHeight;
+    const maxCombined = totalHeight * 0.9;
+    
+    if (combinedHeight > maxCombined) {
+        const scaleFactor = maxCombined / combinedHeight;
+        topGateHeight = Math.max(minGateHeight, topGateHeight * scaleFactor);
+        bottomGateHeight = Math.max(minGateHeight, bottomGateHeight * scaleFactor);
+    }
+    
+    const availableSpace = totalHeight - topGateHeight - bottomGateHeight;
+    
+    const threatPercent = Math.round((topGateHeight / totalHeight) * 100);
+    const regulatedPercent = Math.round((availableSpace / totalHeight) * 100);
+    const opportunityPercent = Math.round((bottomGateHeight / totalHeight) * 100);
 
     // Helper function to filter out zero values
     const filterNonZero = (obj) => {
@@ -1069,6 +1093,7 @@ function saveEntry() {
     };
 
     const entry = {
+        id: Date.now(), // Add unique ID for each entry
         timestamp: new Date().toISOString(),
         baseline: filterNonZero(Object.keys(state.baseline).reduce((acc, key) => {
             acc[key] = state.baseline[key].value;
@@ -1107,7 +1132,10 @@ function saveEntry() {
             })),
         threatLoad,
         opportunityLoad,
-        regulatedLoad
+        regulatedLoad,
+        threatPercent,
+        regulatedPercent,
+        opportunityPercent
     };
 
     // Remove undefined fields
@@ -1117,22 +1145,121 @@ function saveEntry() {
         }
     });
 
+    // Add to beginning of array (newest first)
     state.entries.unshift(entry);
+    
+    // Save to localStorage
+    saveEntriesToLocalStorage();
 
-    fetch('https://script.google.com/macros/s/AKfycbyre8dXSoVH3LDvBa-SsfPjX0gpKbNcjrF7p-YLQB6fhkQQNRcxmFyoqhp-Xp45VlLU0Q/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(entry)
-    }).then(() => {
-        console.log('Data sent to Google Sheets');
-    }).catch(error => {
-        console.error('Error sending to Google Sheets:', error);
-    });
+    // Optional: Still send to Google Sheets if you want
+    // fetch('https://script.google.com/macros/s/AKfycbyre8dXSoVH3LDvBa-SsfPjX0gpKbNcjrF7p-YLQB6fhkQQNRcxmFyoqhp-Xp45VlLU0Q/exec', {
+    //     method: 'POST',
+    //     mode: 'no-cors',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(entry)
+    // }).then(() => {
+    //     console.log('Data sent to Google Sheets');
+    // }).catch(error => {
+    //     console.error('Error sending to Google Sheets:', error);
+    // });
 
     render();
+}
+
+function saveEntriesToLocalStorage() {
+    try {
+        localStorage.setItem('offloadEntries', JSON.stringify(state.entries));
+        console.log('Saved', state.entries.length, 'entries to localStorage');
+    } catch (e) {
+        console.error('Error saving entries to localStorage:', e);
+        if (e.name === 'QuotaExceededError') {
+            alert('⚠️ Storage limit reached! Please delete some old entries.');
+        }
+    }
+}
+
+function loadEntriesFromLocalStorage() {
+    try {
+        const saved = localStorage.getItem('offloadEntries');
+        if (saved) {
+            state.entries = JSON.parse(saved);
+            console.log('Loaded', state.entries.length, 'entries from localStorage');
+        }
+    } catch (e) {
+        console.error('Error loading entries from localStorage:', e);
+    }
+}
+
+function deleteEntry(entryId) {
+    if (confirm('Delete this entry? This cannot be undone.')) {
+        state.entries = state.entries.filter(e => e.id !== entryId);
+        saveEntriesToLocalStorage();
+        render();
+    }
+}
+
+function exportEntries() {
+    const dataStr = JSON.stringify(state.entries, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'offload-entries-' + new Date().toISOString().split('T')[0] + '.json';
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
+function importEntries() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const imported = JSON.parse(event.target.result);
+                if (Array.isArray(imported)) {
+                    if (confirm('Import ' + imported.length + ' entries? This will add to your existing entries.')) {
+                        state.entries = [...imported, ...state.entries];
+                        saveEntriesToLocalStorage();
+                        render();
+                        alert('✅ Imported ' + imported.length + ' entries!');
+                    }
+                } else {
+                    alert('❌ Invalid file format');
+                }
+            } catch (err) {
+                alert('❌ Error reading file: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+function getStorageInfo() {
+    try {
+        const entries = JSON.stringify(state.entries);
+        const entriesSize = new Blob([entries]).size;
+        const totalSize = new Blob([JSON.stringify(localStorage)]).size;
+        const maxSize = 5 * 1024 * 1024; // 5MB estimate
+        
+        return {
+            entriesSize,
+            totalSize,
+            maxSize,
+            entriesPercent: Math.round((entriesSize / maxSize) * 100),
+            totalPercent: Math.round((totalSize / maxSize) * 100),
+            entriesCount: state.entries.length
+        };
+    } catch (e) {
+        return null;
+    }
 }
 
 function copyEntries() {
@@ -1141,12 +1268,172 @@ function copyEntries() {
         return '=== ' + date + ' ===\nThreat: ' + e.threatLoad + ' | Regulated: ' + e.regulatedLoad + ' | Opportunity: ' + e.opportunityLoad;
     }).join('\n\n');
     navigator.clipboard.writeText(text);
-    alert('Entries copied!');
+    alert('📋 ' + state.entries.length + ' entries copied to clipboard!');
+}
+
+function copyEntry(entryId, format = 'detailed') {
+    const entry = state.entries.find(e => e.id === entryId);
+    if (!entry) return;
+    
+    let text = '';
+    const date = new Date(entry.timestamp).toLocaleString();
+    
+    if (format === 'summary') {
+        // Short format for quick reference
+        text = date + '\nStress: ' + entry.threatLoad + ' | Regulated: ' + entry.regulatedLoad + ' | Opportunity: ' + entry.opportunityLoad;
+        if (entry.threatPercent !== undefined) {
+            text += '\n(' + entry.threatPercent + '% / ' + entry.regulatedPercent + '% / ' + entry.opportunityPercent + '%)';
+        }
+    } else {
+        // Detailed format for AI analysis
+        text = '=== Offload Entry: ' + date + ' ===\n\n';
+        text += 'LOAD SUMMARY:\n';
+        text += '- Threat Load: ' + entry.threatLoad;
+        if (entry.threatPercent !== undefined) text += ' (' + entry.threatPercent + '%)';
+        text += '\n';
+        text += '- Regulated Load: ' + entry.regulatedLoad;
+        if (entry.regulatedPercent !== undefined) text += ' (' + entry.regulatedPercent + '%)';
+        text += '\n';
+        text += '- Opportunity Load: ' + entry.opportunityLoad;
+        if (entry.opportunityPercent !== undefined) text += ' (' + entry.opportunityPercent + '%)';
+        text += '\n\n';
+        
+        if (entry.baseline && Object.keys(entry.baseline).length > 0) {
+            text += 'BASELINE:\n';
+            Object.keys(entry.baseline).forEach(key => {
+                text += '- ' + key + ': ' + entry.baseline[key] + '\n';
+            });
+            text += '\n';
+        }
+        
+        if (entry.internalSelf && Object.keys(entry.internalSelf).length > 0) {
+            text += 'INTERNAL SELF:\n';
+            Object.keys(entry.internalSelf).forEach(key => {
+                text += '- ' + key + ': ' + entry.internalSelf[key] + '\n';
+            });
+            text += '\n';
+        }
+        
+        if (entry.externalAreas && Object.keys(entry.externalAreas).length > 0) {
+            text += 'EXTERNAL AREAS:\n';
+            Object.keys(entry.externalAreas).forEach(key => {
+                text += '- ' + key + ': ' + entry.externalAreas[key] + '\n';
+            });
+            text += '\n';
+        }
+        
+        if (entry.supports && Object.keys(entry.supports).length > 0) {
+            text += 'SUPPORTS:\n';
+            Object.keys(entry.supports).forEach(key => {
+                text += '- ' + key + ': ' + entry.supports[key] + '\n';
+            });
+            text += '\n';
+        }
+        
+        if (entry.customExternal && entry.customExternal.length > 0) {
+            text += 'CUSTOM EXTERNAL:\n';
+            entry.customExternal.forEach(item => {
+                text += '- ' + item.label + ': ' + item.value + '\n';
+            });
+            text += '\n';
+        }
+        
+        if (entry.customSupports && entry.customSupports.length > 0) {
+            text += 'CUSTOM SUPPORTS:\n';
+            entry.customSupports.forEach(item => {
+                text += '- ' + item.label + ': ' + item.value + '\n';
+            });
+            text += '\n';
+        }
+        
+        if (entry.ambient && entry.ambient.length > 0) {
+            text += 'SPECIFIC EXPERIENCES:\n';
+            entry.ambient.forEach(amb => {
+                text += '- [' + amb.type.toUpperCase() + ' - ' + amb.value + '/10] ' + amb.note + '\n';
+            });
+        }
+    }
+    
+    navigator.clipboard.writeText(text);
+    alert('✅ Entry copied to clipboard!');
+}
+
+function copyLastN(days) {
+    const now = new Date();
+    const cutoff = new Date(now.getTime() - (days * 24 * 60 * 60 * 1000));
+    
+    const filtered = state.entries.filter(e => new Date(e.timestamp) >= cutoff);
+    
+    if (filtered.length === 0) {
+        alert('No entries found in the last ' + days + ' day' + (days > 1 ? 's' : ''));
+        return;
+    }
+    
+    let text = '=== Offload Entries: Last ' + days + ' Day' + (days > 1 ? 's' : '') + ' ===\n';
+    text += '(' + filtered.length + ' entries from ' + cutoff.toLocaleDateString() + ' to ' + now.toLocaleDateString() + ')\n\n';
+    
+    filtered.forEach(entry => {
+        const date = new Date(entry.timestamp).toLocaleString();
+        text += '--- ' + date + ' ---\n';
+        text += 'Threat: ' + entry.threatLoad + ' | Regulated: ' + entry.regulatedLoad + ' | Opportunity: ' + entry.opportunityLoad;
+        
+        if (entry.threatPercent !== undefined) {
+            text += '\nPercentages: ' + entry.threatPercent + '% Stress / ' + entry.regulatedPercent + '% Regulated / ' + entry.opportunityPercent + '% Opportunity';
+        }
+        text += '\n';
+        
+        if (entry.ambient && entry.ambient.length > 0) {
+            text += 'Notes: ';
+            text += entry.ambient.map(a => a.note).join('; ');
+            text += '\n';
+        }
+        text += '\n';
+    });
+    
+    navigator.clipboard.writeText(text);
+    alert('📋 ' + filtered.length + ' entries from last ' + days + ' day' + (days > 1 ? 's' : '') + ' copied!');
+}
+
+function copyCustomRange() {
+    const count = prompt('How many most recent entries do you want to copy?', '5');
+    if (!count) return;
+    
+    const num = parseInt(count);
+    if (isNaN(num) || num < 1) {
+        alert('Please enter a valid number');
+        return;
+    }
+    
+    const filtered = state.entries.slice(0, Math.min(num, state.entries.length));
+    
+    let text = '=== Offload Entries: Last ' + filtered.length + ' Entries ===\n\n';
+    
+    filtered.forEach(entry => {
+        const date = new Date(entry.timestamp).toLocaleString();
+        text += '--- ' + date + ' ---\n';
+        text += 'Threat: ' + entry.threatLoad + ' | Regulated: ' + entry.regulatedLoad + ' | Opportunity: ' + entry.opportunityLoad;
+        
+        if (entry.threatPercent !== undefined) {
+            text += '\nPercentages: ' + entry.threatPercent + '% Stress / ' + entry.regulatedPercent + '% Regulated / ' + entry.opportunityPercent + '% Opportunity';
+        }
+        text += '\n';
+        
+        if (entry.ambient && entry.ambient.length > 0) {
+            text += 'Notes: ';
+            text += entry.ambient.map(a => a.note).join('; ');
+            text += '\n';
+        }
+        text += '\n';
+    });
+    
+    navigator.clipboard.writeText(text);
+    alert('📋 ' + filtered.length + ' entries copied!');
 }
 
 function clearEntries() {
-    if (confirm('Clear all entries?')) {
+    if (confirm('⚠️ Delete ALL ' + state.entries.length + ' entries? This cannot be undone!\n\nTip: Use Export first to save a backup.')) {
         state.entries = [];
+        saveEntriesToLocalStorage();
         render();
     }
 }
@@ -1173,21 +1460,54 @@ function updateVisualOpacity(value) {
 }
 
 function saveModalContent(modalId) {
-    const contentDiv = document.getElementById(modalId + '_content');
+    // Handle both 'modalId' and 'modalId_content' formats
+    let contentDiv;
+    
+    // First try the ID as-is (for cases like 'introModal_content2')
+    contentDiv = document.getElementById(modalId);
+    
+    // If not found, try appending '_content' (for cases like 'introModal' or 'infoModal1')
+    if (!contentDiv) {
+        contentDiv = document.getElementById(modalId + '_content');
+    }
+    
     if (contentDiv) {
         const content = contentDiv.innerHTML;
         localStorage.setItem('modal_' + modalId, content);
-        alert('Content saved!');
+        console.log('Saved content for:', modalId);
+        return true;
+    } else {
+        console.error('Could not find content div for:', modalId);
+        return false;
+    }
+}
+
+function saveAllModalContent(modalIds) {
+    let allSaved = true;
+    modalIds.forEach(id => {
+        if (!saveModalContent(id)) {
+            allSaved = false;
+        }
+    });
+    if (allSaved) {
+        alert('✅ All changes saved!');
+    } else {
+        alert('⚠️ Some changes could not be saved. Check the console for details.');
     }
 }
 
 function loadModalContent() {
+    console.log('Loading modal content from localStorage...');
+    
     // Load intro modal content (has two sections)
     const introContent = localStorage.getItem('modal_introModal');
     if (introContent) {
         const introDiv = document.getElementById('introModal_content');
         if (introDiv) {
             introDiv.innerHTML = introContent;
+            console.log('Loaded introModal content');
+        } else {
+            console.warn('introModal_content div not found');
         }
     }
     
@@ -1196,6 +1516,9 @@ function loadModalContent() {
         const introDiv2 = document.getElementById('introModal_content2');
         if (introDiv2) {
             introDiv2.innerHTML = introContent2;
+            console.log('Loaded introModal_content2');
+        } else {
+            console.warn('introModal_content2 div not found');
         }
     }
     
@@ -1207,9 +1530,14 @@ function loadModalContent() {
             const div = document.getElementById(modalId + '_content');
             if (div) {
                 div.innerHTML = content;
+                console.log('Loaded ' + modalId + ' content');
+            } else {
+                console.warn(modalId + '_content div not found');
             }
         }
     }
+    
+    console.log('Modal content loading complete');
 }
 
 function updateVisualization(threatLoad, opportunityLoad, regulatedLoad) {
@@ -1874,11 +2202,93 @@ function render() {
 
         // Entries
         '<div class="card">' +
-            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">' +
                 '<h2 style="margin: 0;">Saved Entries: ' + state.entries.length + '</h2>' +
-                '<button class="btn" style="background: #3b82f6; color: white;" onclick="copyEntries()" ' + (state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : '') + '>📋 Copy All</button>' +
+                '<div style="display: flex; gap: 6px; flex-wrap: wrap;">' +
+                    '<div style="position: relative; display: inline-block;">' +
+                        '<button class="btn" style="background: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === \'block\' ? \'none\' : \'block\'" ' + (state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : '') + '>📋 Copy ▼</button>' +
+                        '<div style="display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; background: white; border: 1px solid #d1d5db; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 180px; z-index: 1000;">' +
+                            '<button onclick="copyLastN(1); this.parentElement.style.display=\'none\'" style="display: block; width: 100%; text-align: left; padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 12px; border-bottom: 1px solid #e5e7eb;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">Last 24 hours</button>' +
+                            '<button onclick="copyLastN(3); this.parentElement.style.display=\'none\'" style="display: block; width: 100%; text-align: left; padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 12px; border-bottom: 1px solid #e5e7eb;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">Last 3 days</button>' +
+                            '<button onclick="copyLastN(7); this.parentElement.style.display=\'none\'" style="display: block; width: 100%; text-align: left; padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 12px; border-bottom: 1px solid #e5e7eb;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">Last 7 days</button>' +
+                            '<button onclick="copyLastN(30); this.parentElement.style.display=\'none\'" style="display: block; width: 100%; text-align: left; padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 12px; border-bottom: 1px solid #e5e7eb;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">Last 30 days</button>' +
+                            '<button onclick="copyCustomRange(); this.parentElement.style.display=\'none\'" style="display: block; width: 100%; text-align: left; padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 12px; border-bottom: 1px solid #e5e7eb;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">Custom count...</button>' +
+                            '<button onclick="copyEntries(); this.parentElement.style.display=\'none\'" style="display: block; width: 100%; text-align: left; padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 12px;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">All entries</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<button class="btn" style="background: #10b981; color: white; padding: 6px 12px; font-size: 12px;" onclick="exportEntries()" ' + (state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : '') + '>💾 Export</button>' +
+                    '<button class="btn" style="background: #8b5cf6; color: white; padding: 6px 12px; font-size: 12px;" onclick="importEntries()">📂 Import</button>' +
+                    '<button class="btn" style="background: #dc2626; color: white; padding: 6px 12px; font-size: 12px;" onclick="clearEntries()" ' + (state.entries.length === 0 ? 'disabled style="background: #d1d5db; cursor: not-allowed;"' : '') + '>🗑️ Clear All</button>' +
+                '</div>' +
             '</div>' +
-            (state.entries.length === 0 ? '<div style="text-align: center; padding: 36px 0; color: #6b7280;">No saved entries yet</div>' : '') +
+            (function() {
+                const storageInfo = getStorageInfo();
+                if (storageInfo && state.entries.length > 0) {
+                    return '<div style="background: #f9fafb; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 12px;">' +
+                        '<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">' +
+                            '<span style="color: #6b7280;">Storage Used (Entries):</span>' +
+                            '<span style="font-weight: 600; color: #111827;">' + (storageInfo.entriesSize / 1024).toFixed(1) + ' KB (' + storageInfo.entriesPercent + '%)</span>' +
+                        '</div>' +
+                        '<div style="background: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;">' +
+                            '<div style="background: ' + (storageInfo.entriesPercent > 80 ? '#dc2626' : storageInfo.entriesPercent > 50 ? '#f59e0b' : '#10b981') + '; height: 100%; width: ' + storageInfo.entriesPercent + '%; transition: width 0.3s;"></div>' +
+                        '</div>' +
+                    '</div>';
+                }
+                return '';
+            })() +
+            (state.entries.length === 0 ? 
+                '<div style="text-align: center; padding: 36px 0; color: #6b7280;">No saved entries yet</div>' : 
+                '<div style="max-height: 400px; overflow-y: auto;">' +
+                    state.entries.map((entry, index) => {
+                        const date = new Date(entry.timestamp);
+                        const dateStr = date.toLocaleDateString();
+                        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        
+                        // Build a summary of what was tracked
+                        const tracked = [];
+                        if (entry.baseline) tracked.push('Baseline');
+                        if (entry.internalSelf) tracked.push('Internal');
+                        if (entry.externalAreas) tracked.push('External');
+                        if (entry.supports) tracked.push('Supports');
+                        if (entry.ambient && entry.ambient.length > 0) tracked.push(entry.ambient.length + ' Experience' + (entry.ambient.length > 1 ? 's' : ''));
+                        
+                        return '<div style="background: #f9fafb; padding: 12px; margin-bottom: 8px; border-radius: 6px; border-left: 4px solid ' + 
+                            (entry.threatLoad > entry.opportunityLoad ? '#f97316' : '#10b981') + ';">' +
+                            '<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">' +
+                                '<div>' +
+                                    '<div style="font-weight: 600; color: #111827; margin-bottom: 2px;">' + dateStr + ' at ' + timeStr + '</div>' +
+                                    '<div style="font-size: 11px; color: #6b7280;">' + tracked.join(' • ') + '</div>' +
+                                '</div>' +
+                                '<div style="display: flex; gap: 4px;">' +
+                                    '<button onclick="copyEntry(' + entry.id + ', \'detailed\')" style="background: #3b82f6; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" title="Copy detailed version">📋</button>' +
+                                    '<button onclick="deleteEntry(' + entry.id + ')" style="background: #dc2626; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">🗑️</button>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div style="display: flex; gap: 12px; font-size: 13px;">' +
+                                '<div style="flex: 1;">' +
+                                    '<span style="color: #6b7280;">Stress:</span> ' +
+                                    '<span style="font-weight: 600; color: #dc2626;">' + entry.threatLoad + '</span>' +
+                                '</div>' +
+                                '<div style="flex: 1;">' +
+                                    '<span style="color: #6b7280;">Regulated:</span> ' +
+                                    '<span style="font-weight: 600; color: #3b82f6;">' + entry.regulatedLoad + '</span>' +
+                                '</div>' +
+                                '<div style="flex: 1;">' +
+                                    '<span style="color: #6b7280;">Opportunity:</span> ' +
+                                    '<span style="font-weight: 600; color: #10b981;">' + entry.opportunityLoad + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                            (entry.ambient && entry.ambient.length > 0 ? 
+                                '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;">' +
+                                    '<div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">Notes:</div>' +
+                                    entry.ambient.map(amb => 
+                                        '<div style="font-size: 12px; color: #374151; margin-bottom: 2px;">• ' + amb.note + '</div>'
+                                    ).join('') +
+                                '</div>' : '') +
+                        '</div>';
+                    }).join('') +
+                '</div>'
+            ) +
         '</div>';
 
     document.getElementById('app').innerHTML = html;
@@ -1891,6 +2301,7 @@ function render() {
 
 // Load saved state from localStorage
 loadState();
+loadEntriesFromLocalStorage();
 
 // Initial render
 render();
